@@ -7,6 +7,7 @@ import '@testing-library/jest-dom/extend-expect';
 import userEvent from '@testing-library/user-event';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 import React from 'react';
+import { Provider } from 'react-redux';
 import SubscriptionDetails from '../SubscriptionDetails';
 import {
   SubscriptionManagementContext,
@@ -15,6 +16,7 @@ import {
   mockSubscriptionHooks,
   MockSubscriptionContext,
 } from './TestUtilities';
+import { initializeMocks } from '../../../testUtils';
 
 import {
   INVITE_LEARNERS_BUTTON_TEXT,
@@ -25,6 +27,11 @@ jest.mock('../buttons/InviteLearnersButton');
 const defaultProps = {
   enterpriseSlug: 'sluggy',
 };
+const defaultInitialState = {
+  portalConfiguration: {
+    enterpriseSlug: defaultProps.enterpriseSlug,
+  },
+};
 
 const PURCHASE_DATE = 'Purchase Date';
 
@@ -33,9 +40,18 @@ describe('SubscriptionDetails', () => {
     cleanup();
   });
 
+  const renderWithStore = (children, { initialState = defaultInitialState } = {}) => {
+    const { reduxStore } = initializeMocks(initialState);
+    return render(
+      <Provider store={reduxStore}>
+        {children}
+      </Provider>,
+    );
+  };
+
   describe('invite learners button', () => {
     it('should be rendered if there are allocated licenses', () => {
-      render(
+      renderWithStore(
         <IntlProvider locale="en">
           <SubscriptionManagementContext detailState={{
             ...SUBSCRIPTION_PLAN_ASSIGNED_USER_STATE,
@@ -53,7 +69,7 @@ describe('SubscriptionDetails', () => {
     });
 
     it('should be rendered if there are revoked licenses', () => {
-      render(
+      renderWithStore(
         <IntlProvider locale="en">
           <SubscriptionManagementContext detailState={{
             ...SUBSCRIPTION_PLAN_ASSIGNED_USER_STATE,
@@ -73,7 +89,7 @@ describe('SubscriptionDetails', () => {
     });
 
     it('should not be rendered if the subscription has expired', () => {
-      render(
+      renderWithStore(
         <IntlProvider locale="en">
           <SubscriptionManagementContext detailState={{
             ...SUBSCRIPTION_PLAN_ASSIGNED_USER_STATE,
@@ -88,7 +104,7 @@ describe('SubscriptionDetails', () => {
     });
 
     it('should not be disabled if the subscription is not locked for renewal processing', () => {
-      render(
+      renderWithStore(
         <IntlProvider locale="en">
           <SubscriptionManagementContext detailState={SUBSCRIPTION_PLAN_ASSIGNED_USER_STATE}>
             <SubscriptionDetails {...defaultProps} />
@@ -99,7 +115,7 @@ describe('SubscriptionDetails', () => {
     });
 
     it('should be disabled if the subscription is locked for renewal processing', () => {
-      render(
+      renderWithStore(
         <IntlProvider locale="en">
           <SubscriptionManagementContext detailState={{
             ...SUBSCRIPTION_PLAN_ASSIGNED_USER_STATE,
@@ -127,7 +143,7 @@ describe('SubscriptionDetails', () => {
         forceRefreshUsersOverview,
         forceRefreshUsers,
       } = mockSubscriptionHooks(subscriptionPlan);
-      render(
+      renderWithStore(
         <IntlProvider locale="en">
           <MockSubscriptionContext
             subscriptionPlan={subscriptionPlan}
@@ -151,7 +167,7 @@ describe('SubscriptionDetails', () => {
 
   describe('purchase date', () => {
     it('should not show purchase date if there are no prior renewals', () => {
-      render(
+      renderWithStore(
         <IntlProvider locale="en">
           <SubscriptionManagementContext detailState={{
             ...SUBSCRIPTION_PLAN_ASSIGNED_USER_STATE,
@@ -166,7 +182,7 @@ describe('SubscriptionDetails', () => {
     });
 
     it('should show purchase date if there are prior renewals', () => {
-      render(
+      renderWithStore(
         <IntlProvider locale="en">
           <SubscriptionManagementContext detailState={{
             ...SUBSCRIPTION_PLAN_ASSIGNED_USER_STATE,

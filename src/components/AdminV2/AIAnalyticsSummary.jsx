@@ -1,5 +1,5 @@
 import React from 'react';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
   Button, Card, Stack, Badge, useToggle,
@@ -67,9 +67,10 @@ AnalyticsDetailCard.propTypes = {
   data: PropTypes.string,
 };
 
-const AIAnalyticsSummary = ({ enterpriseId, insights, renderOverviewHeading }) => {
+const AIAnalyticsSummary = ({ enterpriseId, renderOverviewHeading }) => {
   const [summarizeCardIsOpen, showSummarizeCard, hideSummarizeCard] = useToggle(false);
   const [trackProgressCardIsOpen, showTrackProgressCard, hideTrackProgressCard] = useToggle(false);
+  const insights = useSelector(state => state.dashboardInsights.insights);
 
   const { data: analyticsSummary, isLoading, error } = useAIAnalyticsSummary(enterpriseId, insights);
 
@@ -134,14 +135,9 @@ const AIAnalyticsSummary = ({ enterpriseId, insights, renderOverviewHeading }) =
   );
 };
 
-const mapStateToProps = state => ({
-  insights: state.dashboardInsights.insights,
-});
-
 AIAnalyticsSummary.propTypes = {
   enterpriseId: PropTypes.string.isRequired,
-  insights: PropTypes.objectOf(PropTypes.shape),
   renderOverviewHeading: PropTypes.func,
 };
 
-export default connect(mapStateToProps)(AIAnalyticsSummary);
+export default AIAnalyticsSummary;

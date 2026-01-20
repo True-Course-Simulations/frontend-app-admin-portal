@@ -1,11 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
-import configureMockStore, { MockStore } from 'redux-mock-store';
 import { Provider } from 'react-redux';
-import type { ThunkDispatch } from 'redux-thunk';
-import thunk from 'redux-thunk';
-import type { AnyAction } from 'redux';
 import { getAuthenticatedHttpClient, getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { QueryClientProvider } from '@tanstack/react-query';
 import MockAdapter from 'axios-mock-adapter';
@@ -17,6 +13,7 @@ import withAlgoliaSearch from './withAlgoliaSearch';
 import type { UseAlgoliaSearchResult } from './useAlgoliaSearch';
 import { queryClient } from '../test/testUtils';
 import { configuration } from '../../config';
+import { initializeMocks } from '../../testUtils';
 
 jest.mock('@edx/frontend-platform/auth');
 jest.mock('algoliasearch/lite', () => {
@@ -45,8 +42,6 @@ jest.mock('@edx/frontend-platform/auth', () => ({
   getAuthenticatedHttpClient: jest.fn(),
 }));
 
-const mockStore = configureMockStore([thunk]);
-
 interface PortalConfigurationState {
   enterpriseId: string;
 }
@@ -54,8 +49,6 @@ interface PortalConfigurationState {
 interface RootState {
   portalConfiguration: PortalConfigurationState;
 }
-
-type DispatchExts = ThunkDispatch<RootState, undefined, AnyAction>;
 
 interface MyComponentProps {
   algolia: UseAlgoliaSearchResult;
@@ -69,19 +62,18 @@ const MyComponent: React.FC<MyComponentProps> = ({ algolia, enterpriseId, classN
     {algolia.searchClient && <div>Search Client Loaded</div>}
   </div>
 );
-interface MyComponentWrapperProps {
-  store: MockStore<RootState, DispatchExts>;
-}
-
 const MyComponentWithAlgoliaSearch = withAlgoliaSearch(MyComponent);
 
-const Wrapper: React.FC<MyComponentWrapperProps> = ({ store }) => (
-  <QueryClientProvider client={queryClient()}>
-    <Provider store={store || mockStore()}>
-      <MyComponentWithAlgoliaSearch />
-    </Provider>
-  </QueryClientProvider>
-);
+const Wrapper: React.FC<{ initialState: RootState }> = ({ initialState }) => {
+  const { reduxStore } = initializeMocks(initialState);
+  return (
+    <QueryClientProvider client={queryClient()}>
+      <Provider store={reduxStore}>
+        <MyComponentWithAlgoliaSearch />
+      </Provider>
+    </QueryClientProvider>
+  );
+};
 
 describe('withAlgoliaSearch', () => {
   beforeEach(() => {
@@ -105,11 +97,11 @@ describe('withAlgoliaSearch', () => {
   }) => {
     const mockEnterpriseId = 'test-enterprise-id';
     const mockSecuredApiKey = 'securedApiKey';
-    const store: MockStore<RootState, DispatchExts> = mockStore({
+    const initialState: RootState = {
       portalConfiguration: {
         enterpriseId: mockEnterpriseId,
       },
-    });
+    };
     const apiUrl = `${configuration.ENTERPRISE_CATALOG_BASE_URL}/api/v1/enterprise-customer/${mockEnterpriseId}/secured-algolia-api-key/`;
     const mockSecuredAlgoliaApiKeyResponse = {
       algolia: {
@@ -126,7 +118,7 @@ describe('withAlgoliaSearch', () => {
     } else {
       axiosMock.onGet(apiUrl).reply(200, mockSecuredAlgoliaApiKeyResponse);
     }
-    render(<Wrapper store={store} />);
+    render(<Wrapper initialState={initialState} />);
 
     await waitFor(() => {
       expect(screen.getByText('My Component')).toBeInTheDocument();

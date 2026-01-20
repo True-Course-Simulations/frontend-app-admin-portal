@@ -1,24 +1,24 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import useAlgoliaSearch from './useAlgoliaSearch';
 
 const withAlgoliaSearch = (WrappedComponent) => {
-  const WithAlgoliaSearch = ({ enterpriseId, enterpriseFeatures, ...rest }) => {
+  const WithAlgoliaSearch = ({ enterpriseId, ...rest }) => {
+    const selectedEnterpriseId = useSelector((state) => state.portalConfiguration.enterpriseId);
+    const resolvedEnterpriseId = enterpriseId || selectedEnterpriseId;
     const algolia = useAlgoliaSearch({
-      enterpriseId,
+      enterpriseId: resolvedEnterpriseId,
     });
-    return <WrappedComponent algolia={algolia} enterpriseId={enterpriseId} {...rest} />;
+    return <WrappedComponent algolia={algolia} enterpriseId={resolvedEnterpriseId} {...rest} />;
   };
   WithAlgoliaSearch.propTypes = {
-    enterpriseId: PropTypes.string.isRequired,
-    enterpriseFeatures: PropTypes.shape({}).isRequired,
+    enterpriseId: PropTypes.string,
   };
-  const mapStateToProps = (state) => ({
-    enterpriseId: state.portalConfiguration.enterpriseId,
-    enterpriseFeatures: state.portalConfiguration.enterpriseFeatures,
-  });
-  return connect(mapStateToProps)(WithAlgoliaSearch);
+  WithAlgoliaSearch.defaultProps = {
+    enterpriseId: undefined,
+  };
+  return WithAlgoliaSearch;
 };
 
 export default withAlgoliaSearch;

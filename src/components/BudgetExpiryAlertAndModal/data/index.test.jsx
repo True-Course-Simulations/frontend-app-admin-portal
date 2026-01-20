@@ -1,8 +1,6 @@
 import { screen } from '@testing-library/react';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 import { QueryClientProvider } from '@tanstack/react-query';
-import configureMockStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
 import { Provider } from 'react-redux';
 import { renderWithRouter } from '@edx/frontend-enterprise-utils';
 import { v4 as uuidv4 } from 'uuid';
@@ -11,6 +9,7 @@ import { useParams } from 'react-router-dom';
 import BudgetExpiryAlertAndModal from '../index';
 import { queryClient } from '../../test/testUtils';
 import { useEnterpriseBudgets } from '../../EnterpriseSubsidiesContext/data/hooks';
+import { initializeMocks } from '../../../testUtils';
 
 jest.mock('../../EnterpriseSubsidiesContext/data/hooks', () => ({
   ...jest.requireActual('../../EnterpriseSubsidiesContext/data/hooks'),
@@ -22,8 +21,6 @@ jest.mock('react-router-dom', () => ({
   useParams: jest.fn(),
 }));
 
-const mockStore = configureMockStore([thunk]);
-const getMockStore = store => mockStore(store);
 const enterpriseSlug = 'test-enterprise';
 const enterpriseUUID = '1234';
 const initialStoreState = {
@@ -57,11 +54,11 @@ const mockEndDateText = mockEnterpriseBudget[0].end.format('MMM D, YYYY');
 const BudgetExpiryAlertAndModalWrapper = ({
   initialState = initialStoreState,
 }) => {
-  const store = getMockStore(initialState);
+  const { reduxStore } = initializeMocks(initialState);
   return (
     <QueryClientProvider client={queryClient()}>
       <IntlProvider locale="en">
-        <Provider store={store}>
+        <Provider store={reduxStore}>
           <BudgetExpiryAlertAndModal />
         </Provider>
       </IntlProvider>

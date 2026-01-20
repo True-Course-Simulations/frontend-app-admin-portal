@@ -1,14 +1,13 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import configureMockStore from 'redux-mock-store';
 import { userEvent } from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import { MemoryRouter } from 'react-router-dom';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
-import thunk from 'redux-thunk';
 import AIAnalyticsSummary from '../AIAnalyticsSummary';
 import * as AIAnalyticsSummaryHooks from '../../AIAnalyticsSummary/data/hooks';
+import { initializeMocks } from '../../../testUtils';
 
 const mockedInsights = {
   learner_progress: {
@@ -41,33 +40,36 @@ const mockedInsights = {
     created_at: '2023-10-02T03:24:40Z',
   },
 };
-const mockStore = configureMockStore([thunk]);
-const store = mockStore({
+const defaultInitialState = {
   portalConfiguration: {
     enterpriseId: 'test-enterprise-id',
   },
-  dashboardInsights: mockedInsights,
-});
+  dashboardInsights: {
+    insights: mockedInsights,
+  },
+};
 const mockRenderOverviewHeading = () => <div>Overview</div>;
 
-const AIAnalyticsSummaryWrapper = props => (
-  <MemoryRouter>
-    <Provider store={store}>
-      <IntlProvider locale="en">
-        <AIAnalyticsSummary
-          enterpriseId="test-enterprise-id"
-          insights={mockedInsights}
-          renderOverviewHeading={mockRenderOverviewHeading}
-          {...props}
-        />,
-      </IntlProvider>
-    </Provider>
-  </MemoryRouter>
-);
+const AIAnalyticsSummaryWrapper = ({ initialState = defaultInitialState, ...props }) => {
+  const { reduxStore } = initializeMocks(initialState);
+  return (
+    <MemoryRouter>
+      <Provider store={reduxStore}>
+        <IntlProvider locale="en">
+          <AIAnalyticsSummary
+            enterpriseId="test-enterprise-id"
+            renderOverviewHeading={mockRenderOverviewHeading}
+            {...props}
+          />
+        </IntlProvider>
+      </Provider>
+    </MemoryRouter>
+  );
+};
 
 describe('<AIAnalyticsSummary />', () => {
   it('should render action buttons correctly', async () => {
-    render(<AIAnalyticsSummaryWrapper insights={mockedInsights} />);
+    render(<AIAnalyticsSummaryWrapper />);
     const summariseAnalyticsComponent = await screen.findByTestId('summarize-analytics');
     expect(summariseAnalyticsComponent).toBeInTheDocument();
   });
@@ -87,7 +89,11 @@ describe('<AIAnalyticsSummary />', () => {
   it('should handle null analytics data', async () => {
     const insightsData = { ...mockedInsights, learner_engagement: null };
     const user = userEvent.setup();
-    render(<AIAnalyticsSummaryWrapper insights={insightsData} />);
+    render(<AIAnalyticsSummaryWrapper initialState={{
+      ...defaultInitialState,
+      dashboardInsights: { insights: insightsData },
+    }}
+    />);
     const summariseAnalyticsComponent = await screen.findByTestId('summarize-analytics');
     await user.click(summariseAnalyticsComponent);
 
@@ -98,7 +104,7 @@ describe('<AIAnalyticsSummary />', () => {
 
   it('should hide the analytics card when Dismiss button is clicked', async () => {
     const user = userEvent.setup();
-    render(<AIAnalyticsSummaryWrapper insights={mockedInsights} />);
+    render(<AIAnalyticsSummaryWrapper />);
     // Open the analytics card
     const summariseAnalyticsComponent = await screen.findByTestId('summarize-analytics');
     await user.click(summariseAnalyticsComponent);
@@ -120,7 +126,7 @@ describe('<AIAnalyticsSummary />', () => {
       error: new Error('API Error'),
     });
 
-    render(<AIAnalyticsSummaryWrapper insights={mockedInsights} />);
+    render(<AIAnalyticsSummaryWrapper />);
     const summariseAnalyticsComponent = await screen.findByTestId('summarize-analytics');
     await user.click(summariseAnalyticsComponent);
 
@@ -138,7 +144,7 @@ describe('<AIAnalyticsSummary />', () => {
     });
 
     const user = userEvent.setup();
-    render(<AIAnalyticsSummaryWrapper insights={mockedInsights} />);
+    render(<AIAnalyticsSummaryWrapper />);
     const summariseAnalyticsComponent = await screen.findByTestId('summarize-analytics');
     await user.click(summariseAnalyticsComponent);
     // TODO: need to figure out how can we test loading state

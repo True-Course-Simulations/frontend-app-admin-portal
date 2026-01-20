@@ -1,7 +1,6 @@
 import { useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useIntl } from '@edx/frontend-platform/i18n';
 import dayjs from 'dayjs';
 import {
@@ -16,10 +15,9 @@ import SubscriptionExpirationBanner from './expiration/SubscriptionExpirationBan
 import { MANAGE_LEARNERS_TAB } from './data/constants';
 import { ADMINISTER_SUBSCRIPTIONS_TARGETS } from '../ProductTours/AdminOnboardingTours/constants';
 
-const SubscriptionDetails = ({
-  enterpriseSlug,
-}) => {
+const SubscriptionDetails = () => {
   const intl = useIntl();
+  const enterpriseSlug = useSelector(state => state.portalConfiguration.enterpriseSlug);
   const { forceRefresh } = useContext(SubscriptionContext);
   const {
     hasMultipleSubscriptions,
@@ -140,12 +138,4 @@ const SubscriptionDetails = ({
   );
 };
 
-SubscriptionDetails.propTypes = {
-  enterpriseSlug: PropTypes.string.isRequired,
-};
-
-const mapStateToProps = state => ({
-  enterpriseSlug: state.portalConfiguration.enterpriseSlug,
-});
-
-export default connect(mapStateToProps)(SubscriptionDetails);
+export default SubscriptionDetails;

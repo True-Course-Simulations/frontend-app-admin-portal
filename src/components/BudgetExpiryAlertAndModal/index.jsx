@@ -3,8 +3,7 @@ import {
   ActionRow, Alert, AlertModal, Button, Hyperlink, useToggle,
 } from '@openedx/paragon';
 
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { sendEnterpriseTrackEvent } from '@edx/frontend-enterprise-utils';
 import { matchPath, useLocation } from 'react-router-dom';
 import { FormattedMessage } from '@edx/frontend-platform/i18n';
@@ -14,7 +13,11 @@ import EVENT_NAMES from '../../eventTracking';
 
 import useExpiry from './data/hooks/useExpiry';
 
-const BudgetExpiryAlertAndModal = ({ enterpriseUUID, disableExpiryMessagingForLearnerCredit }) => {
+const BudgetExpiryAlertAndModal = () => {
+  const enterpriseUUID = useSelector(state => state.portalConfiguration.enterpriseId);
+  const disableExpiryMessagingForLearnerCredit = useSelector(
+    state => state.portalConfiguration.disableExpiryMessagingForLearnerCredit,
+  );
   const [modalIsOpen, modalOpen, modalClose] = useToggle(false);
   const [alertIsOpen, alertOpen, alertClose] = useToggle(false);
   const location = useLocation();
@@ -143,17 +146,4 @@ const BudgetExpiryAlertAndModal = ({ enterpriseUUID, disableExpiryMessagingForLe
   );
 };
 
-const mapStateToProps = state => ({
-  enterpriseUUID: state.portalConfiguration.enterpriseId,
-  enterpriseFeatures: state.portalConfiguration.enterpriseFeatures,
-  disableExpiryMessagingForLearnerCredit: state.portalConfiguration.disableExpiryMessagingForLearnerCredit,
-});
-
-BudgetExpiryAlertAndModal.propTypes = {
-  enterpriseUUID: PropTypes.string.isRequired,
-  enterpriseFeatures: PropTypes.shape({
-  }),
-  disableExpiryMessagingForLearnerCredit: PropTypes.bool.isRequired,
-};
-
-export default connect(mapStateToProps)(BudgetExpiryAlertAndModal);
+export default BudgetExpiryAlertAndModal;

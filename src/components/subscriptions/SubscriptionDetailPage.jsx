@@ -1,7 +1,6 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { Navigate, useParams } from 'react-router-dom';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 import SubscriptionExpirationModals from './expiration/SubscriptionExpirationModals';
 import SubscriptionDetails from './SubscriptionDetails';
@@ -12,8 +11,9 @@ import SubscriptionDetailsSkeleton from './SubscriptionDetailsSkeleton';
 import { ROUTE_NAMES } from '../EnterpriseApp/data/constants';
 import { MANAGE_LEARNERS_TAB } from './data/constants';
 
-export const SubscriptionDetailPage = ({ enterpriseSlug }) => {
+export const SubscriptionDetailPage = () => {
   const { subscriptionUUID } = useParams();
+  const enterpriseSlug = useSelector(state => state.portalConfiguration.enterpriseSlug);
   const [subscription, loadingSubscription] = useSubscriptionFromParams({ subscriptionUUID });
 
   if (!subscription && !loadingSubscription) {
@@ -39,12 +39,4 @@ export const SubscriptionDetailPage = ({ enterpriseSlug }) => {
   );
 };
 
-SubscriptionDetailPage.propTypes = {
-  enterpriseSlug: PropTypes.string.isRequired,
-};
-
-const mapStateToProps = state => ({
-  enterpriseSlug: state.portalConfiguration.enterpriseSlug,
-});
-
-export default connect(mapStateToProps)(SubscriptionDetailPage);
+export default SubscriptionDetailPage;
