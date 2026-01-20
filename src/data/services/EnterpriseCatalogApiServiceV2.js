@@ -3,11 +3,11 @@ import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { configuration } from '../../config';
 
 class EnterpriseCatalogApiServiceV2 {
-  static baseUrl = `${configuration.ENTERPRISE_CATALOG_BASE_URL}/api/v2`;
+  static get baseUrl() { return `${configuration.ENTERPRISE_CATALOG_BASE_URL}/api/v2`; }
 
   static apiClient = getAuthenticatedHttpClient;
 
-  static enterpriseCatalogsUrl = `${EnterpriseCatalogApiServiceV2.baseUrl}/enterprise-catalogs/`;
+  static get enterpriseCatalogsUrl() { return `${this.baseUrl}/enterprise-catalogs/`; }
 
   /**
    * Retrieves the enterprise-catalog based contains_content_items endpoint for

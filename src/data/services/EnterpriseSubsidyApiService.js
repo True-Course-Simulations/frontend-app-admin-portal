@@ -4,11 +4,11 @@ import { snakeCaseObject } from '@edx/frontend-platform';
 import { configuration } from '../../config';
 
 class SubsidyApiService {
-  static baseUrl = `${configuration.ENTERPRISE_SUBSIDY_BASE_URL}/api`;
+  static get baseUrl() { return `${configuration.ENTERPRISE_SUBSIDY_BASE_URL}/api`; }
 
-  static baseUrlV1 = `${this.baseUrl}/v1`;
+  static get baseUrlV1() { return `${this.baseUrl}/v1`; }
 
-  static baseUrlV2 = `${this.baseUrl}/v2`;
+  static get baseUrlV2() { return `${this.baseUrl}/v2`; }
 
   static apiClient = getAuthenticatedHttpClient;
 

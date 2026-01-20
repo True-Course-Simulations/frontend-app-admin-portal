@@ -11,11 +11,13 @@ class EnterpriseDataApiService {
   // TODO: This should access the data-api through the gateway instead of direct
   static apiClient = getAuthenticatedHttpClient;
 
-  static enterpriseBaseUrl = `${configuration.DATA_API_BASE_URL}/enterprise/api/v1/enterprise/`;
+  static get enterpriseBaseUrl() { return `${configuration.DATA_API_BASE_URL}/enterprise/api/v1/enterprise/`; }
 
-  static enterpriseAdminBaseUrl = `${configuration.DATA_API_BASE_URL}/enterprise/api/v1/admin/`;
+  static get enterpriseAdminBaseUrl() { return `${configuration.DATA_API_BASE_URL}/enterprise/api/v1/admin/`; }
 
-  static enterpriseAdminAnalyticsV2BaseUrl = `${configuration.DATA_API_BASE_URL}/enterprise/api/v1/admin/analytics/`;
+  static get enterpriseAdminAnalyticsV2BaseUrl() {
+    return `${configuration.DATA_API_BASE_URL}/enterprise/api/v1/admin/analytics/`;
+  }
 
   static constructAnalyticsDataURL(key, baseURL) {
     const dataURLsMap = {

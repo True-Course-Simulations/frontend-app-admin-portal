@@ -64,51 +64,57 @@ export interface EnterpriseAdminResponse {
 class LmsApiService {
   static apiClient = getAuthenticatedHttpClient;
 
-  static baseUrl = configuration.LMS_BASE_URL;
+  static get baseUrl() { return configuration.LMS_BASE_URL; }
 
-  static reportingConfigUrl = `${LmsApiService.baseUrl}/enterprise/api/v1/enterprise_customer_reporting/`;
+  static get reportingConfigUrl() { return `${this.baseUrl}/enterprise/api/v1/enterprise_customer_reporting/`; }
 
-  static reportingConfigTypesUrl = `${LmsApiService.baseUrl}/enterprise/api/v1/enterprise_report_types/`;
+  static get reportingConfigTypesUrl() { return `${this.baseUrl}/enterprise/api/v1/enterprise_report_types/`; }
 
-  static enterpriseCustomerUrl = `${LmsApiService.baseUrl}/enterprise/api/v1/enterprise-customer/`;
+  static get enterpriseCustomerUrl() { return `${this.baseUrl}/enterprise/api/v1/enterprise-customer/`; }
 
-  static enterpriseCustomerBrandingUrl = `${LmsApiService.baseUrl}/enterprise/api/v1/enterprise-customer-branding/update-branding/`;
+  static get enterpriseCustomerBrandingUrl() {
+    return `${this.baseUrl}/enterprise/api/v1/enterprise-customer-branding/update-branding/`;
+  }
 
-  static enterpriseCustomerMembersUrl = `${LmsApiService.baseUrl}/enterprise/api/v1/enterprise-customer-members/`;
+  static get enterpriseCustomerMembersUrl() { return `${this.baseUrl}/enterprise/api/v1/enterprise-customer-members/`; }
 
-  static providerConfigUrl = `${LmsApiService.baseUrl}/auth/saml/v0/provider_config/`;
+  static get providerConfigUrl() { return `${this.baseUrl}/auth/saml/v0/provider_config/`; }
 
-  static providerDataUrl = `${LmsApiService.baseUrl}/auth/saml/v0/provider_data/`;
+  static get providerDataUrl() { return `${this.baseUrl}/auth/saml/v0/provider_data/`; }
 
-  static providerDataSyncUrl = `${LmsApiService.baseUrl}/auth/saml/v0/provider_data/sync_provider_data/`;
+  static get providerDataSyncUrl() { return `${this.baseUrl}/auth/saml/v0/provider_data/sync_provider_data/`; }
 
-  static lmsIntegrationUrl = `${LmsApiService.baseUrl}/channel_integrations/api/v1`;
+  static get lmsIntegrationUrl() { return `${this.baseUrl}/channel_integrations/api/v1`; }
 
-  static lmsContentSyncStatusUrl = `${LmsApiService.baseUrl}/channel_integrations/api/v1/logs/content_sync_status`;
+  static get lmsContentSyncStatusUrl() { return `${this.baseUrl}/channel_integrations/api/v1/logs/content_sync_status`; }
 
-  static lmsLearnerSyncStatusUrl = `${LmsApiService.baseUrl}/channel_integrations/api/v1/logs/learner_sync_status`;
+  static get lmsLearnerSyncStatusUrl() { return `${this.baseUrl}/channel_integrations/api/v1/logs/learner_sync_status`; }
 
-  static createPendingUsersUrl = `${LmsApiService.baseUrl}/enterprise/api/v1/link_pending_enterprise_users`;
+  static get createPendingUsersUrl() { return `${this.baseUrl}/enterprise/api/v1/link_pending_enterprise_users`; }
 
-  static notificationReadUrl = `${LmsApiService.baseUrl}/enterprise/api/v1/read_notification`;
+  static get notificationReadUrl() { return `${this.baseUrl}/enterprise/api/v1/read_notification`; }
 
-  static enterpriseCustomerInviteKeyListUrl = `${LmsApiService.baseUrl}/enterprise/api/v1/enterprise-customer-invite-key/basic-list/`;
+  static get enterpriseCustomerInviteKeyListUrl() {
+    return `${this.baseUrl}/enterprise/api/v1/enterprise-customer-invite-key/basic-list/`;
+  }
 
-  static enterpriseCustomerInviteKeyUrl = `${LmsApiService.baseUrl}/enterprise/api/v1/enterprise-customer-invite-key/`;
+  static get enterpriseCustomerInviteKeyUrl() { return `${this.baseUrl}/enterprise/api/v1/enterprise-customer-invite-key/`; }
 
-  static apiCredentialsUrl = `${LmsApiService.baseUrl}/enterprise/api/v1/enterprise-customer-api-credentials/`;
+  static get apiCredentialsUrl() { return `${this.baseUrl}/enterprise/api/v1/enterprise-customer-api-credentials/`; }
 
-  static enterpriseSsoOrchestrationUrl = `${LmsApiService.baseUrl}/enterprise/api/v1/enterprise_customer_sso_configuration/`;
+  static get enterpriseSsoOrchestrationUrl() {
+    return `${this.baseUrl}/enterprise/api/v1/enterprise_customer_sso_configuration/`;
+  }
 
-  static enterpriseGroupUrl = `${LmsApiService.baseUrl}/enterprise/api/v1/enterprise-group/`;
+  static get enterpriseGroupUrl() { return `${this.baseUrl}/enterprise/api/v1/enterprise-group/`; }
 
-  static enterpriseGroupListUrl = `${LmsApiService.baseUrl}/enterprise/api/v1/enterprise_group/`;
+  static get enterpriseGroupListUrl() { return `${this.baseUrl}/enterprise/api/v1/enterprise_group/`; }
 
-  static enterpriseGroupMembershipUrl = `${LmsApiService.baseUrl}/enterprise/api/v1/enterprise-group-membership/`;
+  static get enterpriseGroupMembershipUrl() { return `${this.baseUrl}/enterprise/api/v1/enterprise-group-membership/`; }
 
-  static enterpriseLearnerUrl = `${LmsApiService.baseUrl}/enterprise/api/v1/enterprise-learner/`;
+  static get enterpriseLearnerUrl() { return `${this.baseUrl}/enterprise/api/v1/enterprise-learner/`; }
 
-  static loginRefreshUrl = `${LmsApiService.baseUrl}/login_refresh`;
+  static get loginRefreshUrl() { return `${this.baseUrl}/login_refresh`; }
 
   static async createEnterpriseGroup(
     {
@@ -520,7 +526,7 @@ class LmsApiService {
   }
 
   static updateUserActiveEnterprise = (enterpriseId) => {
-    const url = `${configuration.LMS_BASE_URL}/enterprise/select/active/`;
+    const url = `${LmsApiService.baseUrl}/enterprise/select/active/`;
     const formData = new FormData();
     formData.append('enterprise', enterpriseId);
 
