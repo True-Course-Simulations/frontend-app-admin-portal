@@ -3,8 +3,6 @@ import '@testing-library/jest-dom/extend-expect';
 import React, { useMemo } from 'react';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 import { Provider } from 'react-redux';
-import configureMockStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
 import algoliasearch from 'algoliasearch/lite';
 import userEvent from '@testing-library/user-event';
 
@@ -17,6 +15,7 @@ import { AddCoursesStep } from './AddCoursesStep';
 import { renderWithRouter } from '../../test/testUtils';
 import type { SelectedRow } from '../data/types';
 import type { UseAlgoliaSearchResult } from '../../algolia-search';
+import { initializeMocks } from '../../../testUtils';
 
 const mockEnterpriseCatalogUuid = 'fake-enterprise-catalog-uuid';
 const mockEnterpriseCatalogQueryUuid = 'fake-enterprise-catalog-query-uuid';
@@ -49,20 +48,18 @@ const defaultAlgoliaProps: UseAlgoliaSearchResult = {
   securedAlgoliaApiKey: null,
 };
 
-const mockStore = configureMockStore([thunk]);
-
-const defaultMockStore = mockStore({
+const defaultInitialState = {
   portalConfiguration: {
     enterpriseId: 'test-enterprise-uuid',
     enterpriseSlug: 'test-enterprise-slug',
     enterpriseFeatures: {},
   },
-});
+};
 
 const searchClient = algoliasearch('appId', 'test-api-key');
 
 interface StepperWrapperProps {
-  store?: ReturnType<typeof mockStore>;
+  initialState?: typeof defaultInitialState;
   algolia?: UseAlgoliaSearchResult;
   selectedCourses?: SelectedRow[];
   selectedEmails?: SelectedRow[];
@@ -70,13 +67,14 @@ interface StepperWrapperProps {
 }
 
 const StepperWrapper = ({
-  store,
+  initialState,
   algolia,
   selectedCourses = mockSelectedCourses,
   selectedEmails = mockSelectedEmails,
   subscription = mockSubscription,
   ...props
 }: StepperWrapperProps) => {
+  const { reduxStore } = initializeMocks(initialState || defaultInitialState);
   const value = useMemo(
     () => ({
       courses: [selectedCourses, () => {}],
@@ -88,7 +86,7 @@ const StepperWrapper = ({
 
   return (
     <IntlProvider locale="en">
-      <Provider store={store || defaultMockStore}>
+      <Provider store={reduxStore}>
         <BulkEnrollContext.Provider value={value}>
           <AddCoursesStep
             {...props}

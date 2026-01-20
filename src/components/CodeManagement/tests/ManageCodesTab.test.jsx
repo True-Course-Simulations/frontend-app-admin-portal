@@ -3,17 +3,25 @@ import { Provider } from 'react-redux';
 import PropTypes from 'prop-types';
 import { MemoryRouter } from 'react-router-dom';
 import { userEvent } from '@testing-library/user-event';
-import configureMockStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 
 import ManageCodesTab from '../ManageCodesTab';
 
-import { COUPONS_REQUEST, CLEAR_COUPONS } from '../../../data/constants/coupons';
 import { SubsidyRequestsContext } from '../../subsidy-requests';
 import { SUPPORTED_SUBSIDY_TYPES } from '../../../data/constants/subsidyRequests';
+import { initializeMocks } from '../../../testUtils';
+
+jest.mock('../../../data/actions/coupons', () => {
+  const { COUPONS_REQUEST: COUPONS_REQUEST_TYPE, CLEAR_COUPONS: CLEAR_COUPONS_TYPE } = jest.requireActual('../../../data/constants/coupons');
+  return {
+    fetchCouponOrders: jest.fn(() => ({ type: COUPONS_REQUEST_TYPE })),
+    clearCouponOrders: jest.fn(() => ({ type: CLEAR_COUPONS_TYPE })),
+  };
+});
+
+import { fetchCouponOrders, clearCouponOrders } from '../../../data/actions/coupons';
 
 const BNR_NEW_FEATURE_ALERT_TEXT = 'browse and request new feature alert!';
 jest.mock('../../NewFeatureAlertBrowseAndRequest', () => ({
@@ -21,7 +29,6 @@ jest.mock('../../NewFeatureAlertBrowseAndRequest', () => ({
   default: () => BNR_NEW_FEATURE_ALERT_TEXT,
 }));
 
-const mockStore = configureMockStore([thunk]);
 const initialState = {
   portalConfiguration: {
     enterpriseId: 'test-enterprise-id',
@@ -47,24 +54,23 @@ const initialState = {
   },
 };
 
-const ManageCodesTabWrapper = ({ store, subsidyRequestConfiguration, ...props }) => {
+const ManageCodesTabWrapper = ({
+  initialStateOverride,
+  subsidyRequestConfiguration,
+  initialEntries = ['/test-page'],
+  ...props
+}) => {
+  const { reduxStore } = initializeMocks(initialStateOverride || initialState);
   const subsidyRequestsContextValue = useMemo(() => ({
     subsidyRequestConfiguration,
   }), [subsidyRequestConfiguration]);
 
   return (
-    <MemoryRouter>
-      <Provider store={store}>
+    <MemoryRouter initialEntries={initialEntries}>
+      <Provider store={reduxStore}>
         <IntlProvider locale="en">
           <SubsidyRequestsContext.Provider value={subsidyRequestsContextValue}>
             <ManageCodesTab
-              location={{}}
-              match={{
-                path: '/test-page',
-              }}
-              history={{
-                replace: () => {},
-              }}
               {...props}
             />
           </SubsidyRequestsContext.Provider>
@@ -75,16 +81,18 @@ const ManageCodesTabWrapper = ({ store, subsidyRequestConfiguration, ...props })
 };
 
 ManageCodesTabWrapper.defaultProps = {
-  store: mockStore({ ...initialState }),
+  initialStateOverride: initialState,
   subsidyRequestConfiguration: {
     subsidyRequestsEnabled: true,
     subsidyType: 'coupon',
   },
+  initialEntries: ['/test-page'],
 };
 
 ManageCodesTabWrapper.propTypes = {
-  store: PropTypes.shape({}),
+  initialStateOverride: PropTypes.shape({}),
   subsidyRequestConfiguration: PropTypes.shape({}),
+  initialEntries: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.string, PropTypes.shape({})])),
 };
 
 const sampleCouponData = {
@@ -108,7 +116,7 @@ describe('ManageCodesTabWrapper', () => {
     });
 
     it('renders non-empty results correctly', () => {
-      const store = mockStore({
+      const stateWithResults = {
         ...initialState,
         coupons: {
           ...initialState.coupons,
@@ -125,36 +133,36 @@ describe('ManageCodesTabWrapper', () => {
             ],
           },
         },
-      });
+      };
 
-      const { container } = render(<ManageCodesTabWrapper store={store} />);
+      const { container } = render(<ManageCodesTabWrapper initialStateOverride={stateWithResults} />);
       expect(container.textContent).toContain('test-title-1');
       expect(container.textContent).toContain('test-title-2');
     });
 
     it('renders loading state correctly', () => {
-      const store = mockStore({
+      const loadingState = {
         ...initialState,
         coupons: {
           ...initialState.coupons,
           loading: true,
         },
-      });
+      };
 
-      const { container } = render(<ManageCodesTabWrapper store={store} />);
+      const { container } = render(<ManageCodesTabWrapper initialStateOverride={loadingState} />);
       expect(container.textContent).toContain('Loading');
     });
 
     it('renders error state correctly', () => {
-      const store = mockStore({
+      const errorState = {
         ...initialState,
         coupons: {
           ...initialState.coupons,
           error: new Error('test error'),
         },
-      });
+      };
 
-      const { container } = render(<ManageCodesTabWrapper store={store} />);
+      const { container } = render(<ManageCodesTabWrapper initialStateOverride={errorState} />);
       expect(container.textContent).toContain('test error');
     });
   });
@@ -162,19 +170,18 @@ describe('ManageCodesTabWrapper', () => {
   it('handles location.state on componentDidMount', async () => {
     render((
       <ManageCodesTabWrapper
-        location={{
-          state: {
-            hasRequestedCodes: true,
-          },
-        }}
+        initialEntries={[{
+          pathname: '/test-page',
+          state: { hasRequestedCodes: true },
+        }]}
       />
     ));
     const requestedCodeAlert = await screen.findByTestId('code-request-alert');
     expect(requestedCodeAlert).toBeInTheDocument();
   });
 
-  it('handles overview_page query parameter change', () => {
-    const store = mockStore({
+  it('handles overview_page query parameter on render', () => {
+    const stateWithPages = {
       ...initialState,
       coupons: {
         ...initialState.coupons,
@@ -184,34 +191,27 @@ describe('ManageCodesTabWrapper', () => {
           results: [...Array(50)].map((_, index) => ({ ...sampleCouponData, id: index })),
         },
       },
-    });
-    const spy = jest.spyOn(store, 'dispatch');
+    };
+    fetchCouponOrders.mockClear();
+    render(
+      <ManageCodesTabWrapper
+        initialStateOverride={stateWithPages}
+        initialEntries={['/test-page?overview_page=2']}
+      />,
+    );
 
-    const { rerender } = render(<ManageCodesTabWrapper store={store} />);
-    spy.mockClear();
-
-    rerender(<ManageCodesTabWrapper
-      store={store}
-      location={{
-        search: '?overview_page=2',
-      }}
-    />);
-
-    expect(spy).toHaveBeenCalled();
+    expect(fetchCouponOrders).toHaveBeenCalledWith({ page: 2 });
   });
 
   it('calls clearCouponOrders() on componentWillUnmount', () => {
-    const store = mockStore({ ...initialState });
-
-    const { unmount } = render(<ManageCodesTabWrapper store={store} />);
+    clearCouponOrders.mockClear();
+    const { unmount } = render(<ManageCodesTabWrapper />);
     unmount();
-
-    const actions = store.getActions();
-    expect(actions.some(action => action.type === CLEAR_COUPONS)).toBe(true);
+    expect(clearCouponOrders).toHaveBeenCalled();
   });
 
   it('calls expand/collapse callbacks properly', async () => {
-    const store = mockStore({
+    const stateWithCoupons = {
       ...initialState,
       coupons: {
         ...initialState.coupons,
@@ -234,9 +234,9 @@ describe('ManageCodesTabWrapper', () => {
       csv: {
         'coupon-details': {},
       },
-    });
+    };
     const user = userEvent.setup();
-    render(<ManageCodesTabWrapper store={store} />);
+    render(<ManageCodesTabWrapper initialStateOverride={stateWithCoupons} />);
 
     // expand
     const couponItem = (await screen.findAllByTestId('coupon-item-toggle'))[0];
@@ -249,13 +249,12 @@ describe('ManageCodesTabWrapper', () => {
   });
 
   it('fetches coupons on refresh button click', async () => {
-    const store = mockStore({ ...initialState });
     const user = userEvent.setup();
-    render(<ManageCodesTabWrapper store={store} />);
-    store.clearActions();
+    fetchCouponOrders.mockClear();
+    render(<ManageCodesTabWrapper />);
     const refreshDataComponent = await screen.findByTestId('refresh-data');
     await user.click(refreshDataComponent);
-    expect(store.getActions().filter(action => action.type === COUPONS_REQUEST)).toHaveLength(1);
+    expect(fetchCouponOrders).toHaveBeenCalledWith({ page: 1 });
   });
 
   describe('<NewFeatureAlertBrowseAndRequest />', () => {

@@ -1,15 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Provider } from 'react-redux';
-import thunk from 'redux-thunk';
 import {
   screen,
   render,
 } from '@testing-library/react';
-import configureMockStore from 'redux-mock-store';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 
 import CodeManagementRoutes from '../CodeManagementRoutes';
+import { initializeMocks } from '../../../testUtils';
 
 const COUPON_CODE_TABS_MOCK_CONTENT = 'coupon code tabs';
 const MANAGE_CODES_MOCK_CONTENT = 'manage codes';
@@ -46,41 +45,38 @@ const initialStore = {
   },
 };
 
-const mockStore = configureMockStore([thunk]);
-const getMockStore = store => mockStore(store);
-const store = getMockStore({ ...initialStore });
-
 const CodeManagementRoutesWithRouter = ({
-  store: storeProp,
+  initialState,
   initialEntries,
   routePath,
-}) => (
-  <MemoryRouter initialEntries={initialEntries}>
-    <Provider store={storeProp}>
-      <Routes>
-        <Route path={`${routePath}*`} element={<CodeManagementRoutes />} />
-      </Routes>
-    </Provider>
-  </MemoryRouter>
-);
+}) => {
+  const { reduxStore } = initializeMocks(initialState);
+  return (
+    <MemoryRouter initialEntries={initialEntries}>
+      <Provider store={reduxStore}>
+        <Routes>
+          <Route path={`${routePath}*`} element={<CodeManagementRoutes />} />
+        </Routes>
+      </Provider>
+    </MemoryRouter>
+  );
+};
 
 CodeManagementRoutesWithRouter.propTypes = {
-  store: PropTypes.shape(),
+  initialState: PropTypes.shape(),
   initialEntries: PropTypes.arrayOf(PropTypes.string),
   routePath: PropTypes.string,
 };
 
 CodeManagementRoutesWithRouter.defaultProps = {
-  store,
+  initialState: { ...initialStore },
   initialEntries: [`/${enterpriseSlug}/admin/coupons`],
   routePath: '/',
 };
 
 describe('<CodeManagementRoutes />', () => {
   it('redirects to default tab', () => {
-    const newStore = getMockStore(initialStore);
-
-    render(<CodeManagementRoutesWithRouter store={newStore} />);
+    render(<CodeManagementRoutesWithRouter initialState={initialStore} />);
     expect(screen.getByText(COUPON_CODE_TABS_MOCK_CONTENT));
   });
 });

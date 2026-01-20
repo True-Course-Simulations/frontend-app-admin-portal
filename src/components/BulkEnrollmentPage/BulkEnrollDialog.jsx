@@ -1,5 +1,5 @@
 import React from 'react';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import BulkEnrollmentStepper from './stepper/BulkEnrollmentStepper';
@@ -11,20 +11,21 @@ import BulkEnrollContextProvider from './BulkEnrollmentContext';
 */
 const BulkEnrollDialog = (props) => {
   const { learners } = props;
+  const enterpriseSlug = useSelector(state => state.portalConfiguration.enterpriseSlug);
+  const enterpriseId = useSelector(state => state.portalConfiguration.enterpriseId);
   return (
     <BulkEnrollContextProvider initialEmailsList={learners}>
-      <BulkEnrollmentStepper {...props} />
+      <BulkEnrollmentStepper
+        {...props}
+        enterpriseSlug={enterpriseSlug}
+        enterpriseId={enterpriseId}
+      />
     </BulkEnrollContextProvider>
   );
 };
-
-const mapStateToProps = state => ({
-  enterpriseSlug: state.portalConfiguration.enterpriseSlug,
-  enterpriseId: state.portalConfiguration.enterpriseId,
-});
 
 BulkEnrollDialog.propTypes = {
   learners: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 
-export default connect(mapStateToProps)(BulkEnrollDialog);
+export default BulkEnrollDialog;

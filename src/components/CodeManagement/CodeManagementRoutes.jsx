@@ -1,6 +1,5 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import {
   Routes,
   Route,
@@ -14,26 +13,21 @@ import {
   COUPON_CODE_TAB_PARAM,
 } from './data/constants';
 
-const CodeManagementRoutes = ({ enterpriseSlug }) => (
-  <Routes>
-    <Route
-      path="/"
-      element={<Navigate to={`/${enterpriseSlug}/admin/coupons/${DEFAULT_TAB}`} replace />}
-    />
-    <Route
-      path={`/:${COUPON_CODE_TAB_PARAM}?/*`}
-      element={<CouponCodeTabs />}
-    />
-    <Route path="*" element={<NotFoundPage />} />
-  </Routes>
-);
-
-CodeManagementRoutes.propTypes = {
-  enterpriseSlug: PropTypes.string.isRequired,
+const CodeManagementRoutes = () => {
+  const enterpriseSlug = useSelector(state => state.portalConfiguration.enterpriseSlug);
+  return (
+    <Routes>
+      <Route
+        path="/"
+        element={<Navigate to={`/${enterpriseSlug}/admin/coupons/${DEFAULT_TAB}`} replace />}
+      />
+      <Route
+        path={`/:${COUPON_CODE_TAB_PARAM}?/*`}
+        element={<CouponCodeTabs />}
+      />
+      <Route path="*" element={<NotFoundPage />} />
+    </Routes>
+  );
 };
 
-const mapStateToProps = state => ({
-  enterpriseSlug: state.portalConfiguration.enterpriseSlug,
-});
-
-export default connect(mapStateToProps)(CodeManagementRoutes);
+export default CodeManagementRoutes;

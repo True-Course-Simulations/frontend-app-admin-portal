@@ -1,14 +1,12 @@
 import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { Provider } from 'react-redux';
-import thunk from 'redux-thunk';
 import {
   screen,
   cleanup,
   render,
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import configureMockStore from 'redux-mock-store';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 
 import { IntlProvider } from '@edx/frontend-platform/i18n';
@@ -19,6 +17,7 @@ import {
   MANAGE_REQUESTS_TAB,
   COUPON_CODE_TABS_LABELS,
 } from '../data/constants';
+import { initializeMocks } from '../../../testUtils';
 
 const MANAGE_CODES_MOCK_CONTENT = 'codes';
 const MANAGE_REQUESTS_MOCK_CONTENT = 'requests';
@@ -46,22 +45,19 @@ const initialStore = {
   },
 };
 
-const mockStore = configureMockStore([thunk]);
-const getMockStore = store => mockStore(store);
-const store = getMockStore({ ...initialStore });
-
 const CouponCodeTabsWrapper = ({
   subsidyRequestConfiguration,
   subsidyRequestsCounts,
   route = `/${enterpriseSlug}/admin/coupons/${MANAGE_CODES_TAB}`,
 }) => {
+  const { reduxStore } = initializeMocks({ ...initialStore });
   const contextValue = useMemo(
     () => ({ subsidyRequestConfiguration, subsidyRequestsCounts }),
     [subsidyRequestConfiguration, subsidyRequestsCounts],
   );
   return (
     <IntlProvider locale="en">
-      <Provider store={store}>
+      <Provider store={reduxStore}>
         <MemoryRouter initialEntries={[route]}>
           <Routes>
             <Route

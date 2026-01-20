@@ -1,7 +1,7 @@
 import React, { useContext, useEffect } from 'react';
 import { InstantSearch, Configure } from 'react-instantsearch-dom';
 import { SearchData, SearchHeader } from '@edx/frontend-enterprise-catalog-search';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { logError } from '@edx/frontend-platform/logging';
 import { Skeleton } from '@openedx/paragon';
 
@@ -56,20 +56,18 @@ const BaseAddCoursesStepContents: React.FC<BaseAddCoursesStepContentsProps> = ({
 );
 
 interface SearchEnabledProps {
-  enterpriseId: string;
-  enterpriseSlug: string;
   selectedCourses?: SelectedRow[];
   subscription: Subscription;
   algolia: UseAlgoliaSearchResult;
 }
 
-const BaseSearchEnabled: React.FC<SearchEnabledProps> = ({
-  enterpriseId,
-  enterpriseSlug,
+const SearchEnabled: React.FC<SearchEnabledProps> = ({
   selectedCourses,
   subscription,
   algolia,
 }) => {
+  const enterpriseId = useSelector((state) => state.portalConfiguration.enterpriseId);
+  const enterpriseSlug = useSelector((state) => state.portalConfiguration.enterpriseSlug);
   const algoliaFilters = useAlgoliaFilters(subscription, algolia);
 
   return (
@@ -95,13 +93,6 @@ const BaseSearchEnabled: React.FC<SearchEnabledProps> = ({
     </>
   );
 };
-
-const mapStateToProps = (state) => ({
-  enterpriseId: state.portalConfiguration.enterpriseId,
-  enterpriseSlug: state.portalConfiguration.enterpriseSlug,
-});
-
-const SearchEnabled = connect(mapStateToProps)(BaseSearchEnabled);
 
 interface AddCoursesStepProps {
   subscription: Subscription;

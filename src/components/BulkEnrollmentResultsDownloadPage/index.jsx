@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
 import { Navigate, useParams } from 'react-router-dom';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { logError } from '@edx/frontend-platform/logging';
 import { camelCaseObject } from '@edx/frontend-platform';
 import { Toast } from '@openedx/paragon';
@@ -9,8 +8,9 @@ import { FormattedMessage } from '@edx/frontend-platform/i18n';
 import EnterpriseAppSkeleton from '../EnterpriseApp/EnterpriseAppSkeleton';
 import LicenseManagerApiService from '../../data/services/LicenseManagerAPIService';
 
-const BulkEnrollmentResultsDownloadPage = ({ enterpriseId }) => {
+const BulkEnrollmentResultsDownloadPage = () => {
   const { enterpriseSlug, bulkEnrollmentJobId } = useParams();
+  const enterpriseId = useSelector(state => state.portalConfiguration.enterpriseId);
   const [isLoading, setLoading] = useState(true);
   const [redirectUrl, setRedirectUrl] = useState(null);
   const [error, setError] = useState(null);
@@ -92,12 +92,4 @@ const BulkEnrollmentResultsDownloadPage = ({ enterpriseId }) => {
   );
 };
 
-BulkEnrollmentResultsDownloadPage.propTypes = {
-  enterpriseId: PropTypes.string.isRequired,
-};
-
-const mapStateToProps = state => ({
-  enterpriseId: state.portalConfiguration.enterpriseId,
-});
-
-export default connect(mapStateToProps)(BulkEnrollmentResultsDownloadPage);
+export default BulkEnrollmentResultsDownloadPage;

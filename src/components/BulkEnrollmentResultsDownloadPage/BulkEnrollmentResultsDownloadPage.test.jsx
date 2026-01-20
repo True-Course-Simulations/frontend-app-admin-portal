@@ -4,14 +4,11 @@ import { createMemoryHistory } from 'history';
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { Provider } from 'react-redux';
-import thunk from 'redux-thunk';
-import configureMockStore from 'redux-mock-store';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 import BulkEnrollmentResultsDownloadPage from './index';
 
 import LicenseManagerApiService from '../../data/services/LicenseManagerAPIService';
-
-const mockStore = configureMockStore([thunk]);
+import { initializeMocks } from '../../testUtils';
 
 const TEST_ENTERPRISE_SLUG = 'test-enterprise';
 const TEST_BULK_ENROLLMENT_UUID = '12345678-9012-3456-7890-123456789012';
@@ -24,21 +21,25 @@ jest.mock('../../data/services/LicenseManagerAPIService', () => ({
 }));
 
 const BulkEnrollmentResultsDownloadPageWrapper = ({
+  initialState = { portalConfiguration: { enterpriseId: '1234' } },
   ...rest
-}) => (
-  <Provider store={mockStore({ portalConfiguration: { enterpriseId: '1234' } })}>
-    <IntlProvider locale="en">
-      <Router initialEntries={[`/${TEST_ENTERPRISE_SLUG}/admin/bulk-enrollment-results/${TEST_BULK_ENROLLMENT_UUID}`]}>
-        <Routes>
-          <Route
-            path="/:enterpriseSlug/admin/bulk-enrollment-results/:bulkEnrollmentJobId"
-            element={<BulkEnrollmentResultsDownloadPage {...rest} />}
-          />
-        </Routes>
-      </Router>
-    </IntlProvider>
-  </Provider>
-);
+}) => {
+  const { reduxStore } = initializeMocks(initialState);
+  return (
+    <Provider store={reduxStore}>
+      <IntlProvider locale="en">
+        <Router initialEntries={[`/${TEST_ENTERPRISE_SLUG}/admin/bulk-enrollment-results/${TEST_BULK_ENROLLMENT_UUID}`]}>
+          <Routes>
+            <Route
+              path="/:enterpriseSlug/admin/bulk-enrollment-results/:bulkEnrollmentJobId"
+              element={<BulkEnrollmentResultsDownloadPage {...rest} />}
+            />
+          </Routes>
+        </Router>
+      </IntlProvider>
+    </Provider>
+  );
+};
 
 const assignMock = jest.fn();
 delete global.location;
