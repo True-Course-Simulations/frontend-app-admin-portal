@@ -3,8 +3,6 @@ import '@testing-library/jest-dom/extend-expect';
 import userEvent from '@testing-library/user-event';
 
 import { Provider } from 'react-redux';
-import configureMockStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
 import { camelCaseObject } from '@edx/frontend-platform';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 import { renderWithRouter } from '@edx/frontend-enterprise-utils';
@@ -14,8 +12,7 @@ import { EnterpriseAppContext } from '../../EnterpriseApp/EnterpriseAppContextPr
 import EnterpriseCatalogApiService from '../../../data/services/EnterpriseCatalogApiService';
 import ContentHighlightsCardItemsContainer from '../ContentHighlightsCardItemsContainer';
 import { features } from '../../../config';
-
-const mockStore = configureMockStore([thunk]);
+import { initializeMocks } from '../../../testUtils';
 
 jest.mock('../../../data/services/EnterpriseCatalogApiService');
 jest.mock('@edx/frontend-enterprise-utils', () => {
@@ -36,6 +33,7 @@ const initialEnterpriseAppContextValue = {
 const testHighlightSet = camelCaseObject(TEST_COURSE_HIGHLIGHTS_DATA)[0]?.highlightedContent;
 const initialState = {
   portalConfiguration: {
+    enterpriseId: 'test-enterprise-id',
     enterpriseSlug: 'test-enterprise',
   },
 };
@@ -43,15 +41,18 @@ const initialState = {
 const ContentHighlightsCardItemsContainerWrapper = ({
   enterpriseAppContextValue = initialEnterpriseAppContextValue,
   ...props
-}) => (
-  <IntlProvider locale="en">
-    <Provider store={mockStore(initialState)}>
-      <EnterpriseAppContext.Provider value={enterpriseAppContextValue}>
-        <ContentHighlightsCardItemsContainer {...props} />
-      </EnterpriseAppContext.Provider>
-    </Provider>
-  </IntlProvider>
-);
+}) => {
+  const { reduxStore } = initializeMocks(initialState);
+  return (
+    <IntlProvider locale="en">
+      <Provider store={reduxStore}>
+        <EnterpriseAppContext.Provider value={enterpriseAppContextValue}>
+          <ContentHighlightsCardItemsContainer {...props} />
+        </EnterpriseAppContext.Provider>
+      </Provider>
+    </IntlProvider>
+  );
+};
 
 describe('<ContentHighlightsCardItemsContainer />', () => {
   const getDeleteHighlightBtn = () => {

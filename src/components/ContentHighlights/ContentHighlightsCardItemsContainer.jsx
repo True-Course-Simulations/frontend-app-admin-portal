@@ -4,7 +4,7 @@ import {
 } from '@openedx/paragon';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from '@edx/frontend-platform/i18n';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { sendEnterpriseTrackEvent } from '@edx/frontend-enterprise-utils';
 import ContentHighlightCardItem from './ContentHighlightCardItem';
 import {
@@ -20,9 +20,11 @@ import DeleteArchivedHighlightsDialogs from './DeleteArchivedHighlightsDialogs';
 import { isArchivedContent } from '../../utils';
 
 const ContentHighlightsCardItemsContainer = ({
-  enterpriseId, enterpriseSlug, isLoading, highlightedContent, updateHighlightSet,
+  isLoading, highlightedContent, updateHighlightSet,
 }) => {
   const [isDeleteModalOpen, openDeleteModal, closeDeleteModal] = useToggle(false);
+  const enterpriseId = useSelector(state => state.portalConfiguration.enterpriseId);
+  const enterpriseSlug = useSelector(state => state.portalConfiguration.enterpriseSlug);
 
   const {
     FEATURE_HIGHLIGHTS_ARCHIVE_MESSAGING,
@@ -163,8 +165,6 @@ const ContentHighlightsCardItemsContainer = ({
 };
 
 ContentHighlightsCardItemsContainer.propTypes = {
-  enterpriseId: PropTypes.string.isRequired,
-  enterpriseSlug: PropTypes.string.isRequired,
   isLoading: PropTypes.bool.isRequired,
   highlightedContent: PropTypes.arrayOf(PropTypes.shape({
     uuid: PropTypes.string,
@@ -180,10 +180,4 @@ ContentHighlightsCardItemsContainer.propTypes = {
   })).isRequired,
   updateHighlightSet: PropTypes.func.isRequired,
 };
-
-const mapStateToProps = state => ({
-  enterpriseId: state.portalConfiguration.enterpriseId,
-  enterpriseSlug: state.portalConfiguration.enterpriseSlug,
-});
-
-export default connect(mapStateToProps)(ContentHighlightsCardItemsContainer);
+export default ContentHighlightsCardItemsContainer;

@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
 import {
   ActionRow, Alert, AlertModal, Button, StatefulButton, useToggle,
 } from '@openedx/paragon';
@@ -7,7 +6,7 @@ import { FormattedMessage, useIntl } from '@edx/frontend-platform/i18n';
 import { Info } from '@openedx/paragon/icons';
 import { useNavigate, useParams } from 'react-router-dom';
 import { logError } from '@edx/frontend-platform/logging';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 import { sendEnterpriseTrackEvent } from '@edx/frontend-enterprise-utils';
 import EnterpriseCatalogApiService from '../../data/services/EnterpriseCatalogApiService';
@@ -16,8 +15,10 @@ import { EnterpriseAppContext } from '../EnterpriseApp/EnterpriseAppContextProvi
 import { enterpriseCurationActions } from '../EnterpriseApp/data/enterpriseCurationReducer';
 import EVENT_NAMES from '../../eventTracking';
 
-const DeleteHighlightSet = ({ enterpriseId, enterpriseSlug }) => {
+const DeleteHighlightSet = () => {
   const { highlightSetUUID } = useParams();
+  const enterpriseId = useSelector(state => state.portalConfiguration.enterpriseId);
+  const enterpriseSlug = useSelector(state => state.portalConfiguration.enterpriseSlug);
   const [isOpen, open, close] = useToggle(false);
   const [deletionState, setDeletionState] = useState('default');
   const navigate = useNavigate();
@@ -176,15 +177,4 @@ const DeleteHighlightSet = ({ enterpriseId, enterpriseSlug }) => {
     </>
   );
 };
-
-DeleteHighlightSet.propTypes = {
-  enterpriseId: PropTypes.string.isRequired,
-  enterpriseSlug: PropTypes.string.isRequired,
-};
-
-const mapStateToProps = (state) => ({
-  enterpriseId: state.portalConfiguration.enterpriseId,
-  enterpriseSlug: state.portalConfiguration.enterpriseSlug,
-});
-
-export default connect(mapStateToProps)(DeleteHighlightSet);
+export default DeleteHighlightSet;

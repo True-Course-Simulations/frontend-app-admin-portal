@@ -6,8 +6,6 @@ import { logError } from '@edx/frontend-platform/logging';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 import { Provider } from 'react-redux';
 import { Routes, Route, MemoryRouter } from 'react-router-dom';
-import configureMockStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
 import { sendEnterpriseTrackEvent } from '@edx/frontend-enterprise-utils';
 
 import DeleteHighlightSet from '../DeleteHighlightSet';
@@ -15,6 +13,7 @@ import { ROUTE_NAMES } from '../../EnterpriseApp/data/constants';
 import { EnterpriseAppContext } from '../../EnterpriseApp/EnterpriseAppContextProvider';
 import { enterpriseCurationActions } from '../../EnterpriseApp/data/enterpriseCurationReducer';
 import EnterpriseCatalogApiService from '../../../data/services/EnterpriseCatalogApiService';
+import { initializeMocks } from '../../../testUtils';
 
 jest.mock('../../../data/services/EnterpriseCatalogApiService');
 
@@ -32,10 +31,10 @@ jest.mock('react-router-dom', () => ({
   useNavigate: () => mockNavigate,
 }));
 
-const mockStore = configureMockStore([thunk]);
 const initialState = {
   portalConfiguration:
     {
+      enterpriseId: 'test-enterprise-id',
       enterpriseSlug: 'test-enterprise',
     },
 };
@@ -53,23 +52,26 @@ const initialEnterpriseAppContextValue = {
 const DeleteHighlightSetWrapper = ({
   enterpriseAppContextValue = initialEnterpriseAppContextValue,
   ...props
-}) => (
+}) => {
+  const { reduxStore } = initializeMocks(initialState);
+  return (
 /* eslint-enable react/prop-types */
-  <IntlProvider locale="en">
-    <Provider store={mockStore(initialState)}>
-      <EnterpriseAppContext.Provider value={enterpriseAppContextValue}>
-        <MemoryRouter initialEntries={[`/test-enterprise/admin/${ROUTE_NAMES.contentHighlights}/${highlightSetUUID}`]}>
-          <Routes>
-            <Route
-              path={`/:enterpriseSlug/admin/${ROUTE_NAMES.contentHighlights}/:highlightSetUUID`}
-              element={<DeleteHighlightSet {...props} />}
-            />
-          </Routes>
-        </MemoryRouter>
-      </EnterpriseAppContext.Provider>
-    </Provider>
-  </IntlProvider>
-);
+    <IntlProvider locale="en">
+      <Provider store={reduxStore}>
+        <EnterpriseAppContext.Provider value={enterpriseAppContextValue}>
+          <MemoryRouter initialEntries={[`/test-enterprise/admin/${ROUTE_NAMES.contentHighlights}/${highlightSetUUID}`]}>
+            <Routes>
+              <Route
+                path={`/:enterpriseSlug/admin/${ROUTE_NAMES.contentHighlights}/:highlightSetUUID`}
+                element={<DeleteHighlightSet {...props} />}
+              />
+            </Routes>
+          </MemoryRouter>
+        </EnterpriseAppContext.Provider>
+      </Provider>
+    </IntlProvider>
+  );
+};
 
 describe('<DeleteHighlightSet />', () => {
   const getDeleteHighlightBtn = () => {

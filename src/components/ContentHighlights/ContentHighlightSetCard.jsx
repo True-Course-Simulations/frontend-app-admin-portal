@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card } from '@openedx/paragon';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import { useIntl } from '@edx/frontend-platform/i18n';
@@ -13,13 +13,13 @@ const ContentHighlightSetCard = ({
   title,
   highlightSetUUID,
   isPublished,
-  enterpriseSlug,
   itemCount,
   archivedItemCount,
   onClick,
 }) => {
   const intl = useIntl();
   const navigate = useNavigate();
+  const enterpriseSlug = useSelector(state => state.portalConfiguration.enterpriseSlug);
   /* Stepper Draft Logic (See Hook) - Start */
   const { openStepperModal } = useContentHighlightsContext();
   /* Stepper Draft Logic (See Hook) - End */
@@ -74,16 +74,10 @@ const ContentHighlightSetCard = ({
 ContentHighlightSetCard.propTypes = {
   title: PropTypes.string.isRequired,
   highlightSetUUID: PropTypes.string.isRequired,
-  enterpriseSlug: PropTypes.string.isRequired,
   isPublished: PropTypes.bool.isRequired,
   itemCount: PropTypes.number.isRequired,
   archivedItemCount: PropTypes.number.isRequired,
   imageCapSrc: PropTypes.string.isRequired,
   onClick: PropTypes.func.isRequired,
 };
-
-const mapStateToProps = state => ({
-  enterpriseSlug: state.portalConfiguration.enterpriseSlug,
-});
-
-export default connect(mapStateToProps)(ContentHighlightSetCard);
+export default ContentHighlightSetCard;

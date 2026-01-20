@@ -1,17 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { CardGrid } from '@openedx/paragon';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { sendEnterpriseTrackEvent } from '@edx/frontend-enterprise-utils';
 import ContentHighlightSetCard from './ContentHighlightSetCard';
 import { HIGHLIGHTS_CARD_GRID_COLUMN_SIZES } from './data/constants';
 import EVENT_NAMES from '../../eventTracking';
 
 const HighlightSetSection = ({
-  enterpriseId,
   title: sectionTitle,
   highlightSets,
 }) => {
+  const enterpriseId = useSelector(state => state.portalConfiguration.enterpriseId);
   if (highlightSets.length === 0) {
     return null;
   }
@@ -61,7 +61,6 @@ const HighlightSetSection = ({
 };
 
 HighlightSetSection.propTypes = {
-  enterpriseId: PropTypes.string.isRequired,
   title: PropTypes.string.isRequired,
   highlightSets: PropTypes.arrayOf(PropTypes.shape({
     title: PropTypes.string.isRequired,
@@ -70,9 +69,4 @@ HighlightSetSection.propTypes = {
     highlightedContentUuids: PropTypes.arrayOf(PropTypes.string).isRequired,
   })).isRequired,
 };
-
-const mapStateToProps = (state) => ({
-  enterpriseId: state.portalConfiguration.enterpriseId,
-});
-
-export default connect(mapStateToProps)(HighlightSetSection);
+export default HighlightSetSection;

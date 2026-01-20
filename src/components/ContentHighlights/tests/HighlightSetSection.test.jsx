@@ -2,9 +2,7 @@ import { useState } from 'react';
 import { screen } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import { Provider } from 'react-redux';
-import configureMockStore from 'redux-mock-store';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
-import thunk from 'redux-thunk';
 import { renderWithRouter, sendEnterpriseTrackEvent } from '@edx/frontend-enterprise-utils';
 import algoliasearch from 'algoliasearch/lite';
 import { camelCaseObject } from '@edx/frontend-platform';
@@ -14,8 +12,8 @@ import { configuration } from '../../../config';
 import { EnterpriseAppContext } from '../../EnterpriseApp/EnterpriseAppContextProvider';
 import HighlightSetSection from '../HighlightSetSection';
 import { TEST_HIGHLIGHT_SET } from '../data/constants';
+import { initializeMocks } from '../../../testUtils';
 
-const mockStore = configureMockStore([thunk]);
 const testHighlightSet = [camelCaseObject(TEST_HIGHLIGHT_SET)];
 const initialEnterpriseAppContextValue = {
   enterpriseCuration: {
@@ -50,6 +48,7 @@ const HighlightSetSectionWrapper = ({
   enterpriseAppContextValue = initialEnterpriseAppContextValue,
   highlightSetArray = [],
 }) => {
+  const { reduxStore } = initializeMocks(initialState);
   const contextValue = useState({
     stepperModal: {
       isOpen: false,
@@ -66,7 +65,7 @@ const HighlightSetSectionWrapper = ({
   });
   return (
     <IntlProvider locale="en">
-      <Provider store={mockStore(initialState)}>
+      <Provider store={reduxStore}>
         <EnterpriseAppContext.Provider value={enterpriseAppContextValue}>
           <ContentHighlightsContext.Provider value={contextValue}>
             <HighlightSetSection highlightSets={highlightSetArray} />

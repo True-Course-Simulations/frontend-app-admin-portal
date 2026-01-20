@@ -2,8 +2,6 @@ import { useState } from 'react';
 import { screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import { Provider } from 'react-redux';
-import configureMockStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
 import { renderWithRouter, sendEnterpriseTrackEvent } from '@edx/frontend-enterprise-utils';
 import algoliasearch from 'algoliasearch/lite';
 import userEvent from '@testing-library/user-event';
@@ -20,8 +18,7 @@ import {
   STEPPER_STEP_TEXT,
   NEW_ARCHIVED_CONTENT_ALERT_DISMISSED_COOKIE_NAME,
 } from '../data/constants';
-
-const mockStore = configureMockStore([thunk]);
+import { initializeMocks } from '../../../testUtils';
 
 const mockData = [{
   title: 'Test Title',
@@ -115,6 +112,7 @@ const ContentHighlightSetCardWrapper = ({
   enterpriseAppContextValue = initialEnterpriseAppContextValue,
   data = mockData,
 }) => {
+  const { reduxStore } = initializeMocks(initialState);
   const contextValue = useState({
     stepperModal: {
       isOpen: false,
@@ -130,7 +128,7 @@ const ContentHighlightSetCardWrapper = ({
     },
   });
   return (
-    <Provider store={mockStore(initialState)}>
+    <Provider store={reduxStore}>
       <IntlProvider locale="en">
         <EnterpriseAppContext.Provider value={enterpriseAppContextValue}>
           <ContentHighlightsContext.Provider value={contextValue}>

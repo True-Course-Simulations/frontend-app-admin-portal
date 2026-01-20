@@ -4,9 +4,8 @@ import {
   Button, ActionRow, Alert,
 } from '@openedx/paragon';
 import { FormattedMessage, useIntl } from '@edx/frontend-platform/i18n';
-import PropTypes from 'prop-types';
 import { sendEnterpriseTrackEvent } from '@edx/frontend-enterprise-utils';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Add, Info } from '@openedx/paragon/icons';
 import { useContentHighlightsContext } from './data/hooks';
 import EVENT_NAMES from '../../eventTracking';
@@ -17,7 +16,8 @@ import {
   BUTTON_TEXT, MAX_HIGHLIGHT_SETS_PER_ENTERPRISE_CURATION,
 } from './data/constants';
 
-const CurrentContentHighlightHeader = ({ enterpriseId }) => {
+const CurrentContentHighlightHeader = () => {
+  const enterpriseId = useSelector(state => state.portalConfiguration.enterpriseId);
   const {
     enterpriseCuration: {
       enterpriseCuration: {
@@ -132,12 +132,4 @@ const CurrentContentHighlightHeader = ({ enterpriseId }) => {
   );
 };
 
-CurrentContentHighlightHeader.propTypes = {
-  enterpriseId: PropTypes.string.isRequired,
-};
-
-const mapStateToProps = (state) => ({
-  enterpriseId: state.portalConfiguration.enterpriseId,
-});
-
-export default connect(mapStateToProps)(CurrentContentHighlightHeader);
+export default CurrentContentHighlightHeader;
