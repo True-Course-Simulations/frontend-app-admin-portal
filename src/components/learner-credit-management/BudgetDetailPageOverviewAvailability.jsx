@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { isEmpty } from 'lodash-es';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { generatePath, Link, useParams } from 'react-router-dom';
 import {
   Button, Col, Hyperlink, Row, Stack,
@@ -30,8 +30,8 @@ import { ALLOCATE_LEARNING_BUDGETS_TARGETS } from '../ProductTours/AdminOnboardi
 const BudgetActions = ({
   budgetId,
   isAssignable,
-  enterpriseId,
   status,
+  enterpriseId,
 }) => {
   const { enterpriseSlug, enterpriseAppPage } = useParams();
   const { subsidyAccessPolicyId } = useBudgetId();
@@ -447,25 +447,27 @@ const BudgetDetailPageOverviewAvailability = ({
   budgetId,
   isAssignable,
   budgetTotalSummary: { available, utilized, limit },
-  enterpriseId,
   status,
-}) => (
-  <Stack className="mt-4">
-    <Row>
-      <Col lg={7}>
-        <BudgetDetail available={available} utilized={utilized} limit={limit} status={status} />
-      </Col>
-      <Col lg={5}>
-        <BudgetActions
-          budgetId={budgetId}
-          isAssignable={isAssignable}
-          enterpriseId={enterpriseId}
-          status={status}
-        />
-      </Col>
-    </Row>
-  </Stack>
-);
+}) => {
+  const enterpriseId = useSelector(state => state.portalConfiguration.enterpriseId);
+  return (
+    <Stack className="mt-4">
+      <Row>
+        <Col lg={7}>
+          <BudgetDetail available={available} utilized={utilized} limit={limit} status={status} />
+        </Col>
+        <Col lg={5}>
+          <BudgetActions
+            budgetId={budgetId}
+            isAssignable={isAssignable}
+            enterpriseId={enterpriseId}
+            status={status}
+          />
+        </Col>
+      </Row>
+    </Stack>
+  );
+};
 
 BudgetDetailPageOverviewAvailability.propTypes = {
   budgetId: PropTypes.string.isRequired,
@@ -475,15 +477,6 @@ BudgetDetailPageOverviewAvailability.propTypes = {
     limit: PropTypes.number.isRequired,
   }).isRequired,
   isAssignable: PropTypes.bool.isRequired,
-  enterpriseFeatures: PropTypes.shape({
-  }).isRequired,
-  enterpriseId: PropTypes.string.isRequired,
   status: PropTypes.string.isRequired,
 };
-
-const mapStateToProps = state => ({
-  enterpriseId: state.portalConfiguration.enterpriseId,
-  enterpriseFeatures: state.portalConfiguration.enterpriseFeatures,
-});
-
-export default connect(mapStateToProps)(BudgetDetailPageOverviewAvailability);
+export default BudgetDetailPageOverviewAvailability;

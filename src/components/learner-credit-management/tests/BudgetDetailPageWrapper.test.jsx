@@ -2,9 +2,7 @@ import { useContext } from 'react';
 import { Button } from '@openedx/paragon';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import configureMockStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
-import thunk from 'redux-thunk';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 import '@testing-library/jest-dom/extend-expect';
 import { QueryClientProvider } from '@tanstack/react-query';
@@ -13,9 +11,8 @@ import { renderWithRouter, sendEnterpriseTrackEvent } from '@edx/frontend-enterp
 import BudgetDetailPageWrapper, { BudgetDetailPageContext } from '../BudgetDetailPageWrapper';
 import { getButtonElement, queryClient } from '../../test/testUtils';
 import BudgetDetailPageBreadcrumbs from '../BudgetDetailPageBreadcrumbs';
+import { initializeMocks } from '../../../testUtils';
 
-const mockStore = configureMockStore([thunk]);
-const getMockStore = store => mockStore(store);
 const enterpriseSlug = 'test-enterprise';
 const enterpriseUUID = '1234';
 const defaultStoreState = {
@@ -35,11 +32,11 @@ const MockBudgetDetailPageWrapper = ({
   initialStoreState = defaultStoreState,
   children,
 }) => {
-  const store = getMockStore(initialStoreState);
+  const { reduxStore } = initializeMocks(initialStoreState);
   return (
     <QueryClientProvider client={queryClient()}>
       <IntlProvider locale="en">
-        <Provider store={store}>
+        <Provider store={reduxStore}>
           <BudgetDetailPageWrapper>
             {children}
           </BudgetDetailPageWrapper>

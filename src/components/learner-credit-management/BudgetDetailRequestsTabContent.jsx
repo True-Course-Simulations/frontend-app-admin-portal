@@ -1,8 +1,6 @@
 import { useState } from 'react';
-import PropTypes from 'prop-types';
+import { useSelector } from 'react-redux';
 import { Stack } from '@openedx/paragon';
-
-import { connect } from 'react-redux';
 import useBnrSubsidyRequests from './data/hooks/useBnrSubsidyRequests';
 import EnterpriseAccessApiService from '../../data/services/EnterpriseAccessApiService';
 
@@ -11,7 +9,8 @@ import DeclineBnrSubsidyRequestModal from './requests-tab/DeclineBnrSubsidyReque
 import ApproveBnrSubsidyRequestModal from './requests-tab/ApproveBnrSubsidyRequestModal';
 import { BNR_REQUEST_PAGE_SIZE, useBudgetId } from './data';
 
-const BudgetDetailRequestsTabContent = ({ enterpriseId }) => {
+const BudgetDetailRequestsTabContent = () => {
+  const enterpriseId = useSelector(state => state.portalConfiguration.enterpriseId);
   const {
     isLoading,
     bnrRequests,
@@ -90,12 +89,4 @@ const BudgetDetailRequestsTabContent = ({ enterpriseId }) => {
   );
 };
 
-BudgetDetailRequestsTabContent.propTypes = {
-  enterpriseId: PropTypes.string.isRequired,
-};
-
-const mapStateToProps = state => ({
-  enterpriseId: state.portalConfiguration.enterpriseId,
-});
-
-export default connect(mapStateToProps)(BudgetDetailRequestsTabContent);
+export default BudgetDetailRequestsTabContent;

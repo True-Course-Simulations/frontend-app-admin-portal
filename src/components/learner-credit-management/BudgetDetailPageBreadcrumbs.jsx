@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Breadcrumb } from '@openedx/paragon';
 import { Link } from 'react-router-dom';
 import React from 'react';
@@ -10,7 +10,9 @@ import EVENT_NAMES from '../../eventTracking';
 import { useBudgetId, useSubsidyAccessPolicy } from './data';
 import { ALLOCATE_LEARNING_BUDGETS_TARGETS } from '../ProductTours/AdminOnboardingTours/constants';
 
-const BudgetDetailPageBreadcrumbs = ({ enterpriseId, enterpriseSlug, displayName }) => {
+const BudgetDetailPageBreadcrumbs = ({ displayName }) => {
+  const enterpriseId = useSelector(state => state.portalConfiguration.enterpriseId);
+  const enterpriseSlug = useSelector(state => state.portalConfiguration.enterpriseSlug);
   const { subsidyAccessPolicyId } = useBudgetId();
   const { data: subsidyAccessPolicy } = useSubsidyAccessPolicy(subsidyAccessPolicyId);
   const intl = useIntl();
@@ -58,15 +60,8 @@ const BudgetDetailPageBreadcrumbs = ({ enterpriseId, enterpriseSlug, displayName
   );
 };
 
-const mapStateToProps = state => ({
-  enterpriseId: state.portalConfiguration.enterpriseId,
-  enterpriseSlug: state.portalConfiguration.enterpriseSlug,
-});
-
 BudgetDetailPageBreadcrumbs.propTypes = {
-  enterpriseId: PropTypes.string.isRequired,
-  enterpriseSlug: PropTypes.string.isRequired,
   displayName: PropTypes.string.isRequired,
 };
 
-export default connect(mapStateToProps)(BudgetDetailPageBreadcrumbs);
+export default BudgetDetailPageBreadcrumbs;

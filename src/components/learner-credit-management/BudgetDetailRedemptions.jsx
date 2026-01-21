@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Hyperlink } from '@openedx/paragon';
 import { getConfig } from '@edx/frontend-platform/config';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -63,11 +63,10 @@ const BudgetDetailRedemptionsDescription = ({
 
 BudgetDetailRedemptionsDescription.propTypes = {
   status: PropTypes.string.isRequired,
-  enterpriseFeatures: PropTypes.shape({
-  }).isRequired,
 };
 
-const BudgetDetailRedemptions = ({ enterpriseFeatures, enterpriseUUID }) => {
+const BudgetDetailRedemptions = () => {
+  const enterpriseUUID = useSelector(state => state.portalConfiguration.enterpriseId);
   const intl = useIntl();
   const navigate = useNavigate();
   const location = useLocation();
@@ -106,15 +105,15 @@ const BudgetDetailRedemptions = ({ enterpriseFeatures, enterpriseUUID }) => {
   });
 
   return (
-    <section data-testid="spent-section" id={ALLOCATE_LEARNING_BUDGETS_TARGETS.BUDGET_SPENT_TABLE}>
-      <h3 className="mb-3" ref={spentHeadingRef}>
-        <FormattedMessage
+  <section data-testid="spent-section" id={ALLOCATE_LEARNING_BUDGETS_TARGETS.BUDGET_SPENT_TABLE}>
+    <h3 className="mb-3" ref={spentHeadingRef}>
+      <FormattedMessage
           id="lcm.budget.detail.page.spent.heading"
           defaultMessage="Spent"
           description="Heading for the spent section of the budget detail page"
         />
       </h3>
-      <BudgetDetailRedemptionsDescription enterpriseFeatures={enterpriseFeatures} status={status} />
+      <BudgetDetailRedemptionsDescription status={status} />
       <LearnerCreditAllocationTable
         isLoading={isLoading}
         tableData={budgetRedemptions}
@@ -124,15 +123,7 @@ const BudgetDetailRedemptions = ({ enterpriseFeatures, enterpriseUUID }) => {
   );
 };
 
-const mapStateToProps = state => ({
-  enterpriseFeatures: state.portalConfiguration.enterpriseFeatures,
-  enterpriseUUID: state.portalConfiguration.enterpriseId,
-});
-
 BudgetDetailRedemptions.propTypes = {
-  enterpriseUUID: PropTypes.string.isRequired,
-  enterpriseFeatures: PropTypes.shape({
-  }).isRequired,
 };
 
-export default connect(mapStateToProps)(BudgetDetailRedemptions);
+export default BudgetDetailRedemptions;

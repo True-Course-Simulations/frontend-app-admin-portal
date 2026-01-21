@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import {
   Stack, Collapsible, Row, Col, Button,
 } from '@openedx/paragon';
@@ -20,9 +20,9 @@ const BudgetDetailPageOverviewUtilization = ({
   budgetAggregates,
   isAssignable,
   isBnREnabledPolicy,
-  enterpriseId,
   isRetired,
 }) => {
+  const enterpriseId = useSelector(state => state.portalConfiguration.enterpriseId);
   const { enterpriseSlug, enterpriseAppPage } = useParams();
   const intl = useIntl();
   const {
@@ -165,15 +165,7 @@ BudgetDetailPageOverviewUtilization.propTypes = {
   budgetAggregates: PropTypes.shape(budgetAggregatesShape).isRequired,
   isAssignable: PropTypes.bool.isRequired,
   isBnREnabledPolicy: PropTypes.bool.isRequired,
-  enterpriseFeatures: PropTypes.shape({
-  }).isRequired,
-  enterpriseId: PropTypes.string.isRequired,
   isRetired: PropTypes.bool.isRequired,
 };
 
-const mapStateToProps = state => ({
-  enterpriseFeatures: state.portalConfiguration.enterpriseFeatures,
-  enterpriseId: state.portalConfiguration.enterpriseId,
-});
-
-export default connect(mapStateToProps)(BudgetDetailPageOverviewUtilization);
+export default BudgetDetailPageOverviewUtilization;

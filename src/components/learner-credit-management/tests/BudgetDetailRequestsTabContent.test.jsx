@@ -5,8 +5,6 @@ import { Provider } from 'react-redux';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { MemoryRouter } from 'react-router-dom';
-import configureMockStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
 
 import BudgetDetailRequestsTabContent from '../BudgetDetailRequestsTabContent';
 import useBnrSubsidyRequests from '../data/hooks/useBnrSubsidyRequests';
@@ -14,6 +12,7 @@ import { useBudgetId } from '../data';
 import EnterpriseAccessApiService from '../../../data/services/EnterpriseAccessApiService';
 import { queryClient } from '../../test/testUtils';
 import '@testing-library/jest-dom/extend-expect';
+import { initializeMocks } from '../../../testUtils';
 
 jest.mock('../data/hooks/useBnrSubsidyRequests');
 jest.mock('../data', () => ({
@@ -25,12 +24,6 @@ jest.mock('../../../data/services/EnterpriseAccessApiService', () => ({
   approveBnrSubsidyRequest: jest.fn(),
   declineBnrSubsidyRequest: jest.fn(),
 }));
-
-const mockStore = configureMockStore([thunk]);
-
-const defaultProps = {
-  enterpriseId: 'test-enterprise-id',
-};
 
 const mockBnrRequests = {
   itemCount: 2,
@@ -86,7 +79,7 @@ const BudgetDetailRequestsTabContentWrapper = ({
   hookValues = defaultHookValues,
   ...props
 }) => {
-  const store = mockStore(initialState);
+  const { reduxStore } = initializeMocks(initialState);
 
   // Setup hook mocks
   useBnrSubsidyRequests.mockReturnValue(hookValues);
@@ -98,8 +91,8 @@ const BudgetDetailRequestsTabContentWrapper = ({
     <MemoryRouter>
       <QueryClientProvider client={queryClient()}>
         <IntlProvider locale="en">
-          <Provider store={store}>
-            <BudgetDetailRequestsTabContent {...defaultProps} {...props} />
+          <Provider store={reduxStore}>
+            <BudgetDetailRequestsTabContent {...props} />
           </Provider>
         </IntlProvider>
       </QueryClientProvider>

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Hyperlink } from '@openedx/paragon';
 import { getConfig } from '@edx/frontend-platform/config';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -107,8 +107,8 @@ BudgetDetailAssignmentsHeader.propTypes = {
 const BudgetDetailAssignments = ({
   hasContentAssignments,
   hasSpentTransactions,
-  enterpriseId,
 }) => {
+  const enterpriseId = useSelector(state => state.portalConfiguration.enterpriseId);
   const intl = useIntl();
   const { subsidyAccessPolicyId } = useBudgetId();
   const { data: subsidyAccessPolicy } = useSubsidyAccessPolicy(subsidyAccessPolicyId);
@@ -154,17 +154,9 @@ const BudgetDetailAssignments = ({
   );
 };
 
-const mapStateToProps = state => ({
-  enterpriseId: state.portalConfiguration.enterpriseId,
-  enterpriseFeatures: state.portalConfiguration.enterpriseFeatures,
-});
-
 BudgetDetailAssignments.propTypes = {
-  enterpriseId: PropTypes.string.isRequired,
   hasContentAssignments: PropTypes.bool.isRequired,
   hasSpentTransactions: PropTypes.bool.isRequired,
-  enterpriseFeatures: PropTypes.shape({
-  }).isRequired,
 };
 
-export default connect(mapStateToProps)(BudgetDetailAssignments);
+export default BudgetDetailAssignments;
