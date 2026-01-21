@@ -4,7 +4,7 @@ import {
 } from '@openedx/paragon';
 import { AddCircle, CheckCircle } from '@openedx/paragon/icons';
 import React, { useContext, useEffect, useState } from 'react';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { SSOConfigContext } from './SSOConfigContext';
 import { updateConnectInProgress, updateCurrentStep } from './data/actions';
 import { SSO_CONFIG_POLLING_INTERVAL, SSO_CONFIG_POLLING_TIMEOUT } from '../data/constants';
@@ -15,8 +15,9 @@ import LmsApiService from '../../../data/services/LmsApiService';
  * This is the clickable card that is used to test the SSO config before we complete the config creation process.
  */
 const SSOConfigConfiguredCard = ({
-  config, testLink, enterpriseId, setConnectError, setShowValidatedText, showValidatedText,
+  config, testLink, setConnectError, setShowValidatedText, showValidatedText,
 }) => {
+  const enterpriseId = useSelector(state => state.portalConfiguration.enterpriseId);
   const {
     ssoState, dispatchSsoState,
     setProviderConfig, setCurrentError, setIsSsoValid,
@@ -140,7 +141,6 @@ SSOConfigConfiguredCard.propTypes = {
     was_valid_at: PropTypes.string,
   }),
   testLink: PropTypes.string.isRequired,
-  enterpriseId: PropTypes.string.isRequired,
   setConnectError: PropTypes.func.isRequired,
   setShowValidatedText: PropTypes.func.isRequired,
   showValidatedText: PropTypes.bool.isRequired,
@@ -152,8 +152,4 @@ SSOConfigConfiguredCard.defaultProps = {
   },
 };
 
-const mapStateToProps = state => ({
-  enterpriseId: state.portalConfiguration.enterpriseId,
-});
-
-export default connect(mapStateToProps)(SSOConfigConfiguredCard);
+export default SSOConfigConfiguredCard;

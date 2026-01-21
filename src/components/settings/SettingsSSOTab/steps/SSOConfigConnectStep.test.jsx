@@ -23,10 +23,15 @@ mockGetProviderConfig.mockResolvedValue({ data: { results: [{ id: TEST_PROVIDER_
 
 describe('SSO Config Connect step', () => {
   test('renders page with metadata link', () => {
+    const store = getMockStore({ ...initialStore });
     render(
       <Provider store={store}>
         <SSOConfigContextProvider initialState={INITIAL_SSO_STATE}>
-          <SSOConfigConnectStep setConnectError={jest.fn()} />
+          <SSOConfigConnectStep
+            setConnectError={jest.fn()}
+            setShowValidatedText={jest.fn()}
+            showValidatedText={false}
+          />
         </SSOConfigContextProvider>
       </Provider>,
     );

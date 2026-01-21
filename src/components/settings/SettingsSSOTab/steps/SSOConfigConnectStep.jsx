@@ -2,15 +2,24 @@ import { getConfig } from '@edx/frontend-platform/config';
 import { Alert } from '@openedx/paragon';
 import PropTypes from 'prop-types';
 import { useContext, useEffect } from 'react';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useExistingSSOConfigs } from '../hooks';
 import SSOConfigConfiguredCard from '../SSOConfigConfiguredCard';
 import { SSOConfigContext } from '../SSOConfigContext';
 import { createSAMLURLs } from '../utils';
 
 const SSOConfigConnectStep = ({
-  enterpriseId, enterpriseSlug, learnerPortalEnabled, setConnectError, setShowValidatedText, showValidatedText,
+  setConnectError, setShowValidatedText, showValidatedText,
 }) => {
+  const {
+    enterpriseId,
+    enterpriseSlug,
+    learnerPortalEnabled,
+  } = useSelector(state => ({
+    enterpriseId: state.portalConfiguration.enterpriseId,
+    enterpriseSlug: state.portalConfiguration.enterpriseSlug,
+    learnerPortalEnabled: state.portalConfiguration.enableLearnerPortal,
+  }));
   // When we render this component, we need to re-fetch provider configs and update the store
   // so that we can correctly show latest state of providers
   // also, apply latest version of config to ssoState
@@ -62,18 +71,9 @@ const SSOConfigConnectStep = ({
 };
 
 SSOConfigConnectStep.propTypes = {
-  enterpriseId: PropTypes.string.isRequired,
-  enterpriseSlug: PropTypes.string.isRequired,
-  learnerPortalEnabled: PropTypes.bool.isRequired,
   setConnectError: PropTypes.func.isRequired,
   setShowValidatedText: PropTypes.func.isRequired,
   showValidatedText: PropTypes.bool.isRequired,
 };
 
-const mapStateToProps = state => ({
-  enterpriseId: state.portalConfiguration.enterpriseId,
-  enterpriseSlug: state.portalConfiguration.enterpriseSlug,
-  learnerPortalEnabled: state.portalConfiguration.enableLearnerPortal,
-});
-
-export default connect(mapStateToProps)(SSOConfigConnectStep);
+export default SSOConfigConnectStep;

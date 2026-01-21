@@ -1,7 +1,6 @@
 import { Form } from '@openedx/paragon';
 import React, { useContext } from 'react';
-import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
+import { useSelector } from 'react-redux';
 import { useIdpState, useExistingProviderData } from '../hooks';
 import { SSOConfigContext } from '../SSOConfigContext';
 
@@ -11,7 +10,8 @@ import { SSOConfigContext } from '../SSOConfigContext';
  *    this is done in the backend. However, in this case, we don't yet know the entityId unless we read the file
  *    therefore, we want the user to also enter their entityID
  */
-const SSOConfigIDPStep = ({ enterpriseId }) => {
+const SSOConfigIDPStep = () => {
+  const enterpriseId = useSelector(state => state.portalConfiguration.enterpriseId);
   const {
     metadataURL, entityID, handleMetadataURLUpdate, handleEntityIDUpdate,
   } = useIdpState();
@@ -86,12 +86,4 @@ const SSOConfigIDPStep = ({ enterpriseId }) => {
   );
 };
 
-SSOConfigIDPStep.propTypes = {
-  enterpriseId: PropTypes.string.isRequired,
-};
-
-const mapStateToProps = state => ({
-  enterpriseId: state.portalConfiguration.enterpriseId,
-});
-
-export default connect(mapStateToProps)(SSOConfigIDPStep);
+export default SSOConfigIDPStep;

@@ -1,13 +1,16 @@
 import { getConfig } from '@edx/frontend-platform/config';
 import { Form, Hyperlink } from '@openedx/paragon';
-import PropTypes from 'prop-types';
 import { useContext } from 'react';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { createSAMLURLs } from '../utils';
 import { updateServiceProviderConfigured } from '../data/actions';
 import { SSOConfigContext } from '../SSOConfigContext';
 
-const SSOConfigServiceProviderStep = ({ enterpriseSlug, learnerPortalEnabled }) => {
+const SSOConfigServiceProviderStep = () => {
+  const { enterpriseSlug, learnerPortalEnabled } = useSelector(state => ({
+    enterpriseSlug: state.portalConfiguration.enterpriseSlug,
+    learnerPortalEnabled: state.portalConfiguration.enableLearnerPortal,
+  }));
   const {
     ssoState,
     dispatchSsoState,
@@ -48,14 +51,4 @@ const SSOConfigServiceProviderStep = ({ enterpriseSlug, learnerPortalEnabled }) 
   );
 };
 
-SSOConfigServiceProviderStep.propTypes = {
-  enterpriseSlug: PropTypes.string.isRequired,
-  learnerPortalEnabled: PropTypes.bool.isRequired,
-};
-
-const mapStateToProps = state => ({
-  enterpriseSlug: state.portalConfiguration.enterpriseSlug,
-  learnerPortalEnabled: state.portalConfiguration.enableLearnerPortal,
-});
-
-export default connect(mapStateToProps)(SSOConfigServiceProviderStep);
+export default SSOConfigServiceProviderStep;

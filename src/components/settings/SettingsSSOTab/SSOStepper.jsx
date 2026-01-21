@@ -1,14 +1,13 @@
 import {
   Button, Container, Stepper,
 } from '@openedx/paragon';
-import PropTypes from 'prop-types';
 import { ArrowBack, ArrowForward } from '@openedx/paragon/icons';
 import isEmpty from 'validator/lib/isEmpty';
 import isURL from 'validator/lib/isURL';
 import React, {
   useContext, useMemo, useState,
 } from 'react';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { updateCurrentStep } from './data/actions';
 import { useExistingProviderData, useIdpState } from './hooks';
 import { SSOConfigContext } from './SSOConfigContext';
@@ -19,7 +18,16 @@ import SSOConfigConnectStep from './steps/SSOConfigConnectStep';
 import handleErrors from '../utils';
 import LmsApiService from '../../../data/services/LmsApiService';
 
-const SSOStepper = ({ enterpriseSlug, enterpriseId, enterpriseName }) => {
+const SSOStepper = () => {
+  const {
+    enterpriseSlug,
+    enterpriseId,
+    enterpriseName,
+  } = useSelector(state => ({
+    enterpriseSlug: state.portalConfiguration.enterpriseSlug,
+    enterpriseId: state.portalConfiguration.enterpriseId,
+    enterpriseName: state.portalConfiguration.enterpriseName,
+  }));
   const {
     ssoState,
     dispatchSsoState,
@@ -257,15 +265,6 @@ const SSOStepper = ({ enterpriseSlug, enterpriseId, enterpriseName }) => {
 };
 
 SSOStepper.propTypes = {
-  enterpriseSlug: PropTypes.string.isRequired,
-  enterpriseName: PropTypes.string.isRequired,
-  enterpriseId: PropTypes.string.isRequired,
 };
 
-const mapStateToProps = state => ({
-  enterpriseSlug: state.portalConfiguration.enterpriseSlug,
-  enterpriseId: state.portalConfiguration.enterpriseId,
-  enterpriseName: state.portalConfiguration.enterpriseName,
-});
-
-export default connect(mapStateToProps)(SSOStepper);
+export default SSOStepper;

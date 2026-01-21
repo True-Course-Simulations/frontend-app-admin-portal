@@ -2,8 +2,8 @@ import React, {
   useState, useContext,
 } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
 import { useIntl } from '@edx/frontend-platform/i18n';
+import { useSelector } from 'react-redux';
 import FormContextWrapper from '../../forms/FormContextWrapper';
 import { SSOConfigContext } from './SSOConfigContext';
 import SSOFormWorkflowConfig from './SSOFormWorkflowConfig';
@@ -12,7 +12,8 @@ import { camelCaseDict } from '../../../utils';
 import UnsavedSSOChangesModal from './UnsavedSSOChangesModal';
 import { IDP_URL_SELECTION, IDP_XML_SELECTION } from './steps/NewSSOConfigConnectStep';
 
-const NewSSOStepper = ({ enterpriseId, isStepperOpen, setIsStepperOpen }) => {
+const NewSSOStepper = ({ isStepperOpen, setIsStepperOpen }) => {
+  const enterpriseId = useSelector(state => state.portalConfiguration.enterpriseId);
   const {
     setProviderConfig, setRefreshBool, ssoState: { providerConfig, refreshBool },
   } = useContext(SSOConfigContext);
@@ -57,13 +58,8 @@ const NewSSOStepper = ({ enterpriseId, isStepperOpen, setIsStepperOpen }) => {
 };
 
 NewSSOStepper.propTypes = {
-  enterpriseId: PropTypes.string.isRequired,
   isStepperOpen: PropTypes.bool.isRequired,
   setIsStepperOpen: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = state => ({
-  enterpriseId: state.portalConfiguration.enterpriseId,
-});
-
-export default connect(mapStateToProps)(NewSSOStepper);
+export default NewSSOStepper;
