@@ -4,14 +4,15 @@ import {
   Icon, IconButtonWithTooltip,
 } from '@openedx/paragon';
 import { DoNotDisturbOn } from '@openedx/paragon/icons';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { sendEnterpriseTrackEvent } from '@edx/frontend-enterprise-utils';
 import useCancelContentAssignments from './data/hooks/useCancelContentAssignments';
 import CancelAssignmentModal from './CancelAssignmentModal';
 import EVENT_NAMES from '../../eventTracking';
 import { useBudgetId, useSubsidyAccessPolicy } from './data';
 
-const PendingAssignmentCancelButton = ({ row, enterpriseId }) => {
+const PendingAssignmentCancelButton = ({ row }) => {
+  const enterpriseId = useSelector(state => state.portalConfiguration.enterpriseId);
   const { subsidyAccessPolicyId } = useBudgetId();
   const { data: subsidyAccessPolicy } = useSubsidyAccessPolicy(subsidyAccessPolicyId);
   const {
@@ -124,11 +125,6 @@ PendingAssignmentCancelButton.propTypes = {
       uuid: PropTypes.string.isRequired,
     }).isRequired,
   }).isRequired,
-  enterpriseId: PropTypes.string.isRequired,
 };
 
-const mapStateToProps = state => ({
-  enterpriseId: state.portalConfiguration.enterpriseId,
-});
-
-export default connect(mapStateToProps)(PendingAssignmentCancelButton);
+export default PendingAssignmentCancelButton;

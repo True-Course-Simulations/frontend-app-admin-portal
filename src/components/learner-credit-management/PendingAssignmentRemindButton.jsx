@@ -4,13 +4,14 @@ import { Icon, IconButtonWithTooltip } from '@openedx/paragon';
 
 import { Mail } from '@openedx/paragon/icons';
 import { sendEnterpriseTrackEvent } from '@edx/frontend-enterprise-utils';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import RemindAssignmentModal from './RemindAssignmentModal';
 import useRemindContentAssignments from './data/hooks/useRemindContentAssignments';
 import EVENT_NAMES from '../../eventTracking';
 import { useBudgetId, useSubsidyAccessPolicy } from './data';
 
-const PendingAssignmentRemindButton = ({ row, enterpriseId }) => {
+const PendingAssignmentRemindButton = ({ row }) => {
+  const enterpriseId = useSelector(state => state.portalConfiguration.enterpriseId);
   const { subsidyAccessPolicyId } = useBudgetId();
   const { data: subsidyAccessPolicy } = useSubsidyAccessPolicy(subsidyAccessPolicyId);
   const {
@@ -123,11 +124,6 @@ PendingAssignmentRemindButton.propTypes = {
       uuid: PropTypes.string.isRequired,
     }).isRequired,
   }).isRequired,
-  enterpriseId: PropTypes.string.isRequired,
 };
 
-const mapStateToProps = state => ({
-  enterpriseId: state.portalConfiguration.enterpriseId,
-});
-
-export default connect(mapStateToProps)(PendingAssignmentRemindButton);
+export default PendingAssignmentRemindButton;

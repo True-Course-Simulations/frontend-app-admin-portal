@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import {
   Stack, OverlayTrigger, IconButton, Icon, Popover,
 } from '@openedx/paragon';
@@ -35,8 +35,8 @@ const EmailAddressTableCell = ({
   enterpriseEnrollmentId,
   contentAssignmentUUID,
   fulfillmentIdentifier,
-  enterpriseUUID,
 }) => {
+  const enterpriseUUID = useSelector(state => state.portalConfiguration.enterpriseId);
   if (userEmail) {
     return (
       <span
@@ -94,11 +94,6 @@ EmailAddressTableCell.propTypes = {
   enterpriseEnrollmentId: PropTypes.number,
   contentAssignmentUUID: PropTypes.string,
   fulfillmentIdentifier: PropTypes.string,
-  enterpriseUUID: PropTypes.string.isRequired,
 };
 
-const mapStateToProps = state => ({
-  enterpriseUUID: state.portalConfiguration.enterpriseId,
-});
-
-export default connect(mapStateToProps)(EmailAddressTableCell);
+export default EmailAddressTableCell;

@@ -5,19 +5,17 @@ import {
   waitFor,
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import configureMockStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import { sendEnterpriseTrackEvent } from '@edx/frontend-enterprise-utils';
 import '@testing-library/jest-dom/extend-expect';
 
 import EmailAddressTableCell from '../EmailAddressTableCell';
+import { initializeMocks } from '../../../testUtils';
 
 jest.mock('@edx/frontend-enterprise-utils', () => ({
   ...jest.requireActual('@edx/frontend-enterprise-utils'),
   sendEnterpriseTrackEvent: jest.fn(),
 }));
-
-const mockStore = configureMockStore();
 
 const mockEnterpriseUUID = 'test-enterprise-uuid';
 const mockContentAssignmentUUID = 'test-content-assignment-uuid';
@@ -32,11 +30,14 @@ const mockInitialState = {
 const EmailAddressTableCellWrapper = ({
   initialStoreState = mockInitialState,
   ...props
-}) => (
-  <Provider store={mockStore(initialStoreState)}>
-    <EmailAddressTableCell {...props} />
-  </Provider>
-);
+}) => {
+  const { reduxStore } = initializeMocks(initialStoreState);
+  return (
+    <Provider store={reduxStore}>
+      <EmailAddressTableCell {...props} />
+    </Provider>
+  );
+};
 
 describe('<EmailAddressTableCell />', () => {
   beforeEach(() => {

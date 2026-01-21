@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Tabs } from '@openedx/paragon';
 import { sendEnterpriseTrackEvent } from '@edx/frontend-enterprise-utils';
@@ -63,13 +63,13 @@ function getInitialTabKey(routeActiveTabKey, {
 }
 
 const BudgetDetailTabsAndRoutes = ({
-  enterpriseId,
-  enterpriseSlug,
-  enterpriseFeatures,
   enterpriseGroupLearners,
   subsidyAccessPolicy,
   appliesToAllContexts,
 }) => {
+  const enterpriseId = useSelector(state => state.portalConfiguration.enterpriseId);
+  const enterpriseSlug = useSelector(state => state.portalConfiguration.enterpriseSlug);
+  const enterpriseFeatures = useSelector(state => state.portalConfiguration.enterpriseFeatures);
   const { activeTabKey: routeActiveTabKey } = useParams();
   const { budgetId } = useBudgetId();
   const navigate = useNavigate();
@@ -179,16 +179,7 @@ const BudgetDetailTabsAndRoutes = ({
   );
 };
 
-const mapStateToProps = state => ({
-  enterpriseId: state.portalConfiguration.enterpriseId,
-  enterpriseSlug: state.portalConfiguration.enterpriseSlug,
-  enterpriseFeatures: state.portalConfiguration.enterpriseFeatures,
-});
-
 BudgetDetailTabsAndRoutes.propTypes = {
-  enterpriseId: PropTypes.string.isRequired,
-  enterpriseSlug: PropTypes.string.isRequired,
-  enterpriseFeatures: PropTypes.shape().isRequired,
   enterpriseGroupLearners: PropTypes.shape({
     count: PropTypes.number.isRequired,
   }),
@@ -203,4 +194,4 @@ BudgetDetailTabsAndRoutes.propTypes = {
   appliesToAllContexts: PropTypes.bool,
 };
 
-export default connect(mapStateToProps)(BudgetDetailTabsAndRoutes);
+export default BudgetDetailTabsAndRoutes;

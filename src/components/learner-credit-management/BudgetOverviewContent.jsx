@@ -1,6 +1,5 @@
 import React from 'react';
-import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
+import { useSelector } from 'react-redux';
 import { Card, Skeleton } from '@openedx/paragon';
 
 import { FormattedMessage, useIntl } from '@edx/frontend-platform/i18n';
@@ -16,9 +15,8 @@ import { BUDGET_TYPES } from '../EnterpriseApp/data/constants';
 import BudgetStatusSubtitle from './BudgetStatusSubtitle';
 import { ALLOCATE_LEARNING_BUDGETS_TARGETS } from '../ProductTours/AdminOnboardingTours/constants';
 
-const BudgetOverviewContent = ({
-  enterpriseUUID,
-}) => {
+const BudgetOverviewContent = () => {
+  const enterpriseUUID = useSelector(state => state.portalConfiguration.enterpriseId);
   const intl = useIntl();
   const { subsidyAccessPolicyId, enterpriseOfferId } = useBudgetId();
   const budgetType = (enterpriseOfferId !== null) ? BUDGET_TYPES.ecommerce : BUDGET_TYPES.policy;
@@ -104,15 +102,4 @@ const BudgetOverviewContent = ({
   );
 };
 
-const mapStateToProps = state => ({
-  enterpriseUUID: state.portalConfiguration.enterpriseId,
-  enterpriseFeatures: state.portalConfiguration.enterpriseFeatures,
-});
-
-BudgetOverviewContent.propTypes = {
-  enterpriseUUID: PropTypes.string.isRequired,
-  enterpriseFeatures: PropTypes.shape({
-  }).isRequired,
-};
-
-export default connect(mapStateToProps)(BudgetOverviewContent);
+export default BudgetOverviewContent;

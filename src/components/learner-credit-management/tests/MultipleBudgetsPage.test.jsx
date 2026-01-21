@@ -2,8 +2,6 @@
 import React from 'react';
 import { Provider } from 'react-redux';
 import { QueryClientProvider } from '@tanstack/react-query';
-import thunk from 'redux-thunk';
-import configureMockStore from 'redux-mock-store';
 import {
   screen,
   render,
@@ -18,9 +16,8 @@ import { EnterpriseSubsidiesContext } from '../../EnterpriseSubsidiesContext';
 import MultipleBudgetsPage from '../MultipleBudgetsPage';
 import { queryClient } from '../../test/testUtils';
 import { useEnterpriseBudgets } from '../../EnterpriseSubsidiesContext/data/hooks';
+import { initializeMocks } from '../../../testUtils';
 
-const mockStore = configureMockStore([thunk]);
-const getMockStore = store => mockStore(store);
 const enterpriseId = 'test-enterprise-uuid';
 const enterpriseSlug = 'test-enterprise-slug';
 const initialStore = {
@@ -103,9 +100,6 @@ jest.mock('../../EnterpriseSubsidiesContext/data/hooks', () => ({
   }),
 }));
 
-const store = getMockStore({ ...initialStore });
-const enterpriseUUID = '1234';
-
 const emptyOffersContextValue = {
   budgets: [], // Empty offers array
 };
@@ -113,18 +107,22 @@ const emptyOffersContextValue = {
 const defaultEnterpriseSubsidiesContextValue = {};
 const MultipleBudgetsPageWrapper = ({
   enterpriseSubsidiesContextValue = defaultEnterpriseSubsidiesContextValue,
+  initialState = initialStore,
   ...rest
-}) => (
-  <QueryClientProvider client={queryClient()}>
-    <Provider store={store}>
-      <IntlProvider locale="en">
-        <EnterpriseSubsidiesContext.Provider value={enterpriseSubsidiesContextValue}>
-          <MultipleBudgetsPage {...rest} />
-        </EnterpriseSubsidiesContext.Provider>
-      </IntlProvider>
-    </Provider>
-  </QueryClientProvider>
-);
+}) => {
+  const { reduxStore } = initializeMocks(initialState);
+  return (
+    <QueryClientProvider client={queryClient()}>
+      <Provider store={reduxStore}>
+        <IntlProvider locale="en">
+          <EnterpriseSubsidiesContext.Provider value={enterpriseSubsidiesContextValue}>
+            <MultipleBudgetsPage {...rest} />
+          </EnterpriseSubsidiesContext.Provider>
+        </IntlProvider>
+      </Provider>
+    </QueryClientProvider>
+  );
+};
 
 describe('<MultipleBudgetsPage />', () => {
   beforeEach(() => {
@@ -135,8 +133,6 @@ describe('<MultipleBudgetsPage />', () => {
       { data: { budgets: [] } },
     );
     render(<MultipleBudgetsPageWrapper
-      enterpriseUUID={enterpriseUUID}
-      enterpriseSlug={enterpriseId}
       enterpriseSubsidiesContextValue={emptyOffersContextValue}
     />);
     expect(screen.getByText('No budgets for your organization'));
@@ -144,7 +140,7 @@ describe('<MultipleBudgetsPage />', () => {
   });
   it('budgets for your organization', async () => {
     const user = userEvent.setup();
-    render(<MultipleBudgetsPageWrapper enterpriseUUID={enterpriseUUID} enterpriseSlug={enterpriseId} />);
+    render(<MultipleBudgetsPageWrapper />);
     expect(screen.getByText('Budgets'));
     const filterButton = screen.getByText('Filters');
     await user.click(filterButton);
@@ -158,7 +154,7 @@ describe('<MultipleBudgetsPage />', () => {
   });
   it.skip('shows only active and scheduled budgets on initial render', async () => {
     const user = userEvent.setup();
-    render(<MultipleBudgetsPageWrapper enterpriseUUID={enterpriseUUID} enterpriseSlug={enterpriseId} />);
+    render(<MultipleBudgetsPageWrapper />);
     expect(await screen.findByText('Budgets')).toBeInTheDocument();
     const clearFilterButton = screen.getByText('Clear filters');
     // only scheduled, active, and expiring budgets are rendered first
@@ -174,8 +170,6 @@ describe('<MultipleBudgetsPage />', () => {
       isLoading: true,
     };
     render(<MultipleBudgetsPageWrapper
-      enterpriseUUID={enterpriseUUID}
-      enterpriseSlug={enterpriseSlug}
       enterpriseSubsidiesContextValue={enterpriseSubsidiesContextValue}
     />);
     expect(screen.getByText('Loading budgets...')).toBeInTheDocument();

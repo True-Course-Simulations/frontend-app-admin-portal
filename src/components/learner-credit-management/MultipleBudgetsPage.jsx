@@ -1,9 +1,8 @@
 import React, { useContext } from 'react';
-import PropTypes from 'prop-types';
 import {
   Card, Col, Container, Hyperlink, Row, Skeleton, Stack,
 } from '@openedx/paragon';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Helmet } from 'react-helmet';
 import { useIntl, FormattedMessage } from '@edx/frontend-platform/i18n';
 
@@ -14,11 +13,13 @@ import { configuration } from '../../config';
 import { useEnterpriseBudgets } from '../EnterpriseSubsidiesContext/data/hooks';
 
 const MultipleBudgetsPage = ({
-  enterpriseUUID,
-  enterpriseSlug,
-  enableLearnerPortal,
-  enablePortalLearnerCreditManagementScreen,
 }) => {
+  const enterpriseUUID = useSelector(state => state.portalConfiguration.enterpriseId);
+  const enterpriseSlug = useSelector(state => state.portalConfiguration.enterpriseSlug);
+  const enableLearnerPortal = useSelector(state => state.portalConfiguration.enableLearnerPortal);
+  const enablePortalLearnerCreditManagementScreen = useSelector(
+    state => state.portalConfiguration.enablePortalLearnerCreditManagementScreen,
+  );
   const intl = useIntl();
   const PAGE_TITLE = intl.formatMessage({
     id: 'lcm.page.title',
@@ -108,21 +109,4 @@ const MultipleBudgetsPage = ({
   );
 };
 
-const mapStateToProps = state => ({
-  enterpriseUUID: state.portalConfiguration.enterpriseId,
-  enterpriseSlug: state.portalConfiguration.enterpriseSlug,
-  enableLearnerPortal: state.portalConfiguration.enableLearnerPortal,
-  enterpriseFeatures: state.portalConfiguration.enterpriseFeatures,
-  enablePortalLearnerCreditManagementScreen: state.portalConfiguration.enablePortalLearnerCreditManagementScreen,
-});
-
-MultipleBudgetsPage.propTypes = {
-  enterpriseUUID: PropTypes.string.isRequired,
-  enterpriseSlug: PropTypes.string.isRequired,
-  enableLearnerPortal: PropTypes.bool.isRequired,
-  enterpriseFeatures: PropTypes.shape({
-  }).isRequired,
-  enablePortalLearnerCreditManagementScreen: PropTypes.bool.isRequired,
-};
-
-export default connect(mapStateToProps)(MultipleBudgetsPage);
+export default MultipleBudgetsPage;
