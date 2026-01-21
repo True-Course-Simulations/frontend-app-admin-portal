@@ -1,7 +1,7 @@
 import React from 'react';
 import { useParams } from 'react-router';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import {
   Hyperlink, Icon, IconButton, Stack,
 } from '@openedx/paragon';
@@ -9,7 +9,10 @@ import { Person } from '@openedx/paragon/icons';
 import { FormattedMessage } from '@edx/frontend-platform/i18n';
 import { ROUTE_NAMES } from '../../EnterpriseApp/data/constants';
 
-const MemberDetailsTableCell = ({ row, learnerProfileViewEnabled }) => {
+const MemberDetailsTableCell = ({ row }) => {
+  const learnerProfileViewEnabled = useSelector(
+    state => state.portalConfiguration.enterpriseFeatures?.adminPortalLearnerProfileViewEnabled,
+  );
   const { enterpriseSlug, groupUuid } = useParams();
   const hyperlink = `/${enterpriseSlug}/admin/${ROUTE_NAMES.peopleManagement}/${groupUuid}/learner-detail/${row.original.lmsUserId}`;
   let memberDetails;
@@ -102,11 +105,6 @@ MemberDetailsTableCell.propTypes = {
       memberEnrollments: PropTypes.string,
     }).isRequired,
   }).isRequired,
-  learnerProfileViewEnabled: PropTypes.bool.isRequired,
 };
 
-const mapStateToProps = state => ({
-  learnerProfileViewEnabled: state.portalConfiguration.enterpriseFeatures?.adminPortalLearnerProfileViewEnabled,
-});
-
-export default connect(mapStateToProps)(MemberDetailsTableCell);
+export default MemberDetailsTableCell;

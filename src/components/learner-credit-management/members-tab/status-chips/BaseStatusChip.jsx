@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 import { Chip, Hyperlink } from '@openedx/paragon';
 import { sendEnterpriseTrackEvent } from '@edx/frontend-enterprise-utils';
@@ -9,9 +9,10 @@ import { useStatusChip } from '../../data';
 import BaseModalPopup from '../../assignments-status-chips/BaseModalPopup';
 
 const BaseStatusChip = ({
-  enterpriseId, icon, text, popoverHeader, popoverBody,
+  icon, text, popoverHeader, popoverBody,
   popoverExtra1, popoverExtra2, statusEventName, helpEventName,
 }) => {
+  const enterpriseId = useSelector(state => state.portalConfiguration.enterpriseId);
   const sendTrackEvent = (eventName, eventMetadata = {}) => {
     sendEnterpriseTrackEvent(enterpriseId, eventName, {
       ...eventMetadata,
@@ -73,17 +74,12 @@ const BaseStatusChip = ({
   );
 };
 
-const mapStateToProps = state => ({
-  enterpriseId: state.portalConfiguration.enterpriseId,
-});
-
 BaseStatusChip.defaultProps = {
   popoverExtra1: '',
   popoverExtra2: '',
 };
 
 BaseStatusChip.propTypes = {
-  enterpriseId: PropTypes.string.isRequired,
   icon: PropTypes.string.isRequired,
   text: PropTypes.string.isRequired,
   popoverHeader: PropTypes.string.isRequired,
@@ -94,4 +90,4 @@ BaseStatusChip.propTypes = {
   helpEventName: PropTypes.string.isRequired,
 };
 
-export default connect(mapStateToProps)(BaseStatusChip);
+export default BaseStatusChip;

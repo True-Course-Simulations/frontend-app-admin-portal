@@ -4,7 +4,7 @@ import {
   ActionRow, Button, FullscreenModal, Hyperlink, StatefulButton, useToggle,
 } from '@openedx/paragon';
 import { snakeCaseObject } from '@edx/frontend-platform/utils';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 import { useBudgetId, useEnterpriseFlexGroups, useSubsidyAccessPolicy } from '../data';
 import InviteModalContent from './InviteModalContent';
@@ -20,8 +20,8 @@ const InviteMembersModalWrapper = ({
   handleTabSelect,
   setRefresh,
   refresh,
-  enterpriseId,
 }) => {
+  const enterpriseId = useSelector(state => state.portalConfiguration.enterpriseId);
   const { subsidyAccessPolicyId } = useBudgetId();
   const { data: subsidyAccessPolicy } = useSubsidyAccessPolicy(subsidyAccessPolicyId);
   const [learnerEmails, setLearnerEmails] = useState([]);
@@ -151,11 +151,6 @@ InviteMembersModalWrapper.propTypes = {
   handleTabSelect: PropTypes.func.isRequired,
   setRefresh: PropTypes.func.isRequired,
   refresh: PropTypes.bool.isRequired,
-  enterpriseId: PropTypes.string.isRequired,
 };
 
-const mapStateToProps = state => ({
-  enterpriseId: state.portalConfiguration.enterpriseId,
-});
-
-export default connect(mapStateToProps)(InviteMembersModalWrapper);
+export default InviteMembersModalWrapper;

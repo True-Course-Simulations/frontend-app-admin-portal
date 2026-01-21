@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
 import { Skeleton } from '@openedx/paragon';
 import { FormattedMessage } from '@edx/frontend-platform/i18n';
+import { useSelector } from 'react-redux';
 
 import LearnerCreditGroupMembersTable from './LearnerCreditGroupMembersTable';
 import {
@@ -12,7 +12,8 @@ import {
   useEnterpriseRemovedGroupMembers,
 } from '../data';
 
-const BudgetDetailMembersTabContents = ({ enterpriseUUID, refresh, setRefresh }) => {
+const BudgetDetailMembersTabContents = ({ refresh, setRefresh }) => {
+  const enterpriseUUID = useSelector(state => state.portalConfiguration.enterpriseId);
   const { subsidyAccessPolicyId } = useBudgetId();
   const { data: subsidyAccessPolicy } = useSubsidyAccessPolicy(subsidyAccessPolicyId);
   const groupId = subsidyAccessPolicy.groupAssociations[0];
@@ -70,14 +71,9 @@ const BudgetDetailMembersTabContents = ({ enterpriseUUID, refresh, setRefresh })
   );
 };
 
-const mapStateToProps = state => ({
-  enterpriseUUID: state.portalConfiguration.enterpriseId,
-});
-
 BudgetDetailMembersTabContents.propTypes = {
-  enterpriseUUID: PropTypes.string.isRequired,
   refresh: PropTypes.bool.isRequired,
   setRefresh: PropTypes.func.isRequired,
 };
 
-export default connect(mapStateToProps)(BudgetDetailMembersTabContents);
+export default BudgetDetailMembersTabContents;

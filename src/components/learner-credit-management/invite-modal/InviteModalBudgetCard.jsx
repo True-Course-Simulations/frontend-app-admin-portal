@@ -1,10 +1,9 @@
 import React from 'react';
-import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
 import {
   Card, Col, Row, Skeleton,
 } from '@openedx/paragon';
 import { useIntl } from '@edx/frontend-platform/i18n';
+import { useSelector } from 'react-redux';
 import { makePlural } from '../../../utils';
 
 import {
@@ -18,9 +17,8 @@ import BudgetDetail from '../BudgetDetail';
 import { BUDGET_TYPES } from '../../EnterpriseApp/data/constants';
 import BudgetStatusSubtitle from '../BudgetStatusSubtitle';
 
-const InviteModalBudgetCard = ({
-  enterpriseUUID,
-}) => {
+const InviteModalBudgetCard = () => {
+  const enterpriseUUID = useSelector(state => state.portalConfiguration.enterpriseId);
   const intl = useIntl();
   const { subsidyAccessPolicyId, enterpriseOfferId } = useBudgetId();
   const { data: subsidyAccessPolicy } = useSubsidyAccessPolicy(subsidyAccessPolicyId);
@@ -91,15 +89,4 @@ const InviteModalBudgetCard = ({
   );
 };
 
-const mapStateToProps = state => ({
-  enterpriseUUID: state.portalConfiguration.enterpriseId,
-  enterpriseFeatures: state.portalConfiguration.enterpriseFeatures,
-});
-
-InviteModalBudgetCard.propTypes = {
-  enterpriseUUID: PropTypes.string.isRequired,
-  enterpriseFeatures: PropTypes.shape({
-  }).isRequired,
-};
-
-export default connect(mapStateToProps)(InviteModalBudgetCard);
+export default InviteModalBudgetCard;

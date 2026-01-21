@@ -5,7 +5,7 @@ import {
   CheckboxFilter,
 } from '@openedx/paragon';
 import { useIntl } from '@edx/frontend-platform/i18n';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import ActionCell from '../../SubsidyRequestManagementTable/ActionCell';
 import RequestDetailsCell from './RequestDetailsCell';
 import CustomTableControlBar from './CustomTableControlBar';
@@ -27,10 +27,10 @@ const RequestsTable = ({
   initialState,
   disableApproveButton,
   onRefresh,
-  enterpriseSlug,
   ...rest
 }) => {
   const intl = useIntl();
+  const enterpriseSlug = useSelector(state => state.portalConfiguration.enterpriseSlug);
   const columns = useMemo(
     () => ([
       {
@@ -132,7 +132,6 @@ const RequestsTable = ({
 };
 
 RequestsTable.propTypes = {
-  enterpriseSlug: PropTypes.string.isRequired,
   fetchData: PropTypes.func.isRequired,
   isLoading: PropTypes.bool.isRequired,
   pageCount: PropTypes.number.isRequired,
@@ -164,8 +163,4 @@ RequestsTable.defaultProps = {
   disableApproveButton: false,
 };
 
-const mapStateToProps = state => ({
-  enterpriseSlug: state.portalConfiguration.enterpriseSlug,
-});
-
-export default connect(mapStateToProps)(RequestsTable);
+export default RequestsTable;
