@@ -9,7 +9,7 @@ import {
 import { sendEnterpriseTrackEvent } from '@edx/frontend-enterprise-utils';
 import { FormattedMessage, useIntl } from '@edx/frontend-platform/i18n';
 
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import BaseCourseCard from '../cards/BaseCourseCard';
 import {
   formatPrice, useBudgetId, useGroupDropdownToggle, useSubsidyAccessPolicy,
@@ -22,7 +22,6 @@ import FlexGroupDropdown from '../FlexGroupDropdown';
 import { GROUP_DROPDOWN_TEXT } from '../../PeopleManagement/constants';
 
 const AssignmentModalContent = ({
-  enterpriseId,
   course,
   courseRun,
   onEmailAddressesChange,
@@ -30,6 +29,7 @@ const AssignmentModalContent = ({
   onGroupSelectionsChanged,
   setHasSelectedBulkGroupAssign,
 }) => {
+  const enterpriseId = useSelector(state => state.portalConfiguration.enterpriseId);
   const shouldShowGroupsDropdown = enterpriseFlexGroups?.length > 0;
   const { subsidyAccessPolicyId } = useBudgetId();
   const { data: subsidyAccessPolicy } = useSubsidyAccessPolicy(subsidyAccessPolicyId);
@@ -262,7 +262,6 @@ const AssignmentModalContent = ({
 };
 
 AssignmentModalContent.propTypes = {
-  enterpriseId: PropTypes.string.isRequired,
   course: PropTypes.shape().isRequired, // Pass-thru prop to `BaseCourseCard`
   courseRun: PropTypes.shape({
     enrollBy: PropTypes.string,
@@ -279,8 +278,4 @@ AssignmentModalContent.propTypes = {
   setHasSelectedBulkGroupAssign: PropTypes.func,
 };
 
-const mapStateToProps = state => ({
-  enterpriseId: state.portalConfiguration.enterpriseId,
-});
-
-export default connect(mapStateToProps)(AssignmentModalContent);
+export default AssignmentModalContent;

@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import dayjs from 'dayjs';
 import classNames from 'classnames';
 import {
@@ -21,10 +21,12 @@ import SubBudgetCardUtilization from './SubBudgetCardUtilization';
 import { ALLOCATE_LEARNING_BUDGETS_TARGETS } from '../ProductTours/AdminOnboardingTours/constants';
 
 const BaseBackgroundFetchingWrapper = ({
-  enterpriseId,
-  enablePortalLearnerCreditManagementScreen,
   children,
 }) => {
+  const enterpriseId = useSelector(state => state.portalConfiguration.enterpriseId);
+  const enablePortalLearnerCreditManagementScreen = useSelector(
+    state => state.portalConfiguration.enablePortalLearnerCreditManagementScreen,
+  );
   const { isFetching: isFetchingBudgets } = useEnterpriseBudgets({
     enablePortalLearnerCreditManagementScreen,
     enterpriseId,
@@ -34,20 +36,11 @@ const BaseBackgroundFetchingWrapper = ({
 
 BaseBackgroundFetchingWrapper.propTypes = {
   children: PropTypes.node.isRequired,
-  enterpriseId: PropTypes.string.isRequired,
-  enablePortalLearnerCreditManagementScreen: PropTypes.bool.isRequired,
 };
 
 BaseBackgroundFetchingWrapper.defaultProps = {
 };
-
-const mapStateToProps = state => ({
-  enterpriseId: state.portalConfiguration.enterpriseId,
-  enablePortalLearnerCreditManagementScreen: state.portalConfiguration.enablePortalLearnerCreditManagementScreen,
-  enterpriseFeatures: state.features,
-});
-
-const BackgroundFetchingWrapper = connect(mapStateToProps)(BaseBackgroundFetchingWrapper);
+const BackgroundFetchingWrapper = BaseBackgroundFetchingWrapper;
 
 const BaseSubBudgetCard = ({
   id,
@@ -57,15 +50,17 @@ const BaseSubBudgetCard = ({
   pending,
   spent,
   displayName,
-  enterpriseSlug,
-  enterpriseId,
-  enablePortalLearnerCreditManagementScreen,
   isLoading,
   isAssignable,
   isBnREnabled,
   isRetired,
   retiredAt,
 }) => {
+  const enterpriseId = useSelector(state => state.portalConfiguration.enterpriseId);
+  const enterpriseSlug = useSelector(state => state.portalConfiguration.enterpriseSlug);
+  const enablePortalLearnerCreditManagementScreen = useSelector(
+    state => state.portalConfiguration.enablePortalLearnerCreditManagementScreen,
+  );
   const { isFetching: isFetchingBudgets } = useEnterpriseBudgets({
     enablePortalLearnerCreditManagementScreen,
     enterpriseId,
@@ -173,9 +168,6 @@ const BaseSubBudgetCard = ({
 };
 
 BaseSubBudgetCard.propTypes = {
-  enterpriseSlug: PropTypes.string.isRequired,
-  enterpriseId: PropTypes.string.isRequired,
-  enablePortalLearnerCreditManagementScreen: PropTypes.bool.isRequired,
   id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   start: PropTypes.string,
   end: PropTypes.string,
@@ -193,4 +185,4 @@ BaseSubBudgetCard.propTypes = {
 BaseSubBudgetCard.defaultProps = {
 };
 
-export default connect(mapStateToProps)(BaseSubBudgetCard);
+export default BaseSubBudgetCard;

@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Collapsible, Stack } from '@openedx/paragon';
 import { sendEnterpriseTrackEvent } from '@edx/frontend-enterprise-utils';
 import React from 'react';
@@ -8,7 +8,8 @@ import dayjs from 'dayjs';
 import { ASSIGNMENT_ENROLLMENT_DEADLINE, DATETIME_FORMAT } from '../data';
 import EVENT_NAMES from '../../../eventTracking';
 
-const AssignmentAllocationHelpCollapsibles = ({ enterpriseId, courseRun }) => {
+const AssignmentAllocationHelpCollapsibles = ({ courseRun }) => {
+  const enterpriseId = useSelector(state => state.portalConfiguration.enterpriseId);
   const enrollByDate = dayjs(courseRun.enrollBy).format(DATETIME_FORMAT);
   return (
     <Stack gap={1}>
@@ -138,14 +139,9 @@ const AssignmentAllocationHelpCollapsibles = ({ enterpriseId, courseRun }) => {
 };
 
 AssignmentAllocationHelpCollapsibles.propTypes = {
-  enterpriseId: PropTypes.string.isRequired,
   courseRun: PropTypes.shape({
     enrollBy: PropTypes.string,
   }).isRequired,
 };
 
-const mapStateToProps = state => ({
-  enterpriseId: state.portalConfiguration.enterpriseId,
-});
-
-export default connect(mapStateToProps)(AssignmentAllocationHelpCollapsibles);
+export default AssignmentAllocationHelpCollapsibles;

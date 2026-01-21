@@ -1,4 +1,4 @@
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { sendEnterpriseTrackEvent } from '@edx/frontend-enterprise-utils';
 import { Chip } from '@openedx/paragon';
 import PropTypes from 'prop-types';
@@ -11,7 +11,8 @@ import {
   LEARNER_CREDIT_REQUEST_STATES, LEARNER_CREDIT_REQUEST_STATE_LABELS,
 } from './data';
 
-const RequestStatusTableCell = ({ enterpriseId, row }) => {
+const RequestStatusTableCell = ({ row }) => {
+  const enterpriseId = useSelector(state => state.portalConfiguration.enterpriseId);
   const { original } = row;
   const {
     email: learnerEmail,
@@ -89,7 +90,6 @@ const RequestStatusTableCell = ({ enterpriseId, row }) => {
 };
 
 RequestStatusTableCell.propTypes = {
-  enterpriseId: PropTypes.string.isRequired,
   row: PropTypes.shape({
     original: PropTypes.shape({
       email: PropTypes.string,
@@ -99,8 +99,4 @@ RequestStatusTableCell.propTypes = {
   }).isRequired,
 };
 
-const mapStateToProps = state => ({
-  enterpriseId: state.portalConfiguration.enterpriseId,
-});
-
-export default connect(mapStateToProps)(RequestStatusTableCell);
+export default RequestStatusTableCell;
