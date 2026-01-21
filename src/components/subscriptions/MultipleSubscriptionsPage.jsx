@@ -7,7 +7,7 @@ import {
   Card,
   Hyperlink,
 } from '@openedx/paragon';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 import { FormattedMessage } from '@edx/frontend-platform/i18n';
 import LoadingMessage from '../LoadingMessage';
@@ -22,11 +22,11 @@ import { ROUTE_NAMES } from '../EnterpriseApp/data/constants';
 import { configuration } from '../../config';
 
 const MultipleSubscriptionsPage = ({
-  enterpriseSlug,
   redirectPage,
   leadText,
   createActions,
 }) => {
+  const enterpriseSlug = useSelector(state => state.portalConfiguration.enterpriseSlug);
   const { data, loading } = useContext(SubscriptionContext);
   const subscriptions = data.results;
 
@@ -101,14 +101,9 @@ MultipleSubscriptionsPage.defaultProps = {
 };
 
 MultipleSubscriptionsPage.propTypes = {
-  enterpriseSlug: PropTypes.string.isRequired,
   redirectPage: PropTypes.string,
   leadText: PropTypes.string,
   createActions: PropTypes.func,
 };
 
-const mapStateToProps = (state) => ({
-  enterpriseSlug: state.portalConfiguration.enterpriseSlug,
-});
-
-export default connect(mapStateToProps)(MultipleSubscriptionsPage);
+export default MultipleSubscriptionsPage;

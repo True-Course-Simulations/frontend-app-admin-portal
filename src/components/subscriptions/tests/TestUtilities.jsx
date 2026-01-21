@@ -1,11 +1,10 @@
 import React from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { Provider } from 'react-redux';
-import configureMockStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
 import { createMemoryHistory } from 'history';
 import dayjs from 'dayjs';
 import PropTypes from 'prop-types';
+import { initializeMocks } from '../../../testUtils';
 
 import SubscriptionData from '../SubscriptionData';
 import { ASSIGNED } from '../data/constants';
@@ -115,13 +114,11 @@ export const DEFAULT_STORE_STATE = {
 };
 
 export const createMockStore = (state) => {
-  const mockStore = configureMockStore([thunk]);
-
-  return mockStore({
+  return initializeMocks({
     ...DEFAULT_STORE_STATE,
     // override any previously set fields with ``state`` argument
     ...state,
-  });
+  }).reduxStore;
 };
 
 const initialHistory = createMemoryHistory({

@@ -1,15 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Provider } from 'react-redux';
-import thunk from 'redux-thunk';
 import {
   screen,
   render,
 } from '@testing-library/react';
-import configureMockStore from 'redux-mock-store';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 
 import SubscriptionRoutes from '../SubscriptionRoutes';
+import { initializeMocks } from '../../../testUtils';
 
 const SUBSCRIPTION_TABS_MOCK_CONTENT = 'subcription tabs';
 const SUBSCRIPTION_PLAN_ROUTES_MOCK_CONTENT = 'subscription plan routes';
@@ -46,9 +45,8 @@ const initialStore = {
   },
 };
 
-const mockStore = configureMockStore([thunk]);
-const getMockStore = store => mockStore(store);
-const store = getMockStore({ ...initialStore });
+const getStore = storeState => initializeMocks(storeState).reduxStore;
+const store = getStore({ ...initialStore });
 
 const SubscriptionRoutesWithRouter = ({
   store: storeProp,
@@ -78,7 +76,7 @@ SubscriptionRoutesWithRouter.defaultProps = {
 
 describe('<SubscriptionRoutes />', () => {
   it('redirects to default tab', () => {
-    const newStore = getMockStore({
+    const newStore = getStore({
       ...initialStore,
       portalConfiguration: {
         ...initialStore.portalConfiguration,

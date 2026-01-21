@@ -1,6 +1,5 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import {
   Routes,
   Route,
@@ -14,26 +13,21 @@ import {
 } from './data/constants';
 import NotFoundPage from '../NotFoundPage';
 
-const SubscriptionRoutes = ({ enterpriseSlug }) => (
-  <Routes>
-    <Route
-      path="/"
-      element={<Navigate to={`/${enterpriseSlug}/admin/subscriptions/${DEFAULT_TAB}`} />}
-    />
-    <Route
-      path={`/:${SUBSCRIPTIONS_TAB_PARAM}?/*`}
-      element={<SubscriptionTabs />}
-    />
-    <Route path="*" element={<NotFoundPage />} />
-  </Routes>
-);
-
-SubscriptionRoutes.propTypes = {
-  enterpriseSlug: PropTypes.string.isRequired,
+const SubscriptionRoutes = () => {
+  const enterpriseSlug = useSelector(state => state.portalConfiguration.enterpriseSlug);
+  return (
+    <Routes>
+      <Route
+        path="/"
+        element={<Navigate to={`/${enterpriseSlug}/admin/subscriptions/${DEFAULT_TAB}`} />}
+      />
+      <Route
+        path={`/:${SUBSCRIPTIONS_TAB_PARAM}?/*`}
+        element={<SubscriptionTabs />}
+      />
+      <Route path="*" element={<NotFoundPage />} />
+    </Routes>
+  );
 };
 
-const mapStateToProps = state => ({
-  enterpriseSlug: state.portalConfiguration.enterpriseSlug,
-});
-
-export default connect(mapStateToProps)(SubscriptionRoutes);
+export default SubscriptionRoutes;

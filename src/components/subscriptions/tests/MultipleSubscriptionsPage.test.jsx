@@ -5,8 +5,6 @@ import {
 } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import { Provider } from 'react-redux';
-import configureMockStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 
 import {
@@ -15,6 +13,7 @@ import {
 import { SubscriptionContext } from '../SubscriptionData';
 import { ROUTE_NAMES } from '../../EnterpriseApp/data/constants';
 import MultipleSubscriptionsPage from '../MultipleSubscriptionsPage';
+import { initializeMocks } from '../../../testUtils';
 
 jest.mock('react-router-dom', () => {
   const mockNavigation = jest.fn();
@@ -80,10 +79,8 @@ const defaultSubscriptions = {
   errors: null,
 };
 
-const mockStore = configureMockStore([thunk]);
-
 const MultipleSubscriptionsPageWrapper = ({ subscriptions = defaultSubscriptions, ...props }) => (
-  <Provider store={mockStore(fakeStore)}>
+  <Provider store={initializeMocks(fakeStore).reduxStore}>
     <IntlProvider locale="en">
       <SubscriptionContext.Provider value={subscriptions}>
         <MemoryRouter initialEntries={[`/${fakeSlug}/admin/${ROUTE_NAMES.subscriptionManagement}`]}>

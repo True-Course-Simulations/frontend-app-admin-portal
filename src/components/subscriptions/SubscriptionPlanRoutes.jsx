@@ -1,15 +1,15 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
 import { Route, Routes } from 'react-router-dom';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 import MultipleSubscriptionsPage from './MultipleSubscriptionsPage';
 import ConnectedSubscriptionDetailPage from './SubscriptionDetailPage';
 import { ROUTE_NAMES } from '../EnterpriseApp/data/constants';
 import { MANAGE_LEARNERS_TAB } from './data/constants';
 
-const SubscriptionPlanRoutes = ({ enterpriseSlug }) => {
+const SubscriptionPlanRoutes = () => {
+  const enterpriseSlug = useSelector(state => state.portalConfiguration.enterpriseSlug);
   const multipleSubsCreateActions = (subscription) => {
     const now = dayjs();
     const isScheduled = now.isBefore(subscription.startDate);
@@ -52,12 +52,4 @@ const SubscriptionPlanRoutes = ({ enterpriseSlug }) => {
   );
 };
 
-SubscriptionPlanRoutes.propTypes = {
-  enterpriseSlug: PropTypes.string.isRequired,
-};
-
-const mapStateToProps = state => ({
-  enterpriseSlug: state.portalConfiguration.enterpriseSlug,
-});
-
-export default connect(mapStateToProps)(SubscriptionPlanRoutes);
+export default SubscriptionPlanRoutes;
