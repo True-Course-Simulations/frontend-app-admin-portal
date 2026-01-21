@@ -1,12 +1,11 @@
 import {
   useCallback, useContext, useEffect, useMemo,
 } from 'react';
-import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
 import {
   CheckboxControl, DataTable, DataTableContext, Icon, TextFilter,
 } from '@openedx/paragon';
 import { Check } from '@openedx/paragon/icons';
+import { useSelector } from 'react-redux';
 
 import {
   GROUP_MEMBERS_TABLE_PAGE_SIZE, GROUP_MEMBERS_TABLE_DEFAULT_PAGE,
@@ -108,8 +107,8 @@ CustomSelectColumnCell.propTypes = {
 };
 
 const EnterpriseCustomerUserDataTable = ({
-  enterpriseId,
 }) => {
+  const enterpriseId = useSelector(state => state.portalConfiguration.enterpriseId);
   const enterpriseMembersTableDataContext = useEnterpriseMembersTableData({ enterpriseId });
   const {
     isLoading,
@@ -174,12 +173,4 @@ const EnterpriseCustomerUserDataTable = ({
   );
 };
 
-EnterpriseCustomerUserDataTable.propTypes = {
-  enterpriseId: PropTypes.string.isRequired,
-};
-
-const mapStateToProps = state => ({
-  enterpriseId: state.portalConfiguration.enterpriseId,
-});
-
-export default connect(mapStateToProps)(EnterpriseCustomerUserDataTable);
+export default EnterpriseCustomerUserDataTable;

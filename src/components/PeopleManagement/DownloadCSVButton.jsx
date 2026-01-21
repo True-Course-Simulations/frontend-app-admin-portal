@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useIntl } from '@edx/frontend-platform/i18n';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { sendEnterpriseTrackEvent } from '@edx/frontend-enterprise-utils';
 
 import {
@@ -20,11 +20,11 @@ const dataEntryToRow = (entry) => {
 };
 
 const DownloadCsvButton = ({
-  enterpriseUUID,
   testId,
   fetchData,
   totalCt,
 }) => {
+  const enterpriseUUID = useSelector(state => state.portalConfiguration.enterpriseId);
   const [buttonState, setButtonState] = useState('pageLoading');
   const [isToastOpen, openToast, closeToast] = useToggle(false);
   const intl = useIntl();
@@ -124,11 +124,6 @@ DownloadCsvButton.propTypes = {
   fetchData: PropTypes.func.isRequired,
   totalCt: PropTypes.number,
   testId: PropTypes.string,
-  enterpriseUUID: PropTypes.string,
 };
 
-const mapStateToProps = state => ({
-  enterpriseUUID: state.portalConfiguration.enterpriseId,
-});
-
-export default connect(mapStateToProps)(DownloadCsvButton);
+export default DownloadCsvButton;

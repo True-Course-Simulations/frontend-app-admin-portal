@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { logError } from '@edx/frontend-platform/logging';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useQueryClient } from '@tanstack/react-query';
 import { useIntl } from '@edx/frontend-platform/i18n';
 import { snakeCaseObject } from '@edx/frontend-platform/utils';
@@ -22,16 +22,15 @@ import { checkForInviteErrors, GroupErrorType } from './utils';
 export type CreateGroupModalProps = {
   isModalOpen: boolean,
   closeModal: () => void,
-  enterpriseUUID: string,
   onInviteError: (errorType: GroupErrorType) => void
 };
 
 const CreateGroupModal = ({
   isModalOpen,
   closeModal,
-  enterpriseUUID,
   onInviteError,
 }: CreateGroupModalProps) => {
+  const enterpriseUUID = useSelector(state => state.portalConfiguration.enterpriseId);
   const intl = useIntl();
   const {
     validatedEmails: learnerEmails,
@@ -174,14 +173,9 @@ const CreateGroupModal = ({
   );
 };
 
-const mapStateToProps = state => ({
-  enterpriseUUID: state.portalConfiguration.enterpriseId,
-});
-
 CreateGroupModal.propTypes = {
-  enterpriseUUID: PropTypes.string.isRequired,
   isModalOpen: PropTypes.bool.isRequired,
   closeModal: PropTypes.func.isRequired,
 };
 
-export default connect(mapStateToProps)(CreateGroupModal);
+export default CreateGroupModal;

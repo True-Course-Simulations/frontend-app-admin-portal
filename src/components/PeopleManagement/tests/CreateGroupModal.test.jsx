@@ -3,8 +3,6 @@ import {
   fireEvent, render, screen, waitFor,
 } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import thunk from 'redux-thunk';
-import configureMockStore from 'redux-mock-store';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom/extend-expect';
 import { sendEnterpriseTrackEvent } from '@edx/frontend-enterprise-utils';
@@ -19,6 +17,7 @@ import { useEnterpriseMembersTableData } from '../data/hooks';
 import EVENT_NAMES from '../../../eventTracking';
 import ValidatedEmailsContextProvider from '../data/ValidatedEmailsContextProvider';
 import { ERROR_LEARNER_NOT_IN_ORG } from '../constants';
+import { initializeMocks } from '../../../testUtils';
 
 jest.mock('../data/hooks', () => ({
   ...jest.requireActual('../data/hooks'),
@@ -45,8 +44,6 @@ jest.mock('@edx/frontend-enterprise-utils', () => {
   });
 });
 
-const mockStore = configureMockStore([thunk]);
-const getMockStore = store => mockStore(store);
 const enterpriseSlug = 'test-enterprise';
 const enterpriseUUID = '1234';
 const initialStoreState = {
@@ -61,7 +58,6 @@ const defaultProps = {
   isModalOpen: true,
   closeModal: jest.fn(),
   onInviteError: jest.fn(),
-  enterpriseUUID: 'test-uuid',
 };
 
 const mockTabledata = {
@@ -104,7 +100,7 @@ const mockTabledata = {
 };
 
 const CreateGroupModalWrapper = (isCreateGroupListSelection = false, isCreateGroupFileUploaded = false) => {
-  const store = getMockStore({ ...initialStoreState });
+  const { reduxStore } = initializeMocks({ ...initialStoreState });
   const initialContextOverride = {
     groupEnterpriseLearners: mockTabledata.results.map((user) => user.email),
     isCreateGroupListSelection,
@@ -112,7 +108,7 @@ const CreateGroupModalWrapper = (isCreateGroupListSelection = false, isCreateGro
   };
   return (
     <IntlProvider locale="en">
-      <Provider store={store}>
+      <Provider store={reduxStore}>
         <QueryClientProvider client={queryClient()}>
           <ValidatedEmailsContextProvider initialContextOverride={initialContextOverride}>
             <CreateGroupModal {...defaultProps} />

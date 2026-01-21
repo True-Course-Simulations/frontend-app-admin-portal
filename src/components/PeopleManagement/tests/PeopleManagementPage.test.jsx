@@ -4,8 +4,6 @@ import {
 } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import { BrowserRouter } from 'react-router-dom';
-import thunk from 'redux-thunk';
-import configureMockStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 import { sendEnterpriseTrackEvent } from '@edx/frontend-enterprise-utils';
@@ -15,9 +13,8 @@ import { useAllFlexEnterpriseGroups } from '../../learner-credit-management/data
 import { EnterpriseSubsidiesContext } from '../../EnterpriseSubsidiesContext';
 import PeopleManagementPage from '..';
 import EVENT_NAMES from '../../../eventTracking';
+import { initializeMocks } from '../../../testUtils';
 
-const mockStore = configureMockStore([thunk]);
-const getMockStore = (store) => mockStore(store);
 const enterpriseSlug = 'test-enterprise';
 const enterpriseUUID = '1234';
 const initialStoreState = {
@@ -92,11 +89,11 @@ const PeopleManagementPageWrapper = ({
   initialState = initialStoreState,
   enterpriseSubsidiesContextValue = defaultEnterpriseSubsidiesContextValue,
 }) => {
-  const store = getMockStore(initialState);
+  const { reduxStore } = initializeMocks(initialState);
   return (
     <BrowserRouter>
       <IntlProvider locale="en">
-        <Provider store={store}>
+        <Provider store={reduxStore}>
           <EnterpriseSubsidiesContext.Provider value={enterpriseSubsidiesContextValue}>
             <PeopleManagementPage />
           </EnterpriseSubsidiesContext.Provider>
@@ -128,10 +125,10 @@ describe('<PeopleManagementPage >', () => {
   });
   it('renders the PeopleManagementPage zero state without LC', () => {
     useAllFlexEnterpriseGroups.mockReturnValue({ data: { results: [] } });
-    const store = getMockStore(initialStoreState);
+    const { reduxStore } = initializeMocks(initialStoreState);
     render(
       <IntlProvider locale="en">
-        <Provider store={store}>
+        <Provider store={reduxStore}>
           <EnterpriseSubsidiesContext.Provider value={subsEnterpriseSubsidiesContextValue}>
             <PeopleManagementPage />
           </EnterpriseSubsidiesContext.Provider>
@@ -146,11 +143,11 @@ describe('<PeopleManagementPage >', () => {
   });
   it('renders the PeopleManagementPage group card grid', () => {
     useAllFlexEnterpriseGroups.mockReturnValue({ data: mockGroupsResponse });
-    const store = getMockStore(initialStoreState);
+    const { reduxStore } = initializeMocks(initialStoreState);
     render(
       <BrowserRouter>
         <IntlProvider locale="en">
-          <Provider store={store}>
+          <Provider store={reduxStore}>
             <EnterpriseSubsidiesContext.Provider value={subsEnterpriseSubsidiesContextValue}>
               <PeopleManagementPage />
             </EnterpriseSubsidiesContext.Provider>
@@ -164,11 +161,11 @@ describe('<PeopleManagementPage >', () => {
   it('renders the PeopleManagementPage group card grid with collapsible', async () => {
     const user = userEvent.setup();
     useAllFlexEnterpriseGroups.mockReturnValue({ data: mockMultipleGroupsResponse });
-    const store = getMockStore(initialStoreState);
+    const { reduxStore } = initializeMocks(initialStoreState);
     render(
       <BrowserRouter>
         <IntlProvider locale="en">
-          <Provider store={store}>
+          <Provider store={reduxStore}>
             <EnterpriseSubsidiesContext.Provider value={subsEnterpriseSubsidiesContextValue}>
               <PeopleManagementPage />
             </EnterpriseSubsidiesContext.Provider>

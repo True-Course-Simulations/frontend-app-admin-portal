@@ -1,13 +1,12 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
 import { useIntl, FormattedMessage } from '@edx/frontend-platform/i18n';
 import {
   ActionRow, Button, Skeleton, Toast, useToggle,
 } from '@openedx/paragon';
 import { Add } from '@openedx/paragon/icons';
 import { sendEnterpriseTrackEvent } from '@edx/frontend-enterprise-utils';
+import { useSelector } from 'react-redux';
 
 import Hero from '../Hero';
 import { SUBSIDY_TYPES } from '../../data/constants/subsidyTypes';
@@ -22,7 +21,8 @@ import ValidatedEmailsContextProvider from './data/ValidatedEmailsContextProvide
 import GroupInviteErrorToast from './GroupInviteErrorToast';
 import { ORGANIZE_LEARNER_TARGETS } from '../ProductTours/AdminOnboardingTours/constants';
 
-const PeopleManagementPage = ({ enterpriseId }) => {
+const PeopleManagementPage = () => {
+  const enterpriseId = useSelector(state => state.portalConfiguration.enterpriseId);
   const intl = useIntl();
   const PAGE_TITLE = intl.formatMessage({
     id: 'admin.portal.people.management.page',
@@ -179,12 +179,4 @@ const PeopleManagementPage = ({ enterpriseId }) => {
   );
 };
 
-const mapStateToProps = (state) => ({
-  enterpriseId: state.portalConfiguration.enterpriseId,
-});
-
-PeopleManagementPage.propTypes = {
-  enterpriseId: PropTypes.string.isRequired,
-};
-
-export default connect(mapStateToProps)(PeopleManagementPage);
+export default PeopleManagementPage;
