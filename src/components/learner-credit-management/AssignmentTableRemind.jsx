@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Button } from '@openedx/paragon';
 import { Mail } from '@openedx/paragon/icons';
 import { sendEnterpriseTrackEvent } from '@edx/frontend-enterprise-utils';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { FormattedMessage } from '@edx/frontend-platform/i18n';
 import useRemindContentAssignments from './data/hooks/useRemindContentAssignments';
 import RemindAssignmentModal from './RemindAssignmentModal';
@@ -23,8 +23,9 @@ const calculateTotalToRemind = ({
 };
 
 const AssignmentTableRemindAction = ({
-  selectedFlatRows, isEntireTableSelected, learnerStateCounts, tableInstance, enterpriseId,
+  selectedFlatRows, isEntireTableSelected, learnerStateCounts, tableInstance,
 }) => {
+  const enterpriseId = useSelector(state => state.portalConfiguration.enterpriseId);
   const { subsidyAccessPolicyId } = useBudgetId();
   const { data: subsidyAccessPolicy } = useSubsidyAccessPolicy(subsidyAccessPolicyId);
   const {
@@ -150,7 +151,6 @@ const AssignmentTableRemindAction = ({
 
 AssignmentTableRemindAction.propTypes = {
   selectedFlatRows: PropTypes.arrayOf(PropTypes.shape()).isRequired,
-  enterpriseId: PropTypes.string.isRequired,
   isEntireTableSelected: PropTypes.bool.isRequired,
   learnerStateCounts: PropTypes.arrayOf(PropTypes.shape({
     learnerState: PropTypes.string.isRequired,
@@ -165,8 +165,4 @@ AssignmentTableRemindAction.propTypes = {
   }).isRequired,
 };
 
-const mapStateToProps = state => ({
-  enterpriseId: state.portalConfiguration.enterpriseId,
-});
-
-export default connect(mapStateToProps)(AssignmentTableRemindAction);
+export default AssignmentTableRemindAction;

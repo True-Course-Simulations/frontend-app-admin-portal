@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { isEmpty } from 'lodash-es';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Skeleton, Stack } from '@openedx/paragon';
 
 import BudgetDetailAssignments from './BudgetDetailAssignments';
@@ -13,7 +13,8 @@ import NoAssignableBudgetActivity from './empty-state/NoAssignableBudgetActivity
 import NoBnEBudgetActivity from './empty-state/NoBnEBudgetActivity';
 import NoBnRBudgetActivity from './empty-state/NoBnRBudgetActivity';
 
-const BudgetDetailActivityTabContents = ({ enterpriseUUID, appliesToAllContexts }) => {
+const BudgetDetailActivityTabContents = ({ appliesToAllContexts }) => {
+  const enterpriseUUID = useSelector(state => state.portalConfiguration.enterpriseId);
   const { enterpriseOfferId, subsidyAccessPolicyId } = useBudgetId();
   const { data: subsidyAccessPolicy } = useSubsidyAccessPolicy(subsidyAccessPolicyId);
   const isEnterpriseGroupsEnabled = !isEmpty(subsidyAccessPolicy?.groupAssociations);
@@ -114,16 +115,8 @@ const BudgetDetailActivityTabContents = ({ enterpriseUUID, appliesToAllContexts 
   );
 };
 
-const mapStateToProps = state => ({
-  enterpriseUUID: state.portalConfiguration.enterpriseId,
-  enterpriseFeatures: state.portalConfiguration.enterpriseFeatures,
-});
-
 BudgetDetailActivityTabContents.propTypes = {
-  enterpriseUUID: PropTypes.string.isRequired,
-  enterpriseFeatures: PropTypes.shape({
-  }).isRequired,
   appliesToAllContexts: PropTypes.bool.isRequired,
 };
 
-export default connect(mapStateToProps)(BudgetDetailActivityTabContents);
+export default BudgetDetailActivityTabContents;

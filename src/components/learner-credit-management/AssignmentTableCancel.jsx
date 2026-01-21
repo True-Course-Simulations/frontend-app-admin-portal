@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Button } from '@openedx/paragon';
 import { DoNotDisturbOn } from '@openedx/paragon/icons';
 import { sendEnterpriseTrackEvent } from '@edx/frontend-enterprise-utils';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { FormattedMessage } from '@edx/frontend-platform/i18n';
 import CancelAssignmentModal from './CancelAssignmentModal';
 import useCancelContentAssignments from './data/hooks/useCancelContentAssignments';
@@ -22,8 +22,9 @@ const calculateTotalToCancel = ({
 };
 
 const AssignmentTableCancelAction = ({
-  selectedFlatRows, isEntireTableSelected, learnerStateCounts, tableInstance, enterpriseId,
+  selectedFlatRows, isEntireTableSelected, learnerStateCounts, tableInstance,
 }) => {
+  const enterpriseId = useSelector(state => state.portalConfiguration.enterpriseId);
   const { subsidyAccessPolicyId } = useBudgetId();
   const { data: subsidyAccessPolicy } = useSubsidyAccessPolicy(subsidyAccessPolicyId);
   const {
@@ -143,7 +144,6 @@ const AssignmentTableCancelAction = ({
 };
 
 AssignmentTableCancelAction.propTypes = {
-  enterpriseId: PropTypes.string.isRequired,
   selectedFlatRows: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   isEntireTableSelected: PropTypes.bool.isRequired,
   learnerStateCounts: PropTypes.arrayOf(PropTypes.shape({
@@ -159,8 +159,4 @@ AssignmentTableCancelAction.propTypes = {
   }).isRequired,
 };
 
-const mapStateToProps = state => ({
-  enterpriseId: state.portalConfiguration.enterpriseId,
-});
-
-export default connect(mapStateToProps)(AssignmentTableCancelAction);
+export default AssignmentTableCancelAction;

@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Hyperlink } from '@openedx/paragon';
 import { getConfig } from '@edx/frontend-platform/config';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -59,7 +58,8 @@ const BudgetDetailApprovedRequestHeader = () => {
   );
 };
 
-const BudgetDetailApprovedRequest = ({ enterpriseId }) => {
+const BudgetDetailApprovedRequest = () => {
+  const enterpriseId = useSelector(state => state.portalConfiguration.enterpriseId);
   const { isLoading, bnrRequests, fetchApprovedRequests } = useBnrSubsidyRequests({ enterpriseId });
 
   const approvedRequests = {
@@ -81,12 +81,4 @@ const BudgetDetailApprovedRequest = ({ enterpriseId }) => {
   );
 };
 
-BudgetDetailApprovedRequest.propTypes = {
-  enterpriseId: PropTypes.string.isRequired,
-};
-
-const mapStateToProps = (state) => ({
-  enterpriseId: state.portalConfiguration.enterpriseId,
-});
-
-export default connect(mapStateToProps)(BudgetDetailApprovedRequest);
+export default BudgetDetailApprovedRequest;

@@ -2,12 +2,13 @@ import React from 'react';
 import { Button } from '@openedx/paragon';
 import PropTypes from 'prop-types';
 import { sendEnterpriseTrackEvent } from '@edx/frontend-enterprise-utils';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { FormattedMessage } from '@edx/frontend-platform/i18n';
 import EVENT_NAMES from '../../eventTracking';
 import { applyFiltersToOptions, applySortByToOptions } from './data/hooks/useBudgetContentAssignments';
 
-const AssignmentsTableRefreshAction = ({ enterpriseId, tableInstance, refresh }) => {
+const AssignmentsTableRefreshAction = ({ tableInstance, refresh }) => {
+  const enterpriseId = useSelector(state => state.portalConfiguration.enterpriseId);
   const handleRefresh = () => {
     const { state: dataTableState } = tableInstance;
     refresh(dataTableState);
@@ -50,14 +51,10 @@ const AssignmentsTableRefreshAction = ({ enterpriseId, tableInstance, refresh })
 };
 
 AssignmentsTableRefreshAction.propTypes = {
-  enterpriseId: PropTypes.string.isRequired,
   refresh: PropTypes.func.isRequired,
   tableInstance: PropTypes.shape({
     state: PropTypes.shape(),
   }),
 };
 
-const mapStateToProps = (state) => ({
-  enterpriseId: state.portalConfiguration.enterpriseId,
-});
-export default connect(mapStateToProps)(AssignmentsTableRefreshAction);
+export default AssignmentsTableRefreshAction;

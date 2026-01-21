@@ -1,7 +1,7 @@
 import { Chip } from '@openedx/paragon';
 import PropTypes from 'prop-types';
 import { sendEnterpriseTrackEvent } from '@edx/frontend-enterprise-utils';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import FailedBadEmail from './assignments-status-chips/FailedBadEmail';
 import FailedCancellation from './assignments-status-chips/FailedCancellation';
 import FailedRedemption from './assignments-status-chips/FailedRedemption';
@@ -16,7 +16,8 @@ import {
 } from './data';
 import IncompleteAssignment from './assignments-status-chips/IncompleteAssignment';
 
-const AssignmentStatusTableCell = ({ enterpriseId, row }) => {
+const AssignmentStatusTableCell = ({ row }) => {
+  const enterpriseId = useSelector(state => state.portalConfiguration.enterpriseId);
   const { original } = row;
   const {
     learnerEmail,
@@ -125,7 +126,6 @@ const AssignmentStatusTableCell = ({ enterpriseId, row }) => {
 };
 
 AssignmentStatusTableCell.propTypes = {
-  enterpriseId: PropTypes.string.isRequired,
   row: PropTypes.shape({
     original: PropTypes.shape({
       learnerEmail: PropTypes.string,
@@ -142,8 +142,4 @@ AssignmentStatusTableCell.propTypes = {
   }).isRequired,
 };
 
-const mapStateToProps = state => ({
-  enterpriseId: state.portalConfiguration.enterpriseId,
-});
-
-export default connect(mapStateToProps)(AssignmentStatusTableCell);
+export default AssignmentStatusTableCell;
