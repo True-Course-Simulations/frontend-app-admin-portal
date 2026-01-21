@@ -6,14 +6,15 @@ import {
 
 import { FormattedMessage } from '@edx/frontend-platform/i18n';
 import { DoNotDisturbOn } from '@openedx/paragon/icons';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { sendEnterpriseTrackEvent } from '@edx/frontend-enterprise-utils';
 import useCancelApprovedRequest from './data/hooks/useCancelApprovedRequest';
 import CancelApprovedRequestModal from './CancelApprovedRequestModal';
 import EVENT_NAMES from '../../eventTracking';
 import { useBudgetId, useSubsidyAccessPolicy } from './data';
 
-const ApprovedRequestTableCancel = ({ row, enterpriseId }) => {
+const ApprovedRequestTableCancel = ({ row }) => {
+  const enterpriseId = useSelector(state => state.portalConfiguration.enterpriseId);
   const { subsidyAccessPolicyId } = useBudgetId();
   const { data: subsidyAccessPolicy } = useSubsidyAccessPolicy(subsidyAccessPolicyId);
   const {
@@ -128,11 +129,6 @@ ApprovedRequestTableCancel.propTypes = {
       courseListPrice: PropTypes.string,
     }).isRequired,
   }).isRequired,
-  enterpriseId: PropTypes.string.isRequired,
 };
 
-const mapStateToProps = state => ({
-  enterpriseId: state.portalConfiguration.enterpriseId,
-});
-
-export default connect(mapStateToProps)(ApprovedRequestTableCancel);
+export default ApprovedRequestTableCancel;

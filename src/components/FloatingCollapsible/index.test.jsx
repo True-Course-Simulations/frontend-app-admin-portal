@@ -2,8 +2,6 @@ import React from 'react';
 import {
   render, screen, fireEvent, waitFor,
 } from '@testing-library/react';
-import { Provider } from 'react-redux';
-import configureStore from 'redux-mock-store';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 import FloatingCollapsible from './index';
 
@@ -31,20 +29,7 @@ jest.mock('@openedx/paragon/icons', () => ({
   KeyboardArrowDown: () => <div data-testid="keyboard-arrow-down-icon" />,
 }));
 
-const mockStore = configureStore([]);
-const defaultState = {
-  portalConfiguration: {
-    enterpriseBranding: {},
-  },
-  enterpriseCustomerAdmin: {
-    onboardingTourDismissed: false,
-    uuid: 'test-uuid',
-  },
-};
-
 const setup = (props = {}) => {
-  const store = mockStore(defaultState);
-
   const defaultProps = {
     title: 'Test Title',
     children: <div>Test Content</div>,
@@ -54,13 +39,10 @@ const setup = (props = {}) => {
   const mergedProps = { ...defaultProps, ...props };
 
   return {
-    store,
     props: mergedProps,
     ...render(
       <IntlProvider locale="en" messages={{}}>
-        <Provider store={store}>
-          <FloatingCollapsible {...mergedProps} />
-        </Provider>
+        <FloatingCollapsible {...mergedProps} />
       </IntlProvider>,
     ),
   };

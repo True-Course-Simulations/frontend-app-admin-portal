@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Hyperlink, Stack } from '@openedx/paragon';
 import { sendEnterpriseTrackEvent } from '@edx/frontend-enterprise-utils';
 
@@ -8,7 +8,9 @@ import { configuration } from '../../config';
 import EmailAddressTableCell from './EmailAddressTableCell';
 import EVENT_NAMES from '../../eventTracking';
 
-const AssignmentDetailsTableCell = ({ row, enterpriseSlug, enterpriseId }) => {
+const AssignmentDetailsTableCell = ({ row }) => {
+  const enterpriseId = useSelector(state => state.portalConfiguration.enterpriseId);
+  const enterpriseSlug = useSelector(state => state.portalConfiguration.enterpriseSlug);
   const { ENTERPRISE_LEARNER_PORTAL_URL } = configuration;
   const handleOnViewCourseClick = () => sendEnterpriseTrackEvent(
     enterpriseId,
@@ -44,11 +46,6 @@ const AssignmentDetailsTableCell = ({ row, enterpriseSlug, enterpriseId }) => {
   );
 };
 
-const mapStateToProps = state => ({
-  enterpriseId: state.portalConfiguration.enterpriseId,
-  enterpriseSlug: state.portalConfiguration.enterpriseSlug,
-});
-
 AssignmentDetailsTableCell.propTypes = {
   row: PropTypes.shape({
     original: PropTypes.shape({
@@ -67,8 +64,6 @@ AssignmentDetailsTableCell.propTypes = {
       isAssignedCourseRun: PropTypes.bool,
     }).isRequired,
   }).isRequired,
-  enterpriseSlug: PropTypes.string,
-  enterpriseId: PropTypes.string.isRequired,
 };
 
-export default connect(mapStateToProps)(AssignmentDetailsTableCell);
+export default AssignmentDetailsTableCell;

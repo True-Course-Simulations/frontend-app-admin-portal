@@ -6,14 +6,15 @@ import {
 
 import { FormattedMessage } from '@edx/frontend-platform/i18n';
 import { Mail } from '@openedx/paragon/icons';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { sendEnterpriseTrackEvent } from '@edx/frontend-enterprise-utils';
 import useRemindApprovedRequest from './data/hooks/useRemindApprovedRequest';
 import RemindApprovedRequestModal from './RemindApprovedRequestModal';
 import EVENT_NAMES from '../../eventTracking';
 import { useBudgetId, useSubsidyAccessPolicy } from './data';
 
-const ApprovedRequestTableRemind = ({ row, enterpriseId }) => {
+const ApprovedRequestTableRemind = ({ row }) => {
+  const enterpriseId = useSelector(state => state.portalConfiguration.enterpriseId);
   const { subsidyAccessPolicyId } = useBudgetId();
   const { data: subsidyAccessPolicy } = useSubsidyAccessPolicy(subsidyAccessPolicyId);
   const {
@@ -128,11 +129,6 @@ ApprovedRequestTableRemind.propTypes = {
       courseListPrice: PropTypes.string,
     }).isRequired,
   }).isRequired,
-  enterpriseId: PropTypes.string.isRequired,
 };
 
-const mapStateToProps = state => ({
-  enterpriseId: state.portalConfiguration.enterpriseId,
-});
-
-export default connect(mapStateToProps)(ApprovedRequestTableRemind);
+export default ApprovedRequestTableRemind;

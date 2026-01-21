@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import { Add } from '@openedx/paragon/icons';
 import { FormattedMessage } from '@edx/frontend-platform/i18n';
 import { sendEnterpriseTrackEvent } from '@edx/frontend-enterprise-utils';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import cardImage from '../data/images/ContentHighlightImage.svg';
 import ZeroStateCardImage from './ZeroStateCardImage';
 import ZeroStateCardText from './ZeroStateCardText';
@@ -16,7 +16,8 @@ import { BUTTON_TEXT } from '../data/constants';
 import { EnterpriseAppContext } from '../../EnterpriseApp/EnterpriseAppContextProvider';
 import EVENT_NAMES from '../../../eventTracking';
 
-const ZeroStateHighlights = ({ enterpriseId, cardClassName }) => {
+const ZeroStateHighlights = ({ cardClassName }) => {
+  const enterpriseId = useSelector(state => state.portalConfiguration.enterpriseId);
   const { openStepperModal } = useContentHighlightsContext();
   const {
     enterpriseCuration: {
@@ -80,8 +81,6 @@ const ZeroStateHighlights = ({ enterpriseId, cardClassName }) => {
 };
 
 ZeroStateHighlights.propTypes = {
-  enterpriseId: PropTypes.string.isRequired,
-
   cardClassName: PropTypes.string,
 };
 
@@ -89,8 +88,4 @@ ZeroStateHighlights.defaultProps = {
   cardClassName: undefined,
 };
 
-const mapStateToProps = state => ({
-  enterpriseId: state.portalConfiguration.enterpriseId,
-});
-
-export default connect(mapStateToProps)(ZeroStateHighlights);
+export default ZeroStateHighlights;

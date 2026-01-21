@@ -1,5 +1,4 @@
 import React, { FC, useState } from 'react';
-import { connect } from 'react-redux';
 import {
   Collapsible, Icon, ActionRow, Button,
 } from '@openedx/paragon';
@@ -72,8 +71,4 @@ const FloatingCollapsible: FC<Props> = ({
   );
 };
 
-const mapStateToProps = state => ({
-  enterpriseBranding: state.portalConfiguration.enterpriseBranding,
-});
-
-export default connect(mapStateToProps)(FloatingCollapsible);
+export default FloatingCollapsible;
