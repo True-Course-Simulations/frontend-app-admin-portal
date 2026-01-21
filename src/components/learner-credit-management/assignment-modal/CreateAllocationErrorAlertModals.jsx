@@ -2,18 +2,18 @@ import React, { useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useToggle } from '@openedx/paragon';
 import { sendEnterpriseTrackEvent } from '@edx/frontend-enterprise-utils';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import SystemErrorAlertModal from '../cards/assignment-allocation-status-modals/SystemErrorAlertModal';
 import ContentNotInCatalogErrorAlertModal from '../cards/assignment-allocation-status-modals/ContentNotInCatalogErrorAlertModal';
 import NotEnoughBalanceAlertModal from '../cards/assignment-allocation-status-modals/NotEnoughBalanceAlertModal';
 import EVENT_NAMES from '../../../eventTracking';
 
 const CreateAllocationErrorAlertModals = ({
-  enterpriseId,
   errorReason,
   retry,
   closeAssignmentModal,
 }) => {
+  const enterpriseId = useSelector(state => state.portalConfiguration.enterpriseId);
   const [isCatalogError, openCatalogErrorModal, closeCatalogErrorModal] = useToggle(false);
   const [isSystemError, openSystemErrorModal, closeSystemErrorModal] = useToggle(false);
   const [isBalanceError, openBalanceErrorModal, closeBalanceErrorModal] = useToggle(false);
@@ -89,14 +89,9 @@ const CreateAllocationErrorAlertModals = ({
 };
 
 CreateAllocationErrorAlertModals.propTypes = {
-  enterpriseId: PropTypes.string.isRequired,
   closeAssignmentModal: PropTypes.func.isRequired,
   retry: PropTypes.func.isRequired,
   errorReason: PropTypes.string,
 };
 
-const mapStateToProps = state => ({
-  enterpriseId: state.portalConfiguration.enterpriseId,
-});
-
-export default connect(mapStateToProps)(CreateAllocationErrorAlertModals);
+export default CreateAllocationErrorAlertModals;

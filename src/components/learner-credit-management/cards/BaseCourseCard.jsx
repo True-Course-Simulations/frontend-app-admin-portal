@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import {
   Badge, breakpoints, Card, Skeleton, Stack, useMediaQuery,
 } from '@openedx/paragon';
@@ -14,10 +14,10 @@ import { formatPrice } from '../data';
 const BaseCourseCard = ({
   original,
   footerActions: CardFooterActions,
-  enterpriseSlug,
   cardClassName,
   courseRun,
 }) => {
+  const enterpriseSlug = useSelector(state => state.portalConfiguration.enterpriseSlug);
   const isSmall = useMediaQuery({ maxWidth: breakpoints.small.maxWidth });
   const isExtraSmall = useMediaQuery({ maxWidth: breakpoints.extraSmall.maxWidth });
   const courseCardMetadata = useCourseCardMetadata({
@@ -105,12 +105,7 @@ const BaseCourseCard = ({
   );
 };
 
-const mapStateToProps = state => ({
-  enterpriseSlug: state.portalConfiguration.enterpriseSlug,
-});
-
 BaseCourseCard.propTypes = {
-  enterpriseSlug: PropTypes.string.isRequired,
   original: PropTypes.shape({
     availability: PropTypes.arrayOf(PropTypes.string),
     cardImageUrl: PropTypes.string,
@@ -138,4 +133,4 @@ BaseCourseCard.defaultProps = {
   courseRun: null,
 };
 
-export default connect(mapStateToProps)(BaseCourseCard);
+export default BaseCourseCard;

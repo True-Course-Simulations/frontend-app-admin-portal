@@ -1,12 +1,11 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import {
   Button, Card, Row, Col,
 } from '@openedx/paragon';
 import { sendEnterpriseTrackEvent } from '@edx/frontend-enterprise-utils';
 import { Link } from 'react-router-dom';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 import { useIsLargeOrGreater, usePathToCatalogTab } from '../data';
 import findTheRightCourse from '../assets/phoneScroll.svg';
@@ -27,7 +26,8 @@ const ConfirmSpendIllustration = (props) => (
   <img data-testid="confirm-spend-illustration" src={confirmSpend} alt="" {...props} />
 );
 
-const NoBudgetActivityEmptyState = ({ enterpriseId }) => {
+const NoBudgetActivityEmptyState = () => {
+  const enterpriseId = useSelector(state => state.portalConfiguration.enterpriseId);
   const pathToCatalogTab = usePathToCatalogTab();
   const isLargeOrGreater = useIsLargeOrGreater();
 
@@ -106,12 +106,4 @@ const NoBudgetActivityEmptyState = ({ enterpriseId }) => {
   );
 };
 
-NoBudgetActivityEmptyState.propTypes = {
-  enterpriseId: PropTypes.string.isRequired,
-};
-
-const mapStateToProps = state => ({
-  enterpriseId: state.portalConfiguration.enterpriseId,
-});
-
-export default connect(mapStateToProps)(NoBudgetActivityEmptyState);
+export default NoBudgetActivityEmptyState;

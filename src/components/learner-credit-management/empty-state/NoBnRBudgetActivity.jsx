@@ -1,11 +1,10 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import {
   Button, Card, Col, Row,
 } from '@openedx/paragon';
 import { Link } from 'react-router-dom';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { FormattedMessage, useIntl } from '@edx/frontend-platform/i18n';
 import {
   useIsLargeOrGreater,
@@ -51,7 +50,8 @@ const ApproveRequestIllustration = (props) => {
   );
 };
 
-const NoBnRBudgetActivity = ({ enterpriseSlug }) => {
+const NoBnRBudgetActivity = () => {
+  const enterpriseSlug = useSelector(state => state.portalConfiguration.enterpriseSlug);
   const isLargeOrGreater = useIsLargeOrGreater();
 
   return (
@@ -150,12 +150,4 @@ const NoBnRBudgetActivity = ({ enterpriseSlug }) => {
   );
 };
 
-NoBnRBudgetActivity.propTypes = {
-  enterpriseSlug: PropTypes.string.isRequired,
-};
-
-const mapStateToProps = state => ({
-  enterpriseSlug: state.portalConfiguration.enterpriseSlug,
-});
-
-export default connect(mapStateToProps)(NoBnRBudgetActivity);
+export default NoBnRBudgetActivity;

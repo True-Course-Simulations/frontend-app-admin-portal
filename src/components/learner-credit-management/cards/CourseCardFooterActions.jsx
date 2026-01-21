@@ -2,14 +2,15 @@ import { Button, Hyperlink } from '@openedx/paragon';
 import { sendEnterpriseTrackEvent } from '@edx/frontend-enterprise-utils';
 
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
 import React from 'react';
+import { useSelector } from 'react-redux';
 import { FormattedMessage } from '@edx/frontend-platform/i18n';
 import { useBudgetId, useSubsidyAccessPolicy, useEnterpriseGroup } from '../data';
 import NewAssignmentModalButton from '../assignment-modal/NewAssignmentModalButton';
 import EVENT_NAMES from '../../../eventTracking';
 
-const CourseCardFooterActions = ({ enterpriseId, course }) => {
+const CourseCardFooterActions = ({ course }) => {
+  const enterpriseId = useSelector(state => state.portalConfiguration.enterpriseId);
   const { subsidyAccessPolicyId } = useBudgetId();
   const {
     data: subsidyAccessPolicy,
@@ -56,12 +57,7 @@ const CourseCardFooterActions = ({ enterpriseId, course }) => {
 };
 
 CourseCardFooterActions.propTypes = {
-  enterpriseId: PropTypes.string.isRequired,
   course: PropTypes.shape().isRequired,
 };
 
-const mapStateToProps = state => ({
-  enterpriseId: state.portalConfiguration.enterpriseId,
-});
-
-export default connect(mapStateToProps)(CourseCardFooterActions);
+export default CourseCardFooterActions;

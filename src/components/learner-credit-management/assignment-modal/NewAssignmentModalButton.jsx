@@ -5,9 +5,8 @@ import {
   ActionRow, Button, FullscreenModal, Hyperlink, StatefulButton, useToggle,
 } from '@openedx/paragon';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import PropTypes from 'prop-types';
 import React, { useCallback, useContext, useState } from 'react';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { generatePath, useNavigate, useParams } from 'react-router-dom';
 import { AppContext } from '@edx/frontend-platform/react';
 import { FormattedMessage, useIntl } from '@edx/frontend-platform/i18n';
@@ -40,6 +39,8 @@ const useAllocateContentAssignments = () => useMutation({
 });
 
 const NewAssignmentModalButton = ({ enterpriseId, course, children }) => {
+  const selectedEnterpriseId = useSelector(state => state.portalConfiguration.enterpriseId);
+  const resolvedEnterpriseId = enterpriseId || selectedEnterpriseId;
   const intl = useIntl();
   const navigate = useNavigate();
   const { enterpriseSlug, enterpriseAppPage } = useParams();
@@ -52,7 +53,7 @@ const NewAssignmentModalButton = ({ enterpriseId, course, children }) => {
   const [assignButtonState, setAssignButtonState] = useState('default');
   const [createAssignmentsErrorReason, setCreateAssignmentsErrorReason] = useState();
   const [assignmentRun, setAssignmentRun] = useState();
-  const { data: enterpriseFlexGroups } = useEnterpriseFlexGroups(enterpriseId);
+  const { data: enterpriseFlexGroups } = useEnterpriseFlexGroups(resolvedEnterpriseId);
   const {
     successfulAssignmentToast: { displayToastForAssignmentAllocation },
   } = useContext(BudgetDetailPageContext);
@@ -111,12 +112,12 @@ const NewAssignmentModalButton = ({ enterpriseId, course, children }) => {
         selectedCourseRun: ${selectedCourseRun},
         parentContentKey: ${course.key},
         contentKey: ${selectedCourseRun.key},
-        enterpriseUuid: ${enterpriseId},
+        enterpriseUuid: ${resolvedEnterpriseId},
         policyUuid: ${subsidyAccessPolicyId}`);
     }
     open();
     sendEnterpriseTrackEvent(
-      enterpriseId,
+      resolvedEnterpriseId,
       EVENT_NAMES.LEARNER_CREDIT_MANAGEMENT.ASSIGN_COURSE,
       {
         ...sharedEnterpriseTrackEventMetadata,
@@ -164,13 +165,13 @@ const NewAssignmentModalButton = ({ enterpriseId, course, children }) => {
       response,
     };
     sendEnterpriseTrackEvent(
-      enterpriseId,
+      resolvedEnterpriseId,
       EVENT_NAMES.LEARNER_CREDIT_MANAGEMENT.ASSIGNMENT_ALLOCATION_LEARNER_ASSIGNMENT,
       trackEventMetadata,
     );
     if (hasSelectedBulkGroupAssign) {
       sendEnterpriseTrackEvent(
-        enterpriseId,
+        resolvedEnterpriseId,
         EVENT_NAMES.LEARNER_CREDIT_MANAGEMENT.BULK_GROUP_ASSIGNMENT,
         trackEventMetadata,
       );
@@ -198,7 +199,7 @@ const NewAssignmentModalButton = ({ enterpriseId, course, children }) => {
           queryKey: learnerCreditManagementQueryKeys.budget(subsidyAccessPolicyId),
         });
         queryClient.invalidateQueries({
-          queryKey: learnerCreditManagementQueryKeys.budgets(enterpriseId),
+          queryKey: learnerCreditManagementQueryKeys.budgets(resolvedEnterpriseId),
         });
         handleCloseAssignmentModal();
         const totalLearnersAllocated = res.created.length + res.updated.length;
@@ -231,7 +232,7 @@ const NewAssignmentModalButton = ({ enterpriseId, course, children }) => {
         }
         setAssignButtonState('error');
         sendEnterpriseTrackEvent(
-          enterpriseId,
+          resolvedEnterpriseId,
           EVENT_NAMES.LEARNER_CREDIT_MANAGEMENT.ASSIGNMENT_ALLOCATION_ERROR,
           {
             ...sharedEnterpriseTrackEventMetadata,
@@ -268,7 +269,7 @@ const NewAssignmentModalButton = ({ enterpriseId, course, children }) => {
         onClose={() => {
           handleCloseAssignmentModal();
           sendEnterpriseTrackEvent(
-            enterpriseId,
+            resolvedEnterpriseId,
             EVENT_NAMES.LEARNER_CREDIT_MANAGEMENT.ASSIGNMENT_MODAL_EXIT,
             {
               ...sharedEnterpriseTrackEventMetadata,
@@ -284,7 +285,7 @@ const NewAssignmentModalButton = ({ enterpriseId, course, children }) => {
               variant="tertiary"
               as={Hyperlink}
               onClick={() => sendEnterpriseTrackEvent(
-                enterpriseId,
+                resolvedEnterpriseId,
                 EVENT_NAMES.LEARNER_CREDIT_MANAGEMENT.ASSIGNMENT_MODAL_HELP_CENTER,
                 {
                   ...sharedEnterpriseTrackEventMetadata,
@@ -307,7 +308,7 @@ const NewAssignmentModalButton = ({ enterpriseId, course, children }) => {
               onClick={() => {
                 handleCloseAssignmentModal();
                 sendEnterpriseTrackEvent(
-                  enterpriseId,
+                  resolvedEnterpriseId,
                   EVENT_NAMES.LEARNER_CREDIT_MANAGEMENT.ASSIGNMENT_MODAL_CANCEL,
                   {
                     ...sharedEnterpriseTrackEventMetadata,
@@ -375,14 +376,4 @@ const NewAssignmentModalButton = ({ enterpriseId, course, children }) => {
   );
 };
 
-NewAssignmentModalButton.propTypes = {
-  enterpriseId: PropTypes.string.isRequired,
-  course: PropTypes.shape().isRequired, // Pass-thru prop to `BaseCourseCard`
-  children: PropTypes.node.isRequired, // Represents the button text
-};
-
-const mapStateToProps = state => ({
-  enterpriseId: state.portalConfiguration.enterpriseId,
-});
-
-export default connect(mapStateToProps)(NewAssignmentModalButton);
+export default NewAssignmentModalButton;
