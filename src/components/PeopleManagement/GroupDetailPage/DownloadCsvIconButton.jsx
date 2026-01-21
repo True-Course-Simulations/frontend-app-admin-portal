@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { defineMessages, useIntl } from '@edx/frontend-platform/i18n';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 import { sendEnterpriseTrackEvent } from '@edx/frontend-enterprise-utils';
 import {
@@ -16,13 +16,13 @@ import EVENT_NAMES from '../../../eventTracking';
 const csvHeaders = ['Name', 'Email', 'Recent action', 'Enrollments'];
 
 const DownloadCsvIconButton = ({
-  enterpriseUUID,
   fetchAllData,
   dataCount,
   testId,
   tableInstance: { state },
   groupName,
 }) => {
+  const enterpriseUUID = useSelector(state => state.portalConfiguration.enterpriseId);
   const [isToastOpen, openToast, closeToast] = useToggle(false);
   const [isErrorModalOpen, openErrorModal, closeErrorModal] = useToggle(false);
   const selectedRowsCount = Object.keys(state.selectedRowIds).length;
@@ -103,7 +103,6 @@ DownloadCsvIconButton.defaultProps = {
 };
 
 DownloadCsvIconButton.propTypes = {
-  enterpriseUUID: PropTypes.string,
   fetchAllData: PropTypes.func.isRequired,
   dataCount: PropTypes.number.isRequired,
   testId: PropTypes.string,
@@ -113,8 +112,4 @@ DownloadCsvIconButton.propTypes = {
   }),
 };
 
-const mapStateToProps = state => ({
-  enterpriseUUID: state.portalConfiguration.enterpriseId,
-});
-
-export default connect(mapStateToProps)(DownloadCsvIconButton);
+export default DownloadCsvIconButton;

@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
 import { useParams } from 'react-router';
+import { useSelector } from 'react-redux';
 import {
   Avatar, Card, Col, Hyperlink, Row,
 } from '@openedx/paragon';
@@ -9,6 +9,9 @@ import { ROUTE_NAMES } from '../EnterpriseApp/data/constants';
 import { ORGANIZE_LEARNER_TARGETS } from '../ProductTours/AdminOnboardingTours/constants';
 
 const OrgMemberCard = ({ original, learnerProfileViewEnabled }) => {
+  const selectedLearnerProfileViewEnabled = useSelector(
+    state => state.portalConfiguration.enterpriseFeatures?.adminPortalLearnerProfileViewEnabled,
+  );
   const { enterpriseSlug } = useParams();
   const { enterpriseCustomerUser, enrollments } = original;
   const {
@@ -41,7 +44,7 @@ const OrgMemberCard = ({ original, learnerProfileViewEnabled }) => {
               <h5 className="pt-2 text-uppercase">Enrollments</h5>
               {enrollments}
             </Col>
-            {learnerProfileViewEnabled && (
+            {(learnerProfileViewEnabled ?? selectedLearnerProfileViewEnabled) && (
               <Col>
                 <Hyperlink
                   id={ORGANIZE_LEARNER_TARGETS.MEMBER_VIEW_MORE}
@@ -72,8 +75,4 @@ OrgMemberCard.propTypes = {
   learnerProfileViewEnabled: PropTypes.bool,
 };
 
-const mapStateToProps = state => ({
-  learnerProfileViewEnabled: state.portalConfiguration.enterpriseFeatures?.adminPortalLearnerProfileViewEnabled,
-});
-
-export default connect(mapStateToProps)(OrgMemberCard);
+export default OrgMemberCard;

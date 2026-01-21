@@ -1,7 +1,6 @@
 import React from 'react';
 import { CardView, DataTable } from '@openedx/paragon';
-import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
+import { useSelector } from 'react-redux';
 
 import TableTextFilter from '../learner-credit-management/TableTextFilter';
 import CustomDataTableEmptyState from '../learner-credit-management/CustomDataTableEmptyState';
@@ -11,7 +10,8 @@ import DownloadCsvButton from './DownloadCSVButton';
 
 const FilterStatus = (rest) => <DataTable.FilterStatus showFilteredFields={false} {...rest} />;
 
-const PeopleManagementTable = ({ enterpriseId }) => {
+const PeopleManagementTable = () => {
+  const enterpriseId = useSelector(state => state.portalConfiguration.enterpriseId);
   const {
     isLoading: isTableLoading,
     enterpriseMembersTableData,
@@ -65,12 +65,4 @@ const PeopleManagementTable = ({ enterpriseId }) => {
   );
 };
 
-PeopleManagementTable.propTypes = {
-  enterpriseId: PropTypes.string.isRequired,
-};
-
-const mapStateToProps = state => ({
-  enterpriseId: state.portalConfiguration.enterpriseId,
-});
-
-export default connect(mapStateToProps)(PeopleManagementTable);
+export default PeopleManagementTable;

@@ -4,8 +4,6 @@ import { logError } from '@edx/frontend-platform/logging';
 import {
   act, fireEvent, render, screen, waitFor,
 } from '@testing-library/react';
-import configureMockStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
 import { Provider } from 'react-redux';
 
 import '@testing-library/jest-dom/extend-expect';
@@ -15,6 +13,7 @@ import userEvent from '@testing-library/user-event';
 import DownloadCsvIconButton from '../GroupDetailPage/DownloadCsvIconButton';
 import { downloadCsv } from '../../../utils';
 import EVENT_NAMES from '../../../eventTracking';
+import { initializeMocks } from '../../../testUtils';
 
 jest.mock('@edx/frontend-enterprise-utils', () => {
   const originalModule = jest.requireActual('@edx/frontend-enterprise-utils');
@@ -73,20 +72,22 @@ const DEFAULT_PROPS = {
   },
 };
 const enterpriseId = 'test-enterprise-id';
-const mockStore = configureMockStore([thunk]);
-const store = mockStore({
+const storeState = {
   portalConfiguration: {
     enterpriseId,
   },
-});
+};
 
-const DownloadCsvIconButtonWrapper = props => (
-  <Provider store={store}>
-    <IntlProvider locale="en">
-      <DownloadCsvIconButton {...props} />
-    </IntlProvider>
-  </Provider>
-);
+const DownloadCsvIconButtonWrapper = props => {
+  const { reduxStore } = initializeMocks(storeState);
+  return (
+    <Provider store={reduxStore}>
+      <IntlProvider locale="en">
+        <DownloadCsvIconButton {...props} />
+      </IntlProvider>
+    </Provider>
+  );
+};
 
 describe('DownloadCsvIconButton', () => {
   const flushPromises = () => new Promise(setImmediate);

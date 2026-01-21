@@ -1,8 +1,6 @@
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import { BrowserRouter, useParams } from 'react-router-dom';
-import configureMockStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
 import { Provider } from 'react-redux';
 import '@testing-library/jest-dom';
 import { QueryClientProvider } from '@tanstack/react-query';
@@ -20,6 +18,7 @@ import {
 import LearnerDetailPage from '../LearnerDetailPage/LearnerDetailPage';
 import LmsApiService from '../../../data/services/LmsApiService';
 import { queryClient } from '../../test/testUtils';
+import { initializeMocks } from '../../../testUtils';
 
 const ENTERPRISE_ID = 'test-enterprise-id';
 const ENTERPRISE_SLUG = 'test-slug';
@@ -112,8 +111,6 @@ const mockCreditPlansData = [
   },
 ];
 
-const mockStore = configureMockStore([thunk]);
-const getMockStore = store => mockStore(store);
 const initialStoreState = {
   portalConfiguration: {
     enterpriseId: ENTERPRISE_ID,
@@ -151,12 +148,12 @@ jest.mock('@edx/frontend-enterprise-utils', () => {
 const LearnerDetailPageWrapper = ({
   initialState = initialStoreState,
 }) => {
-  const store = getMockStore({ ...initialState });
+  const { reduxStore } = initializeMocks({ ...initialState });
   return (
     <QueryClientProvider client={queryClient()}>
       <IntlProvider locale="en">
         <BrowserRouter>
-          <Provider store={store}>
+          <Provider store={reduxStore}>
             <IntlProvider locale="en">
               <LearnerDetailPage />
             </IntlProvider>
@@ -354,7 +351,7 @@ describe('LearnerDetailPage', () => {
 
   describe('EnrollmentCard event tracking', () => {
     it('sends track event when clicking view course link', async () => {
-      const store = getMockStore({
+      const { reduxStore } = initializeMocks({
         ...initialStoreState,
         portalConfiguration: {
           ...initialStoreState.portalConfiguration,
@@ -366,7 +363,7 @@ describe('LearnerDetailPage', () => {
         <QueryClientProvider client={queryClient()}>
           <IntlProvider locale="en">
             <BrowserRouter>
-              <Provider store={store}>
+              <Provider store={reduxStore}>
                 <IntlProvider locale="en">
                   <LearnerDetailPage />
                 </IntlProvider>
@@ -393,7 +390,7 @@ describe('LearnerDetailPage', () => {
     });
 
     it('sends track event when clicking view assignment link', async () => {
-      const store = getMockStore({
+      const { reduxStore } = initializeMocks({
         ...initialStoreState,
         portalConfiguration: {
           ...initialStoreState.portalConfiguration,
@@ -426,7 +423,7 @@ describe('LearnerDetailPage', () => {
         <QueryClientProvider client={queryClient()}>
           <IntlProvider locale="en">
             <BrowserRouter>
-              <Provider store={store}>
+              <Provider store={reduxStore}>
                 <IntlProvider locale="en">
                   <LearnerDetailPage />
                 </IntlProvider>

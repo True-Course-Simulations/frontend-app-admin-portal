@@ -1,6 +1,4 @@
 import { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { useIntl, FormattedMessage } from '@edx/frontend-platform/i18n';
 import {
@@ -8,6 +6,7 @@ import {
 } from '@openedx/paragon';
 import { Delete, Edit } from '@openedx/paragon/icons';
 import { sendEnterpriseTrackEvent } from '@edx/frontend-enterprise-utils';
+import { useSelector } from 'react-redux';
 
 import { useEnterpriseGroupLearnersTableData, useEnterpriseGroupUuid } from '../data/hooks';
 import { ROUTE_NAMES } from '../../EnterpriseApp/data/constants';
@@ -22,7 +21,8 @@ import ValidatedEmailsContextProvider from '../data/ValidatedEmailsContextProvid
 import GroupInviteErrorToast from '../GroupInviteErrorToast';
 import { ORGANIZE_LEARNER_TARGETS } from '../../ProductTours/AdminOnboardingTours/constants';
 
-const GroupDetailPage = ({ enterpriseUUID }) => {
+const GroupDetailPage = () => {
+  const enterpriseUUID = useSelector(state => state.portalConfiguration.enterpriseId);
   const intl = useIntl();
   const { enterpriseSlug, groupUuid } = useParams();
   const { data: enterpriseGroup, isLoading } = useEnterpriseGroupUuid(groupUuid);
@@ -196,12 +196,4 @@ const GroupDetailPage = ({ enterpriseUUID }) => {
   );
 };
 
-GroupDetailPage.propTypes = {
-  enterpriseUUID: PropTypes.string,
-};
-
-const mapStateToProps = state => ({
-  enterpriseUUID: state.portalConfiguration.enterpriseId,
-});
-
-export default connect(mapStateToProps)(GroupDetailPage);
+export default GroupDetailPage;

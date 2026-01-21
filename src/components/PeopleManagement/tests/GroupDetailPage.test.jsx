@@ -2,8 +2,6 @@ import {
   fireEvent, render, screen, waitFor,
 } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
-import thunk from 'redux-thunk';
-import configureMockStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import userEvent from '@testing-library/user-event';
 import { QueryClientProvider, useQueryClient } from '@tanstack/react-query';
@@ -15,6 +13,7 @@ import GroupDetailPage from '../GroupDetailPage/GroupDetailPage';
 import LmsApiService from '../../../data/services/LmsApiService';
 import { queryClient } from '../../test/testUtils';
 import EVENT_NAMES from '../../../eventTracking';
+import { initializeMocks } from '../../../testUtils';
 
 const TEST_ENTERPRISE_SLUG = 'test-enterprise';
 const enterpriseUUID = '1234';
@@ -24,9 +23,6 @@ const TEST_GROUP = {
   acceptedMembersCount: 0,
   groupType: 'flex',
 };
-const mockStore = configureMockStore([thunk]);
-const getMockStore = store => mockStore(store);
-
 jest.mock('@tanstack/react-query', () => ({
   ...jest.requireActual('@tanstack/react-query'),
   useQueryClient: jest.fn(),
@@ -69,10 +65,10 @@ const initialStoreState = {
 const GroupDetailPageWrapper = ({
   initialState = initialStoreState,
 }) => {
-  const store = getMockStore(initialState);
+  const { reduxStore } = initializeMocks(initialState);
   return (
     <IntlProvider locale="en">
-      <Provider store={store}>
+      <Provider store={reduxStore}>
         <QueryClientProvider client={queryClient()}>
           <GroupDetailPage />
         </QueryClientProvider>

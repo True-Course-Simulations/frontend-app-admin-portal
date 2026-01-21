@@ -3,8 +3,6 @@ import {
   fireEvent, render, screen, waitFor,
 } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import thunk from 'redux-thunk';
-import configureMockStore from 'redux-mock-store';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom/extend-expect';
 import { QueryClientProvider, useQueryClient } from '@tanstack/react-query';
@@ -16,6 +14,7 @@ import AddMembersModal from '../AddMembersModal/AddMembersModal';
 import { useEnterpriseLearners } from '../../learner-credit-management/data';
 import { useAllEnterpriseGroupLearners, useEnterpriseMembersTableData } from '../data/hooks';
 import ValidatedEmailsContextProvider from '../data/ValidatedEmailsContextProvider';
+import { initializeMocks } from '../../../testUtils';
 
 jest.mock('@tanstack/react-query', () => ({
   ...jest.requireActual('@tanstack/react-query'),
@@ -36,8 +35,6 @@ jest.mock('../../learner-credit-management/data', () => ({
   useEnterpriseLearners: jest.fn(),
 }));
 
-const mockStore = configureMockStore([thunk]);
-const getMockStore = store => mockStore(store);
 const TEST_GROUP = 'test-group-uuid';
 const enterpriseSlug = 'test-enterprise';
 const enterpriseUUID = '1234';
@@ -52,7 +49,6 @@ const initialStoreState = {
 const defaultProps = {
   isModalOpen: true,
   closeModal: jest.fn(),
-  enterpriseUUID,
   groupName: 'test-group-name',
   groupUuid: TEST_GROUP,
 };
@@ -97,13 +93,13 @@ const mockTabledata = {
 };
 
 const AddMembersModalWrapper = () => {
-  const store = getMockStore({ ...initialStoreState });
+  const { reduxStore } = initializeMocks({ ...initialStoreState });
   const initialContextOverride = {
     groupEnterpriseLearners: mockTabledata.results.map((user) => user.email),
   };
   return (
     <IntlProvider locale="en">
-      <Provider store={store}>
+      <Provider store={reduxStore}>
         <QueryClientProvider client={queryClient()}>
           <ValidatedEmailsContextProvider initialContextOverride={initialContextOverride}>
             <AddMembersModal {...defaultProps} />

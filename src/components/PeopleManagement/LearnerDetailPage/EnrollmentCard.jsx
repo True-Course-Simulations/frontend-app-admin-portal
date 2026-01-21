@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import {
   Badge, Card, Hyperlink, Stack,
 } from '@openedx/paragon';
@@ -11,7 +11,8 @@ import { COURSE_TYPE_MAP } from '../constants';
 import { formatDate } from '../../learner-credit-management/data';
 import EVENT_NAMES from '../../../eventTracking';
 
-const EnrollmentCard = ({ enrollment, enterpriseSlug }) => {
+const EnrollmentCard = ({ enrollment }) => {
+  const enterpriseSlug = useSelector(state => state.portalConfiguration.enterpriseSlug);
   const renderBadge = () => {
     switch (enrollment.courseRunStatus) {
       case 'completed': {
@@ -97,10 +98,6 @@ const EnrollmentCard = ({ enrollment, enterpriseSlug }) => {
   );
 };
 
-const mapStateToProps = state => ({
-  enterpriseSlug: state.portalConfiguration.enterpriseSlug,
-});
-
 EnrollmentCard.propTypes = {
   enrollment: PropTypes.shape({
     courseKey: PropTypes.string,
@@ -112,7 +109,6 @@ EnrollmentCard.propTypes = {
     policyUuid: PropTypes.string,
     startDate: PropTypes.string,
   }).isRequired,
-  enterpriseSlug: PropTypes.string.isRequired,
 };
 
-export default connect(mapStateToProps)(EnrollmentCard);
+export default EnrollmentCard;

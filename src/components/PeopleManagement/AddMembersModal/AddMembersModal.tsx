@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { logError } from '@edx/frontend-platform/logging';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useQueryClient } from '@tanstack/react-query';
 import { useIntl } from '@edx/frontend-platform/i18n';
 import { snakeCaseObject } from '@edx/frontend-platform/utils';
@@ -22,7 +22,6 @@ import EVENT_NAMES from '../../../eventTracking';
 export type AddMembersModalProps = {
   isModalOpen: boolean,
   closeModal: () => void,
-  enterpriseUUID: string,
   groupName: string,
   groupUuid: string,
   onInviteError: (errorType: GroupErrorType) => void
@@ -31,11 +30,11 @@ export type AddMembersModalProps = {
 const AddMembersModal = ({
   isModalOpen,
   closeModal,
-  enterpriseUUID,
   groupName,
   groupUuid,
   onInviteError,
 }) => {
+  const enterpriseUUID = useSelector(state => state.portalConfiguration.enterpriseId);
   const intl = useIntl();
   const { validatedEmails: learnerEmails, canInvite: canInviteMembers } = useValidatedEmailsContext();
   const [addButtonState, setAddButtonState] = useState('default');
@@ -129,7 +128,6 @@ const AddMembersModal = ({
 };
 
 AddMembersModal.propTypes = {
-  enterpriseUUID: PropTypes.string.isRequired,
   isModalOpen: PropTypes.bool.isRequired,
   closeModal: PropTypes.func.isRequired,
   onInviteError: PropTypes.func.isRequired,
@@ -137,8 +135,4 @@ AddMembersModal.propTypes = {
   groupName: PropTypes.string,
 };
 
-const mapStateToProps = state => ({
-  enterpriseUUID: state.portalConfiguration.enterpriseId,
-});
-
-export default connect(mapStateToProps)(AddMembersModal);
+export default AddMembersModal;
