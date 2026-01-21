@@ -1,9 +1,8 @@
 import React, {
   useCallback, useContext, useEffect, useState,
 } from 'react';
-import PropTypes from 'prop-types';
 import { useContextSelector } from 'use-context-selector';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import {
   ActionRow, AlertModal, Button, FullscreenModal, StatefulButton, Stepper, useToggle,
 } from '@openedx/paragon';
@@ -34,7 +33,8 @@ const steps = [
 /**
  * Stepper to support create user flow for a highlight set.
  */
-const ContentHighlightStepper = ({ enterpriseId }) => {
+const ContentHighlightStepper = () => {
+  const enterpriseId = useSelector(state => state.portalConfiguration.enterpriseId);
   const intl = useIntl();
   const {
     enterpriseCuration: {
@@ -400,12 +400,4 @@ const ContentHighlightStepper = ({ enterpriseId }) => {
   );
 };
 
-ContentHighlightStepper.propTypes = {
-  enterpriseId: PropTypes.string.isRequired,
-};
-
-const mapStateToProps = state => ({
-  enterpriseId: state.portalConfiguration.enterpriseId,
-});
-
-export default connect(mapStateToProps)(ContentHighlightStepper);
+export default ContentHighlightStepper;

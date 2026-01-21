@@ -3,8 +3,6 @@ import { screen } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import algoliasearch from 'algoliasearch/lite';
 import { renderWithRouter } from '@edx/frontend-enterprise-utils';
-import configureMockStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
 import { Provider } from 'react-redux';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 import HighlightStepperConfirmContent, { BaseReviewContentSelections, SelectedContent } from '../HighlightStepperConfirmContent';
@@ -15,8 +13,8 @@ import {
 } from '../../data/constants';
 import { ContentHighlightsContext } from '../../ContentHighlightsContext';
 import { configuration } from '../../../../config';
+import { initializeMocks } from '../../../../testUtils';
 
-const mockStore = configureMockStore([thunk]);
 const enterpriseId = 'test-enterprise-id';
 const initialState = {
   portalConfiguration:
@@ -32,6 +30,7 @@ const searchClient = algoliasearch(
 );
 
 const HighlightStepperConfirmContentWrapper = ({ children, currentSelectedRowIds = [] }) => {
+  const { reduxStore } = initializeMocks(initialState);
   const contextValue = useState({
     stepperModal: {
       isOpen: false,
@@ -48,7 +47,7 @@ const HighlightStepperConfirmContentWrapper = ({ children, currentSelectedRowIds
   });
   return (
     <IntlProvider locale="en">
-      <Provider store={mockStore(initialState)}>
+      <Provider store={reduxStore}>
         <ContentHighlightsContext.Provider value={contextValue}>
           {children}
         </ContentHighlightsContext.Provider>
@@ -93,7 +92,7 @@ describe('<HighlightStepperConfirmContent />', () => {
   it('renders the content', () => {
     renderWithRouter(
       <HighlightStepperConfirmContentWrapper currentSelectedRowIds={testCourseAggregation}>
-        <HighlightStepperConfirmContent enterpriseId={enterpriseId} />
+        <HighlightStepperConfirmContent />
       </HighlightStepperConfirmContentWrapper>,
     );
     testCourseData.forEach((element) => {
@@ -103,7 +102,7 @@ describe('<HighlightStepperConfirmContent />', () => {
   it('renders the content in the correct order based on testCourseAggregationCourses', () => {
     const { container } = renderWithRouter(
       <HighlightStepperConfirmContentWrapper currentSelectedRowIds={testCourseAggregation}>
-        <HighlightStepperConfirmContent enterpriseId={enterpriseId} />
+        <HighlightStepperConfirmContent />
       </HighlightStepperConfirmContentWrapper>,
     );
     container.querySelectorAll('div[data-testid="title-test"]').forEach((element, index) => {
@@ -136,7 +135,7 @@ describe('SelectedContent', () => {
   it('should not render anything when nothing is selected', () => {
     renderWithRouter(
       <HighlightStepperConfirmContentWrapper>
-        <SelectedContent enterpriseId={enterpriseId} />
+        <SelectedContent />
       </HighlightStepperConfirmContentWrapper>,
     );
     expect(screen.getByTestId('selected-content-no-results')).toBeInTheDocument();

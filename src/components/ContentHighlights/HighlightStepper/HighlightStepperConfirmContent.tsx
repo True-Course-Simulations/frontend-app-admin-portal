@@ -15,7 +15,7 @@ import {
 import { Assignment } from '@openedx/paragon/icons';
 import { camelCaseObject } from '@edx/frontend-platform';
 import { Configure, InstantSearch, connectStateResults } from 'react-instantsearch-dom';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { configuration } from '../../../config';
 import {
   STEPPER_STEP_TEXT,
@@ -73,7 +73,8 @@ BaseReviewContentSelections.defaultProps = {
 
 const ReviewContentSelections = connectStateResults(BaseReviewContentSelections);
 
-export const SelectedContent = ({ enterpriseId }) => {
+export const SelectedContent = () => {
+  const enterpriseId = useSelector(state => state.portalConfiguration.enterpriseId);
   const searchClient = useContextSelector(
     ContentHighlightsContext,
     v => v[0].algolia.searchClient,
@@ -168,11 +169,7 @@ export const SelectedContent = ({ enterpriseId }) => {
   );
 };
 
-SelectedContent.propTypes = {
-  enterpriseId: PropTypes.string.isRequired,
-};
-
-const HighlightStepperConfirmContent = ({ enterpriseId }) => {
+const HighlightStepperConfirmContent = () => {
   const highlightTitle = useContextSelector(
     ContentHighlightsContext,
     v => v[0].stepperModal.highlightTitle,
@@ -191,17 +188,8 @@ const HighlightStepperConfirmContent = ({ enterpriseId }) => {
           </p>
         </Col>
       </Row>
-      <SelectedContent enterpriseId={enterpriseId} />
+      <SelectedContent />
     </Container>
   );
 };
-
-HighlightStepperConfirmContent.propTypes = {
-  enterpriseId: PropTypes.string.isRequired,
-};
-
-const mapStateToProps = (state) => ({
-  enterpriseId: state.portalConfiguration.enterpriseId,
-});
-
-export default connect(mapStateToProps)(HighlightStepperConfirmContent);
+export default HighlightStepperConfirmContent;

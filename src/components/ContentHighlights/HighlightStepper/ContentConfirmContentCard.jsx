@@ -2,14 +2,16 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Delete } from '@openedx/paragon/icons';
 import { IconButton, Icon } from '@openedx/paragon';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { sendEnterpriseTrackEvent } from '@edx/frontend-enterprise-utils';
 import ContentHighlightCardItem from '../ContentHighlightCardItem';
 import { useContentHighlightsContext } from '../data/hooks';
 import { generateAboutPageUrl } from '../data/utils';
 import EVENT_NAMES from '../../../eventTracking';
 
-const ContentConfirmContentCard = ({ enterpriseId, enterpriseSlug, original }) => {
+const ContentConfirmContentCard = ({ original }) => {
+  const enterpriseId = useSelector(state => state.portalConfiguration.enterpriseId);
+  const enterpriseSlug = useSelector(state => state.portalConfiguration.enterpriseSlug);
   const { deleteSelectedRowId } = useContentHighlightsContext();
   const {
     title,
@@ -74,8 +76,6 @@ const ContentConfirmContentCard = ({ enterpriseId, enterpriseSlug, original }) =
 };
 
 ContentConfirmContentCard.propTypes = {
-  enterpriseId: PropTypes.string.isRequired,
-  enterpriseSlug: PropTypes.string.isRequired,
   original: PropTypes.shape({
     title: PropTypes.string,
     contentType: PropTypes.string,
@@ -87,9 +87,4 @@ ContentConfirmContentCard.propTypes = {
   }).isRequired,
 };
 
-export const mapStateToProps = state => ({
-  enterpriseId: state.portalConfiguration.enterpriseId,
-  enterpriseSlug: state.portalConfiguration.enterpriseSlug,
-});
-
-export default connect(mapStateToProps)(ContentConfirmContentCard);
+export default ContentConfirmContentCard;

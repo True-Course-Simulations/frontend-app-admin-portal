@@ -5,15 +5,13 @@ import '@testing-library/jest-dom/extend-expect';
 import algoliasearch from 'algoliasearch/lite';
 import { Provider } from 'react-redux';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
-import configureMockStore from 'redux-mock-store';
 import { renderWithRouter, sendEnterpriseTrackEvent } from '@edx/frontend-enterprise-utils';
 import ContentConfirmContentCard from '../ContentConfirmContentCard';
 import { testCourseData, testCourseAggregation, FOOTER_TEXT_BY_CONTENT_TYPE } from '../../data/constants';
 import { ContentHighlightsContext } from '../../ContentHighlightsContext';
 import { configuration } from '../../../../config';
 import { useContentHighlightsContext } from '../../data/hooks';
-
-const mockStore = configureMockStore();
+import { initializeMocks } from '../../../../testUtils';
 
 jest.mock('@edx/frontend-enterprise-utils', () => {
   const originalModule = jest.requireActual('@edx/frontend-enterprise-utils');
@@ -26,6 +24,7 @@ jest.mock('@edx/frontend-enterprise-utils', () => {
 const initialState = {
   portalConfiguration:
     {
+      enterpriseId: 'test-enterprise-id',
       enterpriseSlug: 'test-enterprise',
     },
 };
@@ -45,10 +44,8 @@ const searchClient = algoliasearch(
   configuration.ALGOLIA.SEARCH_API_KEY,
 );
 
-const ContentHighlightContentCardWrapper = ({
-
-  store = mockStore(initialState),
-}) => {
+const ContentHighlightContentCardWrapper = () => {
+  const { reduxStore } = initializeMocks(initialState);
   const contextValue = useState({
     stepperModal: {
       isOpen: false,
@@ -65,7 +62,7 @@ const ContentHighlightContentCardWrapper = ({
   });
   return (
     <IntlProvider locale="en">
-      <Provider store={store}>
+      <Provider store={reduxStore}>
         <ContentHighlightsContext.Provider value={contextValue}>
           {testCourseData.map((original) => (
             <ContentConfirmContentCard

@@ -1,12 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { sendEnterpriseTrackEvent } from '@edx/frontend-enterprise-utils';
 import ContentHighlightCardItem from '../ContentHighlightCardItem';
 import { generateAboutPageUrl } from '../data/utils';
 import EVENT_NAMES from '../../../eventTracking';
 
-const ContentSearchResultCard = ({ enterpriseId, enterpriseSlug, original }) => {
+const ContentSearchResultCard = ({ original }) => {
+  const enterpriseId = useSelector(state => state.portalConfiguration.enterpriseId);
+  const enterpriseSlug = useSelector(state => state.portalConfiguration.enterpriseSlug);
   const {
     aggregationKey,
     title,
@@ -47,8 +49,6 @@ const ContentSearchResultCard = ({ enterpriseId, enterpriseSlug, original }) => 
 };
 
 ContentSearchResultCard.propTypes = {
-  enterpriseId: PropTypes.string.isRequired,
-  enterpriseSlug: PropTypes.string.isRequired,
   original: PropTypes.shape({
     aggregationKey: PropTypes.string,
     title: PropTypes.string,
@@ -60,9 +60,4 @@ ContentSearchResultCard.propTypes = {
   }).isRequired,
 };
 
-const mapStateToProps = state => ({
-  enterpriseId: state.portalConfiguration.enterpriseId,
-  enterpriseSlug: state.portalConfiguration.enterpriseSlug,
-});
-
-export default connect(mapStateToProps)(ContentSearchResultCard);
+export default ContentSearchResultCard;

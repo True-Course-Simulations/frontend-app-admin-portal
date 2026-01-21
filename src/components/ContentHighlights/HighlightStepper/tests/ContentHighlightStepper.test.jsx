@@ -4,9 +4,7 @@ import '@testing-library/jest-dom/extend-expect';
 import { useState } from 'react';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 import algoliasearch from 'algoliasearch/lite';
-import thunk from 'redux-thunk';
 import { renderWithRouter, sendEnterpriseTrackEvent } from '@edx/frontend-enterprise-utils';
-import configureMockStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import { ContentHighlightsContext } from '../../ContentHighlightsContext';
 import {
@@ -22,8 +20,7 @@ import { configuration } from '../../../../config';
 import ContentHighlightsDashboard from '../../ContentHighlightsDashboard';
 import { EnterpriseAppContext } from '../../../EnterpriseApp/EnterpriseAppContextProvider';
 import ContentHighlightStepper from '../ContentHighlightStepper';
-
-const mockStore = configureMockStore([thunk]);
+import { initializeMocks } from '../../../../testUtils';
 
 const initialState = {
   portalConfiguration: {
@@ -57,6 +54,7 @@ const ContentHighlightStepperWrapper = ({
   enterpriseAppContextValue = initialEnterpriseAppContextValue,
   ...props
 }) => {
+  const { reduxStore } = initializeMocks(initialState);
   const contextValue = useState({
     stepperModal: {
       isOpen: false,
@@ -73,7 +71,7 @@ const ContentHighlightStepperWrapper = ({
   });
   return (
     <IntlProvider locale="en">
-      <Provider store={mockStore(initialState)}>
+      <Provider store={reduxStore}>
         <EnterpriseAppContext.Provider value={enterpriseAppContextValue}>
           <ContentHighlightsContext.Provider value={contextValue}>
             <ContentHighlightsDashboard {...props} />

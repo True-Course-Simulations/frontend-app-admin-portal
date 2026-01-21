@@ -3,8 +3,6 @@ import { screen } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import algoliasearch from 'algoliasearch/lite';
 import { renderWithRouter, sendEnterpriseTrackEvent } from '@edx/frontend-enterprise-utils';
-import configureMockStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
 import { Provider } from 'react-redux';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 import userEvent from '@testing-library/user-event';
@@ -15,8 +13,8 @@ import {
 import { ContentHighlightsContext } from '../../ContentHighlightsContext';
 import { configuration } from '../../../../config';
 import HighlightStepperSelectContent from '../HighlightStepperSelectContentSearch';
+import { initializeMocks } from '../../../../testUtils';
 
-const mockStore = configureMockStore([thunk]);
 jest.mock('@edx/frontend-enterprise-utils', () => {
   const originalModule = jest.requireActual('@edx/frontend-enterprise-utils');
   return ({
@@ -57,10 +55,11 @@ const HighlightStepperSelectContentSearchWrapper = ({
   initialStepperState = initialHighlightStepperState,
   children,
 }) => {
+  const { reduxStore } = initializeMocks(initialState);
   const contextValue = useState(initialStepperState);
   return (
     <IntlProvider locale="en">
-      <Provider store={mockStore(initialState)}>
+      <Provider store={reduxStore}>
         <ContentHighlightsContext.Provider value={contextValue}>
           {children}
         </ContentHighlightsContext.Provider>

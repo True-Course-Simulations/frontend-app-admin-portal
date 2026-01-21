@@ -1,11 +1,10 @@
 import React, { useMemo, useState } from 'react';
-import PropTypes from 'prop-types';
 import { useContextSelector } from 'use-context-selector';
 import { Configure, connectStateResults, InstantSearch } from 'react-instantsearch-dom';
 import { CardView, DataTable, Skeleton } from '@openedx/paragon';
 import { camelCaseObject } from '@edx/frontend-platform';
 import { SearchData, SearchHeader } from '@edx/frontend-enterprise-catalog-search';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 import { configuration } from '../../../config';
 import { ENABLE_TESTING, FOOTER_TEXT_BY_CONTENT_TYPE, MAX_PAGE_SIZE } from '../data/constants';
@@ -140,11 +139,8 @@ BaseHighlightStepperSelectContentDataTable.defaultProps = {
 
 const HighlightStepperSelectContentDataTable = connectStateResults(BaseHighlightStepperSelectContentDataTable);
 
-type HighlightStepperSelectContentProps = {
-  enterpriseId: string;
-};
-
-const HighlightStepperSelectContent: React.FC<HighlightStepperSelectContentProps> = ({ enterpriseId }) => {
+const HighlightStepperSelectContent: React.FC = () => {
+  const enterpriseId = useSelector(state => state.portalConfiguration.enterpriseId);
   const { setCurrentSelectedRowIds } = useContentHighlightsContext();
   const currentSelectedRowIds = useContextSelector(
     ContentHighlightsContext,
@@ -208,12 +204,4 @@ const HighlightStepperSelectContent: React.FC<HighlightStepperSelectContentProps
   );
 };
 
-HighlightStepperSelectContent.propTypes = {
-  enterpriseId: PropTypes.string.isRequired,
-};
-
-const mapStateToProps = state => ({
-  enterpriseId: state.portalConfiguration.enterpriseId,
-});
-
-export default connect(mapStateToProps)(HighlightStepperSelectContent);
+export default HighlightStepperSelectContent;
