@@ -1,18 +1,19 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
 import {
   ActionRow, Button, Image, ModalDialog, useToggle,
 } from '@openedx/paragon';
 import { FormattedMessage, useIntl } from '@edx/frontend-platform/i18n';
+import { useSelector } from 'react-redux';
 
 import { ONBOARDING_WELCOME_MODAL_COOKIE_NAME } from './constants';
 import messages from './messages';
 import welcomeModal from '../data/images/WelcomeModal.svg';
 
 const OnboardingWelcomeModal = ({
-  openAdminTour, lastLogin,
+  openAdminTour,
 }) => {
+  const lastLogin = useSelector(state => state.enterpriseCustomerAdmin.lastLogin as string | null);
   const intl = useIntl();
   const [isOpen, open, close] = useToggle(false);
   const isNewUser = !lastLogin;
@@ -89,17 +90,8 @@ const OnboardingWelcomeModal = ({
   );
 };
 
-const mapStateToProps = state => ({
-  lastLogin: state.enterpriseCustomerAdmin.lastLogin as string | null,
-});
-
 OnboardingWelcomeModal.propTypes = {
   openAdminTour: PropTypes.func.isRequired,
-  lastLogin: PropTypes.string,
 };
 
-OnboardingWelcomeModal.defaultProps = {
-  lastLogin: null,
-};
-
-export default connect(mapStateToProps)(OnboardingWelcomeModal);
+export default OnboardingWelcomeModal;

@@ -1,7 +1,6 @@
 import React, {
   FC, useContext, useEffect, useState,
 } from 'react';
-import { connect } from 'react-redux';
 import { isEmpty } from 'lodash-es';
 import {
   IconButton, Icon, OverlayTrigger, Tooltip, Stack,
@@ -10,6 +9,7 @@ import {
   CreditCard, InsertChartOutlined, MoneyOutline, Person, Question, Settings, TextSnippet, TrendingUp,
 } from '@openedx/paragon/icons';
 import { useIntl } from '@edx/frontend-platform/i18n';
+import { useDispatch, useSelector } from 'react-redux';
 
 import FloatingCollapsible from '../FloatingCollapsible';
 import messages, {
@@ -38,13 +38,7 @@ import TourCompleteModal from './TourCompleteModal';
 import { EnterpriseSubsidiesContext } from '../EnterpriseSubsidiesContext';
 
 interface Props {
-  adminUuid: string;
-  dismissOnboardingTour: (adminUuid: string) => void;
-  enableAnalyticsScreen: boolean;
-  enableReportingConfigScreen: boolean;
-  enableSubscriptionManagementScreen: boolean;
   onTourSelect?: (targetId: string) => void;
-  reopenOnboardingTour: (adminUuid: string) => void;
   showCollapsible: boolean;
   setShowCollapsible: (value: boolean) => void;
 }
@@ -59,17 +53,23 @@ type StepDefinition = {
 
 const TourCollapsible: FC<Props> = (
   {
-    adminUuid,
-    dismissOnboardingTour: dismissTour,
-    enableAnalyticsScreen,
-    enableReportingConfigScreen,
-    enableSubscriptionManagementScreen,
     onTourSelect,
-    reopenOnboardingTour: reopenTour,
     showCollapsible,
     setShowCollapsible,
   },
 ) => {
+  const {
+    adminUuid,
+    enableAnalyticsScreen,
+    enableReportingConfigScreen,
+    enableSubscriptionManagementScreen,
+  } = useSelector(state => ({
+    adminUuid: state.enterpriseCustomerAdmin.uuid as string,
+    enableAnalyticsScreen: state.portalConfiguration.enableAnalyticsScreen as boolean,
+    enableReportingConfigScreen: state.portalConfiguration.enableReportingConfigScreen as boolean,
+    enableSubscriptionManagementScreen: state.portalConfiguration.enableSubscriptionManagementScreen as boolean,
+  }));
+  const dispatch = useDispatch();
   const intl = useIntl();
   const [onboardingSteps, setOnboardingSteps] = useState<StepDefinition[] | undefined>();
   const [showCompletedModal, setShowCompletedModal] = useState(false);
@@ -79,12 +79,12 @@ const TourCollapsible: FC<Props> = (
 
   const handleDismiss = () => {
     setShowCollapsible(false);
-    dismissTour(adminUuid);
+    dispatch(dismissOnboardingTour(adminUuid));
   };
 
   const handleReopenTour = () => {
     setShowCollapsible(true);
-    reopenTour(adminUuid);
+    dispatch(reopenOnboardingTour(adminUuid));
   };
 
   useEffect(() => {
@@ -233,22 +233,4 @@ const TourCollapsible: FC<Props> = (
   );
 };
 
-const mapStateToProps = state => ({
-  adminUuid: state.enterpriseCustomerAdmin.uuid as string,
-  enableAnalyticsScreen: state.portalConfiguration.enableAnalyticsScreen as boolean,
-  enableReportingConfigScreen: state.portalConfiguration.enableReportingConfigScreen as boolean,
-  enableSubscriptionManagementScreen: state.portalConfiguration.enableSubscriptionManagementScreen as boolean,
-  onboardingTourCompleted: state.enterpriseCustomerAdmin.onboardingTourCompleted as boolean,
-  onboardingTourDismissed: state.enterpriseCustomerAdmin.onboardingTourDismissed as boolean,
-});
-
-const mapDispatchToProps = dispatch => ({
-  dismissOnboardingTour: (adminUuid: string) => {
-    dispatch(dismissOnboardingTour(adminUuid));
-  },
-  reopenOnboardingTour: (adminUuid: string) => {
-    dispatch(reopenOnboardingTour(adminUuid));
-  },
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(TourCollapsible);
+export default TourCollapsible;

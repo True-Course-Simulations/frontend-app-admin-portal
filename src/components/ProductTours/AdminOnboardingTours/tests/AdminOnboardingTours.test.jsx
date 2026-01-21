@@ -2,13 +2,13 @@ import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { Provider } from 'react-redux';
-import configureStore from 'redux-mock-store';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 import { MemoryRouter as Router } from 'react-router-dom';
 
 import userEvent from '@testing-library/user-event';
 import AdminOnboardingTours from '../AdminOnboardingTours';
 import { RESET_TARGETS } from '../constants';
+import { initializeMocks } from '../../../../testUtils';
 
 const mockOnAdvance = jest.fn();
 const mockOnEnd = jest.fn();
@@ -43,10 +43,8 @@ jest.mock('../flows/AdminOnboardingTour', () => jest.fn(() => ([
 
 jest.mock('../../CheckpointOverlay', () => jest.fn(() => <div data-testid="checkpoint-overlay" />));
 
-const mockStore = configureStore([]);
-
 describe('AdminOnboardingTours', () => {
-  let store;
+  let storeState;
 
   const mockedInsights = {
     learner_progress: {
@@ -61,10 +59,12 @@ describe('AdminOnboardingTours', () => {
   const enterpriseAdminUuid = 'test-uuid';
 
   beforeEach(() => {
-    store = mockStore({
+    storeState = {
       portalConfiguration: {
         enableLearnerPortal: true,
+        enterpriseId: 'test-enterprise-id',
         enterpriseSlug: slug,
+        enablePortalLearnerCreditManagementScreen: false,
         enterpriseFeatures: {
           enterpriseAdminOnboardingEnabled: true,
         },
@@ -76,7 +76,7 @@ describe('AdminOnboardingTours', () => {
       enterpriseCustomerAdmin: {
         uuid: enterpriseAdminUuid,
       },
-    });
+    };
     jest.clearAllMocks();
   });
 
@@ -88,10 +88,11 @@ describe('AdminOnboardingTours', () => {
   };
 
   const renderComponent = (props = {}) => {
+    const { reduxStore } = initializeMocks(storeState);
     const finalProps = { ...defaultProps, ...props };
     return render(
       <IntlProvider locale="en">
-        <Provider store={store}>
+        <Provider store={reduxStore}>
           <Router>
             <p id="step-1">Step 1</p>
             <p id="step-2">Step 2</p>

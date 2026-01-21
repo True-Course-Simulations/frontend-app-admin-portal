@@ -2,26 +2,20 @@ import React, {
   FC, useState, useEffect, useRef,
 } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
 import { ProductTour } from '@openedx/paragon';
 import { useIntl } from '@edx/frontend-platform/i18n';
 import { useLocation } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import AdminOnboardingTour from './flows/AdminOnboardingTour';
 import CheckpointOverlay from '../CheckpointOverlay';
 import '../_ProductTours.scss';
 import { RESET_TARGETS } from './constants';
 
 interface AdminOnboardingToursProps {
-  adminUuid: string,
-  enterpriseId: string;
-  enterpriseSlug: string;
   isOpen: boolean;
   onClose: () => void;
   setTarget: Function,
   targetSelector: string;
-  enablePortalLearnerCreditManagementScreen: boolean;
-  enterpriseFeatures: {
-  };
 }
 
 interface RootState {
@@ -38,10 +32,21 @@ interface RootState {
 }
 
 const AdminOnboardingTours: FC<AdminOnboardingToursProps> = ({
-  enterpriseFeatures,
-  enablePortalLearnerCreditManagementScreen,
-  adminUuid, enterpriseId, enterpriseSlug, isOpen, onClose, setTarget, targetSelector,
+  isOpen, onClose, setTarget, targetSelector,
 }) => {
+  const {
+    adminUuid,
+    enterpriseId,
+    enterpriseSlug,
+    enablePortalLearnerCreditManagementScreen,
+    enterpriseFeatures,
+  } = useSelector((state: RootState) => ({
+    adminUuid: state.enterpriseCustomerAdmin.uuid,
+    enterpriseId: state.portalConfiguration.enterpriseId,
+    enterpriseSlug: state.portalConfiguration.enterpriseSlug,
+    enablePortalLearnerCreditManagementScreen: state.portalConfiguration.enablePortalLearnerCreditManagementScreen,
+    enterpriseFeatures: state.portalConfiguration.enterpriseFeatures,
+  }));
   const intl = useIntl();
   const location = useLocation();
   const [currentStep, setCurrentStep] = useState(0);
@@ -133,18 +138,9 @@ const AdminOnboardingTours: FC<AdminOnboardingToursProps> = ({
 };
 
 AdminOnboardingTours.propTypes = {
-  adminUuid: PropTypes.string.isRequired,
-  enterpriseSlug: PropTypes.string.isRequired,
   isOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   setTarget: PropTypes.func.isRequired,
   targetSelector: PropTypes.string.isRequired,
 };
-const mapStateToProps = (state: RootState) => ({
-  adminUuid: state.enterpriseCustomerAdmin.uuid,
-  enterpriseId: state.portalConfiguration.enterpriseId,
-  enterpriseSlug: state.portalConfiguration.enterpriseSlug,
-  enablePortalLearnerCreditManagementScreen: state.portalConfiguration.enablePortalLearnerCreditManagementScreen,
-  enterpriseFeatures: state.portalConfiguration.enterpriseFeatures,
-});
-export default connect(mapStateToProps)(AdminOnboardingTours);
+export default AdminOnboardingTours;

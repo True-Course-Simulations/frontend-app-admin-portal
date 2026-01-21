@@ -1,11 +1,9 @@
 /* eslint-disable react/prop-types */
 import React from 'react';
 import { Provider } from 'react-redux';
-import configureMockStore from 'redux-mock-store';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
-import thunk from 'redux-thunk';
 import {
   cleanup, render, screen, waitFor,
 } from '@testing-library/react';
@@ -30,8 +28,7 @@ import { SUPPORTED_SUBSIDY_TYPES } from '../../../data/constants/subsidyRequests
 import { SUBSIDY_TYPES } from '../../../data/constants/subsidyTypes';
 import useHydrateAdminOnboardingData from '../AdminOnboardingTours/data/useHydrateAdminOnboardingData';
 import { queryClient } from '../../test/testUtils';
-
-const mockStore = configureMockStore([thunk]);
+import { initializeMocks } from '../../../testUtils';
 
 const ENTERPRISE_SLUG = 'sluggy';
 const ENTERPRISE_UUID = 'test-enterprise-uuid';
@@ -61,7 +58,7 @@ const ToursWithContext = ({
     },
     enterpriseSubsidyTypesForRequests: [SUBSIDY_TYPES.coupon],
   },
-  store = mockStore({
+  storeState = {
     portalConfiguration: {
       enterpriseSlug: ENTERPRISE_SLUG,
       enterpriseId: ENTERPRISE_UUID,
@@ -75,35 +72,37 @@ const ToursWithContext = ({
       onboardingTourCompleted: false,
       onboardingTourDismissed: false,
     },
-  }),
-}) => (
-  <QueryClientProvider client={queryClient()}>
-    <Provider store={store}>
-      <IntlProvider locale="en">
-        <Router initialEntries={[`${SUBSCRIPTION_PAGE_LOCATION}`]}>
-          <Routes>
-            <Route
-              path={`/${ENTERPRISE_SLUG}/admin/:enterpriseAppPage`}
-              element={(
-                <EnterpriseSubsidiesContext.Provider value={EnterpriseSubsidiesContextValue}>
-                  <SubsidyRequestsContext.Provider value={subsidyRequestContextValue}>
-                    <>
-                      <ProductTours />
-                      <p id={TOUR_TARGETS.PEOPLE_MANAGEMENT}>People Management</p>
-                      <p id={TOUR_TARGETS.LEARNER_CREDIT}>Learner Credit Management</p>
-                      <p id={TOUR_TARGETS.SETTINGS_SIDEBAR}>Settings</p>
-                    </>
-                  </SubsidyRequestsContext.Provider>
-                </EnterpriseSubsidiesContext.Provider>
-              )}
-            />
-          </Routes>
-        </Router>
-      </IntlProvider>
-    </Provider>
-  </QueryClientProvider>
-
-);
+  },
+}) => {
+  const { reduxStore } = initializeMocks(storeState);
+  return (
+    <QueryClientProvider client={queryClient()}>
+      <Provider store={reduxStore}>
+        <IntlProvider locale="en">
+          <Router initialEntries={[`${SUBSCRIPTION_PAGE_LOCATION}`]}>
+            <Routes>
+              <Route
+                path={`/${ENTERPRISE_SLUG}/admin/:enterpriseAppPage`}
+                element={(
+                  <EnterpriseSubsidiesContext.Provider value={EnterpriseSubsidiesContextValue}>
+                    <SubsidyRequestsContext.Provider value={subsidyRequestContextValue}>
+                      <>
+                        <ProductTours />
+                        <p id={TOUR_TARGETS.PEOPLE_MANAGEMENT}>People Management</p>
+                        <p id={TOUR_TARGETS.LEARNER_CREDIT}>Learner Credit Management</p>
+                        <p id={TOUR_TARGETS.SETTINGS_SIDEBAR}>Settings</p>
+                      </>
+                    </SubsidyRequestsContext.Provider>
+                  </EnterpriseSubsidiesContext.Provider>
+                )}
+              />
+            </Routes>
+          </Router>
+        </IntlProvider>
+      </Provider>
+    </QueryClientProvider>
+  );
+};
 
 describe('<ProductTours/>', () => {
   beforeEach(() => {

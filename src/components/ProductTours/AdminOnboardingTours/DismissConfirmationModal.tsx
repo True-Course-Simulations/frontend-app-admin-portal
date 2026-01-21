@@ -1,23 +1,24 @@
 import React, { useEffect } from 'react';
-import { connect } from 'react-redux';
 import {
   ActionRow, Button, ModalDialog, useToggle,
 } from '@openedx/paragon';
 import { FormattedMessage, useIntl } from '@edx/frontend-platform/i18n';
+import { useSelector } from 'react-redux';
 
 import messages from './messages';
 
 interface DismissConfirmationModalProps {
   openConfirmationModal: (value: boolean) => void;
   onConfirm?: () => void;
-  onboardingTourDismissed: boolean;
 }
 
 const DismissConfirmationModal: React.FC<DismissConfirmationModalProps> = ({
   openConfirmationModal,
   onConfirm,
-  onboardingTourDismissed,
 }) => {
+  const onboardingTourDismissed = useSelector(
+    state => state.enterpriseCustomerAdmin.onboardingTourDismissed as boolean,
+  );
   const intl = useIntl();
   const [isOpen, open, close] = useToggle(true);
 
@@ -84,8 +85,4 @@ const DismissConfirmationModal: React.FC<DismissConfirmationModalProps> = ({
   );
 };
 
-const mapStateToProps = state => ({
-  onboardingTourDismissed: state.enterpriseCustomerAdmin.onboardingTourDismissed as boolean,
-});
-
-export default connect(mapStateToProps)(DismissConfirmationModal);
+export default DismissConfirmationModal;

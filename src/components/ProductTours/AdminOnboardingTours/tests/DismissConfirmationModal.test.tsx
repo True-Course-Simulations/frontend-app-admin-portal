@@ -3,13 +3,12 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 import { Provider } from 'react-redux';
-import configureStore from 'redux-mock-store';
 import DismissConfirmationModal from '../DismissConfirmationModal';
 import messages from '../messages';
+import { initializeMocks } from '../../../../testUtils';
 
 const mockOpenConfirmationModal = jest.fn();
 const mockOnConfirm = jest.fn();
-const mockStore = configureStore([]);
 
 const renderComponent = (props = {}, storeState = {}) => {
   const defaultProps = {
@@ -26,11 +25,11 @@ const renderComponent = (props = {}, storeState = {}) => {
     ...storeState,
   };
 
-  const store = mockStore(defaultState);
+  const { reduxStore } = initializeMocks(defaultState);
 
   return render(
     <IntlProvider locale="en" messages={{}}>
-      <Provider store={store}>
+      <Provider store={reduxStore}>
         <DismissConfirmationModal {...defaultProps} />
       </Provider>
     </IntlProvider>,

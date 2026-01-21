@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
 import { useNavigate } from 'react-router';
+import { useSelector } from 'react-redux';
 import { ProductTour } from '@openedx/paragon';
 import { getConfig } from '@edx/frontend-platform/config';
 import { features } from '../../config';
@@ -44,13 +43,22 @@ import useHydrateAdminOnboardingData from './AdminOnboardingTours/data/useHydrat
  * All actual tour specific logic/content should live within the separate tour files.
  */
 const ProductTours = ({
-  enableLearnerPortal,
-  enterpriseSlug,
-  enterpriseId,
-  onboardingEnabled,
-  onboardingTourCompleted,
-  onboardingTourDismissed,
 }) => {
+  const {
+    enableLearnerPortal,
+    enterpriseSlug,
+    enterpriseId,
+    onboardingEnabled,
+    onboardingTourCompleted,
+    onboardingTourDismissed,
+  } = useSelector(state => ({
+    enableLearnerPortal: state.portalConfiguration.enableLearnerPortal,
+    enterpriseSlug: state.portalConfiguration.enterpriseSlug,
+    enterpriseId: state.portalConfiguration.enterpriseId,
+    onboardingEnabled: state.portalConfiguration.enterpriseFeatures?.enterpriseAdminOnboardingEnabled || false,
+    onboardingTourCompleted: state.enterpriseCustomerAdmin.onboardingTourCompleted,
+    onboardingTourDismissed: state.enterpriseCustomerAdmin.onboardingTourDismissed,
+  }));
   const { isLoading } = useHydrateAdminOnboardingData(enterpriseId);
   const navigate = useNavigate();
   const { FEATURE_CONTENT_HIGHLIGHTS } = getConfig();
@@ -140,22 +148,4 @@ const ProductTours = ({
   );
 };
 
-ProductTours.propTypes = {
-  enableLearnerPortal: PropTypes.bool.isRequired,
-  enterpriseSlug: PropTypes.string.isRequired,
-  enterpriseId: PropTypes.string.isRequired,
-  onboardingEnabled: PropTypes.bool.isRequired,
-  onboardingTourCompleted: PropTypes.bool.isRequired,
-  onboardingTourDismissed: PropTypes.bool.isRequired,
-};
-
-const mapStateToProps = state => ({
-  enableLearnerPortal: state.portalConfiguration.enableLearnerPortal,
-  enterpriseSlug: state.portalConfiguration.enterpriseSlug,
-  enterpriseId: state.portalConfiguration.enterpriseId,
-  onboardingEnabled: state.portalConfiguration.enterpriseFeatures?.enterpriseAdminOnboardingEnabled || false,
-  onboardingTourCompleted: state.enterpriseCustomerAdmin.onboardingTourCompleted,
-  onboardingTourDismissed: state.enterpriseCustomerAdmin.onboardingTourDismissed,
-});
-
-export default connect(mapStateToProps)(ProductTours);
+export default ProductTours;
