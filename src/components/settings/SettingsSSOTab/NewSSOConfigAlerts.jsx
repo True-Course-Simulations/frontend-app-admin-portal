@@ -1,12 +1,12 @@
 import React, { useContext, useState } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
 import {
   CheckCircle, Info, Warning,
 } from '@openedx/paragon/icons';
 import { Alert, Button } from '@openedx/paragon';
 import Cookies from 'universal-cookie';
 import { FormattedMessage } from '@edx/frontend-platform/i18n';
+import { useSelector } from 'react-redux';
 import { SSOConfigContext } from './SSOConfigContext';
 
 export const SSO_SETUP_COMPLETION_COOKIE_NAME = 'dismissed-sso-completion-alert';
@@ -18,13 +18,15 @@ const NewSSOConfigAlerts = ({
   untestedConfigs,
   liveConfigs,
   notConfigured,
-  contactEmail,
   closeAlerts,
-  enterpriseSlug,
   timedOutConfigs,
   erroredConfigs,
   setIsStepperOpen,
 }) => {
+  const { contactEmail, enterpriseSlug } = useSelector(state => ({
+    contactEmail: state.portalConfiguration.contactEmail,
+    enterpriseSlug: state.portalConfiguration.enterpriseSlug,
+  }));
   const { setProviderConfig } = useContext(SSOConfigContext);
 
   const configureOnClick = (config) => {
@@ -255,16 +257,9 @@ NewSSOConfigAlerts.propTypes = {
   liveConfigs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   notConfigured: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   closeAlerts: PropTypes.func.isRequired,
-  contactEmail: PropTypes.string.isRequired,
-  enterpriseSlug: PropTypes.string.isRequired,
   erroredConfigs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   timedOutConfigs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   setIsStepperOpen: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = state => ({
-  contactEmail: state.portalConfiguration.contactEmail,
-  enterpriseSlug: state.portalConfiguration.enterpriseSlug,
-});
-
-export default connect(mapStateToProps)(NewSSOConfigAlerts);
+export default NewSSOConfigAlerts;

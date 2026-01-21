@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   DataTable,
   Alert,
@@ -25,11 +24,17 @@ import { SETTINGS_ACCESS_EVENTS } from '../../../eventTracking';
 import { MAX_UNIVERSAL_LINKS } from '../data/constants';
 
 const SettingsAccessLinkManagement = ({
-  enterpriseUUID,
-  enterpriseSlug,
-  isUniversalLinkEnabled,
-  updatePortalConfiguration,
 }) => {
+  const {
+    enterpriseUUID,
+    enterpriseSlug,
+    isUniversalLinkEnabled,
+  } = useSelector(state => ({
+    enterpriseUUID: state.portalConfiguration.enterpriseId,
+    enterpriseSlug: state.portalConfiguration.enterpriseSlug,
+    isUniversalLinkEnabled: state.portalConfiguration.enableUniversalLink,
+  }));
+  const dispatch = useDispatch();
   const {
     links,
     loadingLinks,
@@ -50,7 +55,7 @@ const SettingsAccessLinkManagement = ({
 
     try {
       await LmsApiService.toggleEnterpriseCustomerUniversalLink(args);
-      updatePortalConfiguration({ enableUniversalLink: newEnableUniversalLink });
+      dispatch(updatePortalConfigurationEvent({ enableUniversalLink: newEnableUniversalLink }));
       setIsLinkManagementAlertModalOpen(false);
       setHasLinkManagementEnabledChangeError(false);
       refreshLinks();
@@ -235,21 +240,4 @@ const SettingsAccessLinkManagement = ({
   );
 };
 
-const mapStateToProps = (state) => ({
-  enterpriseUUID: state.portalConfiguration.enterpriseId,
-  enterpriseSlug: state.portalConfiguration.enterpriseSlug,
-  isUniversalLinkEnabled: state.portalConfiguration.enableUniversalLink,
-});
-
-const mapDispatchToProps = dispatch => ({
-  updatePortalConfiguration: data => dispatch(updatePortalConfigurationEvent(data)),
-});
-
-SettingsAccessLinkManagement.propTypes = {
-  enterpriseUUID: PropTypes.string.isRequired,
-  enterpriseSlug: PropTypes.string.isRequired,
-  isUniversalLinkEnabled: PropTypes.bool.isRequired,
-  updatePortalConfiguration: PropTypes.func.isRequired,
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(SettingsAccessLinkManagement);
+export default SettingsAccessLinkManagement;

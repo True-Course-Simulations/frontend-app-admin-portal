@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import { useState, useContext } from 'react';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import {
   Badge, Card, CardGrid, Dropdown, Icon, IconButton, useToggle,
 } from '@openedx/paragon';
@@ -14,8 +14,9 @@ import LmsApiService from '../../../data/services/LmsApiService';
 import { errorToggleModalText, errorDeleteConfigModalText, errorDeleteDataModalText } from '../data/constants';
 
 const ExistingSSOConfigs = ({
-  configs, refreshBool, setRefreshBool, enterpriseId, providerData,
+  configs, refreshBool, setRefreshBool, providerData,
 }) => {
+  const enterpriseId = useSelector(state => state.portalConfiguration.enterpriseId);
   const [errorIsOpen, openError, closeError] = useToggle(false);
   const [errorModalText, setErrorModalText] = useState();
   const { setProviderConfig, setCurrentStep } = useContext(SSOConfigContext);
@@ -183,11 +184,6 @@ ExistingSSOConfigs.propTypes = {
   providerData: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   refreshBool: PropTypes.bool.isRequired,
   setRefreshBool: PropTypes.func.isRequired,
-  enterpriseId: PropTypes.string.isRequired,
 };
 
-const mapStateToProps = state => ({
-  enterpriseId: state.portalConfiguration.enterpriseId,
-});
-
-export default connect(mapStateToProps)(ExistingSSOConfigs);
+export default ExistingSSOConfigs;

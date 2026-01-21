@@ -6,8 +6,8 @@ import { Info } from '@openedx/paragon/icons';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
-import { connect } from 'react-redux';
 import { FormattedMessage, useIntl } from '@edx/frontend-platform/i18n';
+import { useSelector } from 'react-redux';
 import LmsApiService from '../../../data/services/LmsApiService';
 import NewSSOConfigAlerts from './NewSSOConfigAlerts';
 import NewSSOConfigCard from './NewSSOConfigCard';
@@ -17,8 +17,9 @@ const FRESH_CONFIG_POLLING_INTERVAL = 30000;
 const UPDATED_CONFIG_POLLING_INTERVAL = 2000;
 
 const NewExistingSSOConfigs = ({
-  configs, refreshBool, setRefreshBool, enterpriseId, setPollingNetworkError, setIsStepperOpen,
+  configs, refreshBool, setRefreshBool, setPollingNetworkError, setIsStepperOpen,
 }) => {
+  const enterpriseId = useSelector(state => state.portalConfiguration.enterpriseId);
   const [inactiveConfigs, setInactiveConfigs] = useState([]);
   const [activeConfigs, setActiveConfigs] = useState([]);
   const [inProgressConfigs, setInProgressConfigs] = useState([]);
@@ -247,13 +248,8 @@ NewExistingSSOConfigs.propTypes = {
   configs: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   refreshBool: PropTypes.bool.isRequired,
   setRefreshBool: PropTypes.func.isRequired,
-  enterpriseId: PropTypes.string.isRequired,
   setPollingNetworkError: PropTypes.func.isRequired,
   setIsStepperOpen: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = state => ({
-  enterpriseId: state.portalConfiguration.enterpriseId,
-});
-
-export default connect(mapStateToProps)(NewExistingSSOConfigs);
+export default NewExistingSSOConfigs;

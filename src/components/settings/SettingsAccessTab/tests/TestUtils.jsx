@@ -1,11 +1,9 @@
 /* eslint-disable react/prop-types */
 import React from 'react';
 import { Provider } from 'react-redux';
-import configureMockStore from 'redux-mock-store';
 import PropTypes from 'prop-types';
 import { EnterpriseSubsidiesContext } from '../../../EnterpriseSubsidiesContext';
-
-const mockStore = configureMockStore();
+import { initializeMocks } from '../../../../testUtils';
 
 const ENTERPRISE_ID = 'test-enterprise';
 const NET_DAYS_UNTIL_EXPIRATION = 100;
@@ -18,6 +16,7 @@ export const MOCK_CONSTANTS = {
 const basicStore = {
   portalConfiguration: {
     enterpriseId: ENTERPRISE_ID,
+    enterpriseSlug: 'test-enterprise',
     enableUniversalLink: true,
   },
 };
@@ -30,17 +29,20 @@ const basicStore = {
 export const generateStore = ({
   portalConfiguration,
   coupons,
-}) => (mockStore({
-  ...basicStore,
-  portalConfiguration: {
-    ...basicStore.portalConfiguration,
-    ...portalConfiguration,
-  },
-  coupons: {
-    loading: false,
-    ...coupons,
-  },
-}));
+}) => {
+  const { reduxStore } = initializeMocks({
+    ...basicStore,
+    portalConfiguration: {
+      ...basicStore.portalConfiguration,
+      ...portalConfiguration,
+    },
+    coupons: {
+      loading: false,
+      ...coupons,
+    },
+  });
+  return reduxStore;
+};
 
 const MockSettingsContext = ({
   store,

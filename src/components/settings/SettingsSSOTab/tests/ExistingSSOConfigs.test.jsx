@@ -4,13 +4,12 @@ import {
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom/extend-expect';
-import configureMockStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
 import { Provider } from 'react-redux';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 import LmsApiService from '../../../../data/services/LmsApiService';
 import ExistingSSOConfigs from '../ExistingSSOConfigs';
 import handleErrors from '../../utils';
+import { initializeMocks } from '../../../../testUtils';
 
 jest.mock('../../utils');
 jest.mock('../../../../data/services/LmsApiService');
@@ -25,9 +24,7 @@ const initialStore = {
   },
 };
 
-const mockStore = configureMockStore([thunk]);
-const getMockStore = aStore => mockStore(aStore);
-const store = getMockStore({ ...initialStore });
+const getStore = (storeState = initialStore) => initializeMocks(storeState).reduxStore;
 
 const activeConfig = [
   {
@@ -68,13 +65,12 @@ describe('<ExistingSSOConfigs />', () => {
   it('renders active config card', async () => {
     const user = userEvent.setup();
     render(
-      <Provider store={store}>
+      <Provider store={getStore()}>
         <IntlProvider locale="en">
           <ExistingSSOConfigs
             configs={activeConfig}
             refreshBool
             setRefreshBool={mockSetRefreshBool}
-            enterpriseId={enterpriseId}
             providerData={providerData}
           />
         </IntlProvider>
@@ -99,13 +95,12 @@ describe('<ExistingSSOConfigs />', () => {
   it('renders inactive config card', async () => {
     const user = userEvent.setup();
     render(
-      <Provider store={store}>
+      <Provider store={getStore()}>
         <IntlProvider locale="en">
           <ExistingSSOConfigs
             configs={inactiveConfig}
             refreshBool
             setRefreshBool={mockSetRefreshBool}
-            enterpriseId={enterpriseId}
             providerData={providerData}
           />
         </IntlProvider>
@@ -126,13 +121,12 @@ describe('<ExistingSSOConfigs />', () => {
   it('renders incomplete config card', async () => {
     const user = userEvent.setup();
     render(
-      <Provider store={store}>
+      <Provider store={getStore()}>
         <IntlProvider locale="en">
           <ExistingSSOConfigs
             configs={incompleteConfig}
             refreshBool
             setRefreshBool={mockSetRefreshBool}
-            enterpriseId={enterpriseId}
             providerData={providerData}
           />
         </IntlProvider>
@@ -148,13 +142,12 @@ describe('<ExistingSSOConfigs />', () => {
   });
   it('renders multiple config cards', () => {
     render(
-      <Provider store={store}>
+      <Provider store={getStore()}>
         <IntlProvider locale="en">
           <ExistingSSOConfigs
             configs={activeConfig.concat(inactiveConfig)}
             refreshBool
             setRefreshBool={mockSetRefreshBool}
-            enterpriseId={enterpriseId}
             providerData={providerData}
           />
         </IntlProvider>
@@ -166,13 +159,12 @@ describe('<ExistingSSOConfigs />', () => {
   it('executes delete action on incomplete card', async () => {
     const user = userEvent.setup();
     render(
-      <Provider store={store}>
+      <Provider store={getStore()}>
         <IntlProvider locale="en">
           <ExistingSSOConfigs
             configs={incompleteConfig}
             refreshBool
             setRefreshBool={mockSetRefreshBool}
-            enterpriseId={enterpriseId}
             providerData={providerData}
           />
         </IntlProvider>
@@ -189,13 +181,12 @@ describe('<ExistingSSOConfigs />', () => {
       throw new Error({ response: { data: 'foobar' } });
     });
     render(
-      <Provider store={store}>
+      <Provider store={getStore()}>
         <IntlProvider locale="en">
           <ExistingSSOConfigs
             configs={incompleteConfig}
             refreshBool
             setRefreshBool={mockSetRefreshBool}
-            enterpriseId={enterpriseId}
             providerData={providerData}
           />
         </IntlProvider>
@@ -212,13 +203,12 @@ describe('<ExistingSSOConfigs />', () => {
       throw new Error({ response: { data: 'foobar' } });
     });
     render(
-      <Provider store={store}>
+      <Provider store={getStore()}>
         <IntlProvider locale="en">
           <ExistingSSOConfigs
             configs={incompleteConfig}
             refreshBool
             setRefreshBool={mockSetRefreshBool}
-            enterpriseId={enterpriseId}
             providerData={providerData}
           />
         </IntlProvider>
@@ -237,12 +227,11 @@ describe('<ExistingSSOConfigs />', () => {
     handleErrors.mockResolvedValue('ayylmao');
     render(
       <IntlProvider locale="en">
-        <Provider store={store}>
+        <Provider store={getStore()}>
           <ExistingSSOConfigs
             configs={incompleteConfig}
             refreshBool
             setRefreshBool={mockSetRefreshBool}
-            enterpriseId={enterpriseId}
             providerData={providerData}
           />
         </Provider>

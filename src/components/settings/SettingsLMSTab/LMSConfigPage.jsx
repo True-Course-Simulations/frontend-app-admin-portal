@@ -1,16 +1,15 @@
 import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
 import { cloneDeep } from 'lodash-es';
 
 import { useIntl } from '@edx/frontend-platform/i18n';
+import { useSelector } from 'react-redux';
 import FormContextWrapper from '../../forms/FormContextWrapper';
 import { getChannelMap } from '../../../utils';
 import { LMSFormWorkflowConfig } from './LMSFormWorkflowConfig';
 
 const LMSConfigPage = ({
   onClick,
-  enterpriseCustomerUuid,
   existingConfigFormData,
   existingConfigs,
   setExistingConfigFormData,
@@ -18,6 +17,7 @@ const LMSConfigPage = ({
   closeLmsStepper,
   lmsType,
 }) => {
+  const enterpriseCustomerUuid = useSelector(state => state.portalConfiguration.enterpriseId);
   const intl = useIntl();
 
   const channelMap = useMemo(() => getChannelMap(), []);
@@ -53,17 +53,12 @@ const LMSConfigPage = ({
     </div>
   );
 };
-const mapStateToProps = (state) => ({
-  enterpriseCustomerUuid: state.portalConfiguration.enterpriseId,
-});
-
 LMSConfigPage.defaultProps = {
   existingConfigs: {},
   lmsType: '',
 };
 
 LMSConfigPage.propTypes = {
-  enterpriseCustomerUuid: PropTypes.string.isRequired,
   onClick: PropTypes.func.isRequired,
   existingConfigFormData: PropTypes.shape({}).isRequired,
   existingConfigs: PropTypes.shape({}),
@@ -73,4 +68,4 @@ LMSConfigPage.propTypes = {
   lmsType: PropTypes.string,
 };
 
-export default connect(mapStateToProps)(LMSConfigPage);
+export default LMSConfigPage;

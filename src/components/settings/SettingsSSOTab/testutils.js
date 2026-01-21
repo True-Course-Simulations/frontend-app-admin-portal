@@ -1,5 +1,4 @@
-import configureMockStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
+import { initializeMocks } from '../../../testUtils';
 
 const enterpriseId = 'an-enterprise';
 const initialStore = {
@@ -11,8 +10,10 @@ const initialStore = {
   },
 };
 
-const mockStore = configureMockStore([thunk]);
-const getMockStore = aStore => mockStore(aStore);
+const getMockStore = (aStore) => {
+  const { reduxStore } = initializeMocks(aStore);
+  return reduxStore;
+};
 
 export {
   getMockStore,

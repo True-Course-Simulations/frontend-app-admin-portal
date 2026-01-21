@@ -183,7 +183,6 @@ const setupNewExistingSSOConfigs = (configs) => {
         <SSOConfigContext.Provider value={contextValue}>
           <Provider store={store}>
             <NewExistingSSOConfigs
-              enterpriseId={enterpriseId}
               configs={configs}
               refreshBool={false}
               setRefreshBool={mockSetRefreshBool}
