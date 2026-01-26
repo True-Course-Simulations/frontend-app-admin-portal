@@ -1,11 +1,11 @@
 import React, { useCallback, useState } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
 import dayjs from 'dayjs';
 import {
   ActionRow, Alert, Form, Hyperlink, ModalDialog, Spinner, StatefulButton,
 } from '@openedx/paragon';
 import { logError } from '@edx/frontend-platform/logging';
+import { useSelector } from 'react-redux';
 
 import { useRequestState } from './LicenseManagementModalHook';
 import { validateEmailTemplateForm } from '../../../../data/validation/email';
@@ -51,9 +51,9 @@ const LicenseManagementRemindModal = ({
   usersToRemind,
   remindAllUsers,
   totalToRemind,
-  contactEmail,
   activeFilters,
 }) => {
+  const contactEmail = useSelector(state => state.portalConfiguration.contactEmail);
   const [requestState, setRequestState, initialRequestState] = useRequestState(isOpen);
 
   const [emailTemplate, setEmailTemplate] = useState(generateEmailTemplate(contactEmail));
@@ -240,7 +240,6 @@ const LicenseManagementRemindModal = ({
 LicenseManagementRemindModal.defaultProps = {
   remindAllUsers: false,
   totalToRemind: -1,
-  contactEmail: null,
   onSubmit: undefined,
 };
 
@@ -262,7 +261,6 @@ LicenseManagementRemindModal.propTypes = {
   ).isRequired,
   remindAllUsers: PropTypes.bool,
   totalToRemind: PropTypes.number,
-  contactEmail: PropTypes.string,
   activeFilters: PropTypes.arrayOf(
     PropTypes.shape({
       name: PropTypes.string,
@@ -272,8 +270,4 @@ LicenseManagementRemindModal.propTypes = {
   ).isRequired,
 };
 
-const mapStateToProps = state => ({
-  contactEmail: state.portalConfiguration.contactEmail,
-});
-
-export default connect(mapStateToProps)(LicenseManagementRemindModal);
+export default LicenseManagementRemindModal;

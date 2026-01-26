@@ -1,6 +1,4 @@
 import React, { useContext, useMemo } from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
 import { Tabs, Tab } from '@openedx/paragon';
 import {
   useNavigate,
@@ -8,6 +6,7 @@ import {
   useParams,
   Routes,
 } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 import { useIntl } from '@edx/frontend-platform/i18n';
 import { SubsidyRequestsContext } from '../subsidy-requests';
@@ -23,7 +22,8 @@ import {
 import { SUPPORTED_SUBSIDY_TYPES } from '../../data/constants/subsidyRequests';
 import NotFoundPage from '../NotFoundPage';
 
-const SubscriptionTabs = ({ enterpriseSlug }) => {
+const SubscriptionTabs = () => {
+  const enterpriseSlug = useSelector(state => state.portalConfiguration.enterpriseSlug);
   const { subsidyRequestConfiguration, subsidyRequestsCounts } = useContext(SubsidyRequestsContext);
 
   const isSubsidyRequestsEnabled = subsidyRequestConfiguration?.subsidyRequestsEnabled;
@@ -122,12 +122,4 @@ const SubscriptionTabs = ({ enterpriseSlug }) => {
   );
 };
 
-SubscriptionTabs.propTypes = {
-  enterpriseSlug: PropTypes.string.isRequired,
-};
-
-const mapStateToProps = state => ({
-  enterpriseSlug: state.portalConfiguration.enterpriseSlug,
-});
-
-export default connect(mapStateToProps)(SubscriptionTabs);
+export default SubscriptionTabs;

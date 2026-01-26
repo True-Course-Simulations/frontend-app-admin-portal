@@ -4,21 +4,20 @@ import {
   act, cleanup, render, screen, waitFor,
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import configureMockStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import { logError } from '@edx/frontend-platform/logging';
+import { initializeMocks } from '../../../../../testUtils';
 
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 import LicenseManagerApiService from '../../../../../data/services/LicenseManagerAPIService';
 import LicenseManagementRemindModal from '../LicenseManagementRemindModal';
 import { ASSIGNED } from '../../../data/constants';
 
-const mockStore = configureMockStore();
-const store = mockStore({
+const store = initializeMocks({
   portalConfiguration: {
     enterpriseId: 'test-enterprise-id',
   },
-});
+}).reduxStore;
 jest.mock('../../../../../data/services/LicenseManagerAPIService', () => ({
   __esModule: true,
   default: {

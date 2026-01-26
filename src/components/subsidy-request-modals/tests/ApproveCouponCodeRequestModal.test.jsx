@@ -2,6 +2,8 @@ import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
+import { Provider } from 'react-redux';
+import { initializeMocks } from '../../../testUtils';
 
 import { ApproveCouponCodeRequestModal } from '../ApproveCouponCodeRequestModal';
 import EnterpriseAccessApiService from '../../../data/services/EnterpriseAccessApiService';
@@ -19,11 +21,28 @@ jest.mock('../../../data/services/EnterpriseAccessApiService', () => ({
   approveCouponCodeRequests: jest.fn(),
 }));
 
-const ApproveCouponCodeRequestModalWrapper = ({ ...rest }) => (
-  <IntlProvider locale="en">
-    <ApproveCouponCodeRequestModal {...rest} />
-  </IntlProvider>
-);
+const storeState = {
+  coupons: {
+    data: {
+      results: [
+        {
+          id: 1,
+        },
+      ],
+    },
+  },
+};
+
+const ApproveCouponCodeRequestModalWrapper = ({ ...rest }) => {
+  const { reduxStore } = initializeMocks(storeState);
+  return (
+    <Provider store={reduxStore}>
+      <IntlProvider locale="en">
+        <ApproveCouponCodeRequestModal {...rest} />
+      </IntlProvider>
+    </Provider>
+  );
+};
 
 describe('<ApproveCouponCodeRequestModal />', () => {
   const basicProps = {
@@ -31,13 +50,6 @@ describe('<ApproveCouponCodeRequestModal />', () => {
       uuid: TEST_REQUEST_UUID,
       courseId: TEST_COURSE_RUN_ID,
       enterpriseCustomerUUID: TEST_ENTERPRISE_UUID,
-    },
-    coupons: {
-      results: [
-        {
-          id: 1,
-        },
-      ],
     },
     isOpen: true,
     onSuccess: jest.fn(),

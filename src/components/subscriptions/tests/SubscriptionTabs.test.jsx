@@ -1,14 +1,12 @@
 import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { Provider } from 'react-redux';
-import thunk from 'redux-thunk';
 import {
   screen,
   cleanup,
   render,
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import configureMockStore from 'redux-mock-store';
 import { Routes, Route, MemoryRouter } from 'react-router-dom';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 
@@ -19,6 +17,7 @@ import {
   MANAGE_REQUESTS_TAB,
   SUBSCRIPTION_TABS_LABELS,
 } from '../data/constants';
+import { initializeMocks } from '../../../testUtils';
 
 const MANAGE_LEARNERS_MOCK_CONTENT = 'learners';
 const MANAGE_REQUESTS_MOCK_CONTENT = 'requests';
@@ -46,9 +45,7 @@ const initialStore = {
   },
 };
 
-const mockStore = configureMockStore([thunk]);
-const getMockStore = store => mockStore(store);
-const store = getMockStore({ ...initialStore });
+const store = initializeMocks(initialStore).reduxStore;
 
 const SubscriptionTabsWrapper = ({
   subsidyRequestConfiguration,

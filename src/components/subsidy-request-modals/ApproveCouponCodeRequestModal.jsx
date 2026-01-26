@@ -9,10 +9,10 @@ import {
   StatefulButton,
   Skeleton,
 } from '@openedx/paragon';
-import { connect } from 'react-redux';
 import { Info } from '@openedx/paragon/icons';
 import { logError } from '@edx/frontend-platform/logging';
 import { camelCaseObject } from '@edx/frontend-platform/utils';
+import { useSelector } from 'react-redux';
 import { useApplicableCoupons } from './data/hooks';
 import EnterpriseAccessApiService from '../../data/services/EnterpriseAccessApiService';
 import { formatTimestamp } from '../../utils';
@@ -23,11 +23,13 @@ export const ApproveCouponCodeRequestModal = ({
     courseId,
     enterpriseCustomerUUID,
   },
-  coupons,
   isOpen,
   onSuccess,
   onClose,
 }) => {
+  const coupons = useSelector(state => (
+    state.coupons.data ? camelCaseObject(state.coupons.data) : { results: [] }
+  ));
   const courseRunIds = useMemo(() => [courseId], [courseId]);
   const {
     applicableCoupons,
@@ -193,19 +195,6 @@ ApproveCouponCodeRequestModal.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   onSuccess: PropTypes.func.isRequired,
   onClose: PropTypes.func.isRequired,
-  coupons: PropTypes.shape({
-    results: PropTypes.arrayOf(PropTypes.shape({
-      id: PropTypes.number,
-      endDate: PropTypes.string,
-      title: PropTypes.string,
-      numUnassigned: PropTypes.number,
-      maxUses: PropTypes.number,
-    })),
-  }).isRequired,
 };
 
-const mapStateToProps = state => ({
-  coupons: state.coupons.data ? camelCaseObject(state.coupons.data) : { results: [] },
-});
-
-export default connect(mapStateToProps)(ApproveCouponCodeRequestModal);
+export default ApproveCouponCodeRequestModal;

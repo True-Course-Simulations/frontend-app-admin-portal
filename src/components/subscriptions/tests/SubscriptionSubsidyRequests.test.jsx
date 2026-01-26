@@ -1,13 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Provider } from 'react-redux';
-import thunk from 'redux-thunk';
 import {
   screen,
   render,
   cleanup,
 } from '@testing-library/react';
-import configureMockStore from 'redux-mock-store';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 import '@testing-library/jest-dom/extend-expect';
 import userEvent from '@testing-library/user-event';
@@ -17,6 +15,7 @@ import { SubscriptionContext } from '../SubscriptionData';
 import { SUBSIDY_REQUESTS_TYPES } from '../../SubsidyRequestManagementTable/data/constants';
 import { SUBSIDY_REQUEST_STATUS } from '../../../data/constants/subsidyRequests';
 import { SubsidyRequestsContext } from '../../subsidy-requests';
+import { initializeMocks } from '../../../testUtils';
 
 const mockLicenseRequest = {
   uuid: 'test-license-request-uuid', requestStatus: SUBSIDY_REQUESTS_TYPES.REQUESTED,
@@ -137,9 +136,7 @@ const initialSubscriptionsData = {
   loading: false,
 };
 
-const mockStore = configureMockStore([thunk]);
-const getMockStore = store => mockStore(store);
-const store = getMockStore({ ...initialStore });
+const store = initializeMocks(initialStore).reduxStore;
 
 const mockDecrementLicenseRequestCount = jest.fn();
 const defaultSubsidyRequestsContextValue = { decrementLicenseRequestCount: mockDecrementLicenseRequestCount };

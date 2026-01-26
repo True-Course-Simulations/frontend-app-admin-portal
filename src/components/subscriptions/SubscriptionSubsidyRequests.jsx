@@ -1,7 +1,6 @@
 import React, { useState, useContext } from 'react';
-import PropTypes from 'prop-types';
 import { Stack } from '@openedx/paragon';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 import { FormattedMessage } from '@edx/frontend-platform/i18n';
 import { SubsidyRequestsContext } from '../subsidy-requests';
@@ -16,7 +15,8 @@ import { SubscriptionContext } from './SubscriptionData';
 import LoadingMessage from '../LoadingMessage';
 import { SUPPORTED_SUBSIDY_TYPES, SUBSIDY_REQUEST_STATUS } from '../../data/constants/subsidyRequests';
 
-const SubscriptionSubsidyRequests = ({ enterpriseId }) => {
+const SubscriptionSubsidyRequests = () => {
+  const enterpriseId = useSelector(state => state.portalConfiguration.enterpriseId);
   const {
     isLoading,
     requests,
@@ -117,12 +117,4 @@ const SubscriptionSubsidyRequests = ({ enterpriseId }) => {
   );
 };
 
-SubscriptionSubsidyRequests.propTypes = {
-  enterpriseId: PropTypes.string.isRequired,
-};
-
-const mapStateToProps = state => ({
-  enterpriseId: state.portalConfiguration.enterpriseId,
-});
-
-export default connect(mapStateToProps)(SubscriptionSubsidyRequests);
+export default SubscriptionSubsidyRequests;

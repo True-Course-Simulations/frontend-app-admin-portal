@@ -34,7 +34,7 @@ jest.mock('@edx/frontend-enterprise-utils', () => {
 const ExpirationModalsWithContext = ({ detailState }) => (
   <IntlProvider locale="en">
     <SubscriptionManagementContext detailState={detailState}>
-      <SubscriptionExpirationModals enterpriseId="fake-uuid" />
+      <SubscriptionExpirationModals />
     </SubscriptionManagementContext>
   </IntlProvider>
 );

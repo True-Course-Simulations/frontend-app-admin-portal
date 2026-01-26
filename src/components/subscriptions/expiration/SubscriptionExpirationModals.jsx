@@ -1,9 +1,8 @@
 import React, { useContext, useMemo, useEffect } from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
 import Cookies from 'universal-cookie';
 import { useToggle } from '@openedx/paragon';
 import { sendEnterpriseTrackEvent } from '@edx/frontend-enterprise-utils';
+import { useSelector } from 'react-redux';
 
 import SubscriptionExpiredModal from './SubscriptionExpiredModal';
 import SubscriptionExpiringModal from './SubscriptionExpiringModal';
@@ -26,7 +25,8 @@ import { SubscriptionDetailContext } from '../SubscriptionDetailContextProvider'
  * @param {string} enterpriseId The UUID for an Enterprise Customer.
  * @returns Component containing modals related to subscription expiration.
  */
-const SubscriptionExpirationModals = ({ enterpriseId }) => {
+const SubscriptionExpirationModals = () => {
+  const enterpriseId = useSelector(state => state.portalConfiguration.enterpriseId);
   const {
     subscription: {
       agreementNetDaysUntilExpiration, showExpirationNotifications,
@@ -143,12 +143,4 @@ const SubscriptionExpirationModals = ({ enterpriseId }) => {
   );
 };
 
-const mapStateToProps = state => ({
-  enterpriseId: state.portalConfiguration.enterpriseId,
-});
-
-SubscriptionExpirationModals.propTypes = {
-  enterpriseId: PropTypes.string.isRequired,
-};
-
-export default connect(mapStateToProps)(SubscriptionExpirationModals);
+export default SubscriptionExpirationModals;
