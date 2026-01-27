@@ -1,17 +1,14 @@
 import React from 'react';
-import configureMockStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
-import { render } from '@testing-library/react';
+import { Provider } from 'react-redux';
+import { render, waitFor } from '@testing-library/react';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 
 import EnterpriseIndexPage from './index';
-
-const mockStore = configureMockStore([thunk]);
+import { initializeMocks } from '../../testUtils';
 
 describe('<EnterpriseIndexPage />', () => {
   let store;
   let dispatchSpy;
-  const clearPortalConfiguration = jest.fn();
 
   const initialState = {
     table: {
@@ -36,17 +33,21 @@ describe('<EnterpriseIndexPage />', () => {
   };
 
   beforeEach(() => {
-    store = mockStore(initialState);
+    const { reduxStore } = initializeMocks(initialState);
+    store = reduxStore;
     dispatchSpy = jest.spyOn(store, 'dispatch');
     render((
-      <IntlProvider locale="en">
-        <EnterpriseIndexPage clearPortalConfiguration={clearPortalConfiguration} store={store} />
-      </IntlProvider>
+      <Provider store={store}>
+        <IntlProvider locale="en">
+          <EnterpriseIndexPage />
+        </IntlProvider>
+      </Provider>
     ));
   });
 
   it('clearPortalConfiguration dispatches clearPortalConfiguration action', () => {
-    clearPortalConfiguration();
-    expect(dispatchSpy).toHaveBeenCalled();
+    return waitFor(() => {
+      expect(dispatchSpy).toHaveBeenCalled();
+    });
   });
 });

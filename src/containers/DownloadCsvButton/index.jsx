@@ -1,23 +1,35 @@
-import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { fetchCsv, clearCsv } from '../../data/actions/csv';
 import DownloadCsvButton from '../../components/DownloadCsvButton';
 
-const mapStateToProps = (state, ownProps) => {
-  const csvState = state.csv[ownProps.id] || {};
-  return {
-    enterpriseId: state.portalConfiguration.enterpriseId,
-    csvLoading: csvState.csvLoading,
+const DownloadCsvButtonContainer = (props) => {
+  const dispatch = useDispatch();
+  const { enterpriseId, csvLoading } = useSelector((state) => {
+    const csvState = state.csv[props.id] || {};
+    return {
+      enterpriseId: state.portalConfiguration.enterpriseId,
+      csvLoading: csvState.csvLoading,
+    };
+  });
+
+  const fetchCsvAction = (fetchMethod) => {
+    dispatch(fetchCsv(props.id, fetchMethod));
   };
+
+  const clearCsvAction = () => {
+    dispatch(clearCsv(props.id));
+  };
+
+  return (
+    <DownloadCsvButton
+      {...props}
+      enterpriseId={enterpriseId}
+      csvLoading={csvLoading}
+      fetchCsv={fetchCsvAction}
+      clearCsv={clearCsvAction}
+    />
+  );
 };
 
-const mapDispatchToProps = (dispatch, ownProps) => ({
-  fetchCsv: (fetchMethod) => {
-    dispatch(fetchCsv(ownProps.id, fetchMethod));
-  },
-  clearCsv: () => {
-    dispatch(clearCsv(ownProps.id));
-  },
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(DownloadCsvButton);
+export default DownloadCsvButtonContainer;

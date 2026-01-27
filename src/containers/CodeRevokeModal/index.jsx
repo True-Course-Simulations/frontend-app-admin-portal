@@ -1,31 +1,45 @@
-import { connect } from 'react-redux';
-
 import CodeRevokeModal from '../../components/CodeRevokeModal';
 
 import sendCodeRevoke from '../../data/actions/codeRevoke';
 import { EMAIL_TEMPLATE_SOURCE_NEW_EMAIL } from '../../data/constants/emailTemplate';
+import { useDispatch, useSelector } from 'react-redux';
 
-const mapStateToProps = (state) => {
-  const initialValues = state.emailTemplate.emailTemplateSource === EMAIL_TEMPLATE_SOURCE_NEW_EMAIL
-    ? state.emailTemplate.default.revoke : state.emailTemplate.revoke;
-
-  return {
+const CodeRevokeModalContainer = (props) => {
+  const dispatch = useDispatch();
+  const {
     initialValues,
-    enableReinitialize: true,
-    enterpriseSlug: state.portalConfiguration.enterpriseSlug,
-    enableLearnerPortal: state.portalConfiguration.enableLearnerPortal,
-  };
-};
+    enterpriseSlug,
+    enableLearnerPortal,
+  } = useSelector((state) => {
+    const initialValues = state.emailTemplate.emailTemplateSource === EMAIL_TEMPLATE_SOURCE_NEW_EMAIL
+      ? state.emailTemplate.default.revoke : state.emailTemplate.revoke;
 
-const mapDispatchToProps = dispatch => ({
-  sendCodeRevoke: (couponId, options) => new Promise((resolve, reject) => {
+    return {
+      initialValues,
+      enterpriseSlug: state.portalConfiguration.enterpriseSlug,
+      enableLearnerPortal: state.portalConfiguration.enableLearnerPortal,
+    };
+  });
+
+  const sendCodeRevokeAction = (couponId, options) => new Promise((resolve, reject) => {
     dispatch(sendCodeRevoke({
       couponId,
       options,
       onSuccess: (response) => { resolve(response); },
       onError: (error) => { reject(error); },
     }));
-  }),
-});
+  });
 
-export default connect(mapStateToProps, mapDispatchToProps)(CodeRevokeModal);
+  return (
+    <CodeRevokeModal
+      {...props}
+      initialValues={initialValues}
+      enableReinitialize
+      enterpriseSlug={enterpriseSlug}
+      enableLearnerPortal={enableLearnerPortal}
+      sendCodeRevoke={sendCodeRevokeAction}
+    />
+  );
+};
+
+export default CodeRevokeModalContainer;

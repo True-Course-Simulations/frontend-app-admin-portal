@@ -4,8 +4,6 @@ import PropTypes from 'prop-types';
 import userEvent from '@testing-library/user-event';
 import { within } from '@testing-library/dom';
 import { MemoryRouter } from 'react-router-dom';
-import configureMockStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
 import { render, screen } from '@testing-library/react';
 
 import '@testing-library/jest-dom/extend-expect';
@@ -17,6 +15,7 @@ import { MULTI_USE } from '../../data/constants/coupons';
 
 import CouponDetails from './index';
 import { EMAIL_TEMPLATE_SOURCE_NEW_EMAIL } from '../../data/constants/emailTemplate';
+import { initializeMocks } from '../../testUtils';
 // import CodeReminderModal from '../CodeReminderModal';
 // import CodeAssignmentModal from '../../components/CodeAssignmentModal';
 import {
@@ -24,7 +23,6 @@ import {
 } from '../../components/CouponDetails/constants';
 
 const enterpriseId = 'test-enterprise';
-const mockStore = configureMockStore([thunk]);
 
 const sampleEmailTemplate = {
   'email-address': '',
@@ -83,6 +81,8 @@ const initialState = {
   },
 };
 
+const createStore = (state = initialState) => initializeMocks(state).reduxStore;
+
 const initialCouponData = {
   id: 1,
   title: 'test-title',
@@ -92,9 +92,11 @@ const initialCouponData = {
   available: true,
 };
 
-const CouponDetailsWrapper = props => (
+const CouponDetailsWrapper = ({ store, ...props }) => {
+  const resolvedStore = store || createStore();
+  return (
   <MemoryRouter>
-    <Provider store={props.store}>
+    <Provider store={resolvedStore}>
       <IntlProvider locale="en">
         <CouponDetails
           couponData={initialCouponData}
@@ -104,9 +106,6 @@ const CouponDetailsWrapper = props => (
     </Provider>
   </MemoryRouter>
 );
-
-CouponDetailsWrapper.defaultProps = {
-  store: mockStore({ ...initialState }),
 };
 
 CouponDetailsWrapper.propTypes = {
@@ -176,7 +175,7 @@ describe('CouponDetails container', () => {
       expect(screen.getByText('Download full report (CSV)')).toBeInTheDocument();
     });
     it('renders the unassigned table by default', () => {
-      store = mockStore({
+      store = createStore({
         ...initialState,
         table: {
           'coupon-details': sampleTableData,
@@ -196,7 +195,7 @@ describe('CouponDetails container', () => {
       [COUPON_FILTERS.redeemed.value],
     ])('renders the correct table columns for each coupon filter type %s', async (filterType) => {
       const user = userEvent.setup();
-      store = mockStore({
+      store = createStore({
         ...initialState,
         table: {
           'coupon-details': sampleTableData,
@@ -211,7 +210,7 @@ describe('CouponDetails container', () => {
     });
 
     it('shows Assign button for an available coupon', () => {
-      store = mockStore({
+      store = createStore({
         ...initialState,
         table: {
           'coupon-details': sampleTableData,
@@ -232,7 +231,7 @@ describe('CouponDetails container', () => {
     });
 
     it('does not show Assign button for an unavailable coupon', () => {
-      store = mockStore({
+      store = createStore({
         ...initialState,
         table: {
           'coupon-details': sampleTableData,
@@ -362,7 +361,7 @@ describe('CouponDetails container', () => {
   });
 
   it('enables bulk action select when unassignedCodes !== 0', () => {
-    store = mockStore({
+    store = createStore({
       ...initialState,
       table: {
         'coupon-details': sampleTableData,

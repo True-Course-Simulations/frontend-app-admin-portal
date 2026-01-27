@@ -1,16 +1,14 @@
 import React from 'react';
-import configureMockStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 
 import DownloadCsvButton from './index';
+import { initializeMocks } from '../../testUtils';
 
-const mockStore = configureMockStore([thunk]);
 const enterpriseId = 'test-enterprise';
-const store = mockStore({
+const initialState = {
   portalConfiguration: {
     enterpriseId,
   },
@@ -20,12 +18,15 @@ const store = mockStore({
   table: {
     enrollments: {},
   },
-});
+};
 
 describe('<DownloadCsvButton />', () => {
   let dispatchSpy;
+  let store;
 
   beforeEach(() => {
+    const { reduxStore } = initializeMocks(initialState);
+    store = reduxStore;
     dispatchSpy = jest.spyOn(store, 'dispatch').mockImplementation(() => Promise.resolve());
     render((
       <MemoryRouter>

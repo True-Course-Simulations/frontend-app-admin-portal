@@ -3,14 +3,13 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import PropTypes from 'prop-types';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
-import configureMockStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
 import { render, screen, waitFor } from '@testing-library/react';
 import { breakpoints } from '@openedx/paragon';
 import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 import '@testing-library/jest-dom';
 import { axiosMock } from '../../setupTest';
+import { initializeMocks } from '../../testUtils';
 
 import EnterpriseApp from './index';
 
@@ -70,8 +69,6 @@ getAuthenticatedUser.mockReturnValue({
   username: 'foo',
 });
 
-const mockStore = configureMockStore([thunk]);
-
 const initialState = {
   dashboardAnalytics: {},
   portalConfiguration: {
@@ -94,6 +91,8 @@ const initialState = {
   dashboardInsights: {},
 };
 
+const createStore = (state = initialState) => initializeMocks(state).reduxStore;
+
 const EnterpriseAppWrapper = ({ store, initialEntries, ...props }) => (
   <MemoryRouter initialEntries={initialEntries || ['/test-enterprise-slug/admin/learners']}>
     <Provider store={store}>
@@ -110,7 +109,7 @@ const EnterpriseAppWrapper = ({ store, initialEntries, ...props }) => (
 );
 
 EnterpriseAppWrapper.defaultProps = {
-  store: mockStore({ ...initialState }),
+  store: createStore(),
 };
 
 EnterpriseAppWrapper.propTypes = {
@@ -122,7 +121,7 @@ describe('<EnterpriseApp />', () => {
     axiosMock.reset();
   });
   it('renders not found page correctly', async () => {
-    const store = mockStore({
+    const { reduxStore } = initializeMocks({
       ...initialState,
       portalConfiguration: {
         ...initialState.portalConfiguration,
@@ -132,7 +131,7 @@ describe('<EnterpriseApp />', () => {
     const { container } = render((
       <EnterpriseAppWrapper
         initialEntries={['/foo/bar']}
-        store={store}
+        store={reduxStore}
       />
     ));
     const notFoundInstance = await screen.findByText('Oops, sorry we can\'t find that page!');
@@ -141,7 +140,7 @@ describe('<EnterpriseApp />', () => {
   });
 
   it('renders the load page correctly', async () => {
-    const store = mockStore({
+    const { reduxStore } = initializeMocks({
       ...initialState,
       portalConfiguration: {
         ...initialState.portalConfiguration,
@@ -150,7 +149,7 @@ describe('<EnterpriseApp />', () => {
     });
 
     render((
-      <EnterpriseAppWrapper store={store} />
+      <EnterpriseAppWrapper store={reduxStore} />
     ));
     const AppSkeleton = await screen.findByTestId('enterprise-app-skeleton');
     expect(AppSkeleton).toBeInTheDocument();
@@ -158,7 +157,7 @@ describe('<EnterpriseApp />', () => {
 
   it('renders error page correctly', () => {
     const err = 'test error';
-    const store = mockStore({
+    const { reduxStore } = initializeMocks({
       ...initialState,
       portalConfiguration: {
         ...initialState.portalConfiguration,
@@ -167,7 +166,7 @@ describe('<EnterpriseApp />', () => {
     });
 
     const { container } = render((
-      <EnterpriseAppWrapper store={store} />
+      <EnterpriseAppWrapper store={reduxStore} />
     ));
     expect(container.textContent).toContain(err);
   });
@@ -191,7 +190,7 @@ describe('<EnterpriseApp />', () => {
       const initialWidth = global.innerWidth;
       global.innerWidth = breakpoints.small.minWidth;
 
-      const store = mockStore({
+      const { reduxStore } = initializeMocks({
         ...initialState,
         sidebar: {
           ...initialState.sidebar,
@@ -199,10 +198,10 @@ describe('<EnterpriseApp />', () => {
         },
       });
 
-      const { rerender } = render(<EnterpriseAppWrapper store={store} />);
+      const { rerender } = render(<EnterpriseAppWrapper store={reduxStore} />);
 
       rerender(<EnterpriseAppWrapper
-        store={store}
+        store={reduxStore}
         location={{
           pathname: '/test-enterprise-slug/admin/codes',
         }}
@@ -215,28 +214,28 @@ describe('<EnterpriseApp />', () => {
   });
 
   it('toggles sidebar toggle on componentWillUnmount', () => {
-    const store = mockStore({
+    const { reduxStore } = initializeMocks({
       ...initialState,
       sidebar: {
         ...initialState.sidebar,
         isExpandedByToggle: true,
       },
     });
+    const dispatchSpy = jest.spyOn(reduxStore, 'dispatch');
 
     const { unmount } = render((
       <EnterpriseAppWrapper
-        store={store}
+        store={reduxStore}
       />
     ));
-
-    // clear existing actions
-    store.clearActions();
 
     // unmount component to trigger componentWillUnmount lifecycle method
     unmount();
 
     // ensure the TOGGLE_SIDEBAR_TOGGLE action is dispatched
-    const actions = store.getActions().filter(action => action.type === TOGGLE_SIDEBAR_TOGGLE);
-    expect(actions).toHaveLength(1);
+    const toggleActions = dispatchSpy.mock.calls
+      .map((call) => call[0])
+      .filter((action) => action?.type === TOGGLE_SIDEBAR_TOGGLE);
+    expect(toggleActions).toHaveLength(1);
   });
 });

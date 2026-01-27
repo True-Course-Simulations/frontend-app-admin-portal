@@ -2,10 +2,7 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import PropTypes from 'prop-types';
 import { MemoryRouter } from 'react-router-dom';
-import configureMockStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
 import { fireEvent, render, screen } from '@testing-library/react';
-import { last } from 'lodash-es';
 import '@testing-library/jest-dom';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 
@@ -18,8 +15,8 @@ import {
   SET_EMAIL_TEMPLATE_SOURCE,
 } from '../../data/constants/emailTemplate';
 import { configuration } from '../../config';
+import { initializeMocks } from '../../testUtils';
 
-const mockStore = configureMockStore([thunk]);
 const enterpriseSlug = 'bearsRus';
 const initialState = {
   emailTemplate: {
@@ -80,9 +77,11 @@ const codeRevokeRequestData = (numCodes) => {
   };
 };
 
-const CodeRevokeModalWrapper = props => (
+const CodeRevokeModalWrapper = ({ store, ...props }) => {
+  const resolvedStore = store || initializeMocks(initialState).reduxStore;
+  return (
   <MemoryRouter>
-    <Provider store={props.store}>
+    <Provider store={resolvedStore}>
       <IntlProvider locale="en">
         <CodeRevokeModal
           couponId={couponId}
@@ -95,10 +94,6 @@ const CodeRevokeModalWrapper = props => (
     </Provider>
   </MemoryRouter>
 );
-
-const store = mockStore({ ...initialState });
-CodeRevokeModalWrapper.defaultProps = {
-  store,
 };
 
 CodeRevokeModalWrapper.propTypes = {
@@ -116,7 +111,8 @@ describe('CodeRevokeModalWrapper', () => {
 
   it('renders individual assignment revoke modal', async () => {
     spy = jest.spyOn(EcommerceApiService, 'sendCodeRevoke');
-    render(<CodeRevokeModalWrapper data={data} />);
+    const { reduxStore } = initializeMocks(initialState);
+    render(<CodeRevokeModalWrapper data={data} store={reduxStore} />);
     const modalTitle = await screen.findByTestId('modal-title');
     expect(modalTitle.textContent).toEqual(couponTitle);
 
@@ -131,9 +127,11 @@ describe('CodeRevokeModalWrapper', () => {
   it('renders bulk assignment revoke modal', async () => {
     spy = jest.spyOn(EcommerceApiService, 'sendCodeRevoke');
     const codeRevokeData = [data, data];
+    const { reduxStore } = initializeMocks(initialState);
     render(<CodeRevokeModalWrapper
       data={{ ...codeRevokeData, selectedCodes: codeRevokeData }}
       isBulkRevoke
+      store={reduxStore}
     />);
     expect(await screen.getByTestId('bulk-selected-codes').textContent).toEqual('Selected codes: 2');
     const RevokeSaveBtn = await screen.getByTestId('revoke-submit-btn');
@@ -144,13 +142,14 @@ describe('CodeRevokeModalWrapper', () => {
   it('returns the correct data if learner portal is not enabled', async () => {
     spy = jest.spyOn(EcommerceApiService, 'sendCodeRevoke');
     const codeRevokeData = [data, data];
+    const { reduxStore } = initializeMocks({
+      ...initialState,
+      portalConfiguration: { ...initialState.portalConfiguration, enableLearnerPortal: false },
+    });
     render(<CodeRevokeModalWrapper
       data={{ ...codeRevokeData, selectedCodes: codeRevokeData }}
       isBulkRevoke
-      store={mockStore({
-        ...initialState,
-        portalConfiguration: { ...initialState.portalConfiguration, enableLearnerPortal: false },
-      })}
+      store={reduxStore}
     />);
 
     const RevokeSaveBtn = await screen.getByTestId('revoke-submit-btn');
@@ -163,9 +162,11 @@ describe('CodeRevokeModalWrapper', () => {
   it('throws error if no code is selected for bulk revoke', async () => {
     spy = jest.spyOn(EcommerceApiService, 'sendCodeRevoke');
     const codeRevokeData = [data, data];
+    const { reduxStore } = initializeMocks(initialState);
     render(<CodeRevokeModalWrapper
       data={{ ...codeRevokeData, selectedCodes: [] }}
       isBulkRevoke
+      store={reduxStore}
     />);
 
     const bulkSelectedCodes = await screen.queryByTestId('bulk-selected-codes');
@@ -176,7 +177,8 @@ describe('CodeRevokeModalWrapper', () => {
   });
 
   it('renders <SaveTemplateButton />', async () => {
-    render(<CodeRevokeModalWrapper />);
+    const { reduxStore } = initializeMocks(initialState);
+    render(<CodeRevokeModalWrapper store={reduxStore} />);
     const saveTemplateButton = await screen.findByTestId('save-template-btn');
     expect(saveTemplateButton).toBeInTheDocument();
     // TODO: unable to see how can we test an internal function parameters
@@ -184,7 +186,9 @@ describe('CodeRevokeModalWrapper', () => {
   });
 
   it('renders <TemplateSourceFields /> with source new_email', async () => {
-    render(<CodeRevokeModalWrapper />);
+    const { reduxStore } = initializeMocks(initialState);
+    const dispatchSpy = jest.spyOn(reduxStore, 'dispatch');
+    render(<CodeRevokeModalWrapper store={reduxStore} />);
     const TemplateSourceFields = await screen.findAllByTestId('template-source-fields');
     expect(TemplateSourceFields.length).toEqual(1);
 
@@ -195,21 +199,20 @@ describe('CodeRevokeModalWrapper', () => {
 
     const buttonOldEmailTemplate = await screen.findByTestId('btn-old-email-template');
     fireEvent.click(buttonOldEmailTemplate);
-    expect(last(store.getActions())).toEqual({
-      type: SET_EMAIL_TEMPLATE_SOURCE,
-      payload: { emailTemplateSource: EMAIL_TEMPLATE_SOURCE_FROM_TEMPLATE },
-    });
+    expect(dispatchSpy.mock.calls.some((call) => call[0]?.type === SET_EMAIL_TEMPLATE_SOURCE
+      && call[0]?.payload?.emailTemplateSource === EMAIL_TEMPLATE_SOURCE_FROM_TEMPLATE)).toBe(true);
   });
 
   it('renders <TemplateSourceFields /> with source from_template', async () => {
-    const newStore = mockStore({
+    const { reduxStore } = initializeMocks({
       ...initialState,
       emailTemplate: {
         ...initialState.emailTemplate,
         emailTemplateSource: EMAIL_TEMPLATE_SOURCE_FROM_TEMPLATE,
       },
     });
-    render(<CodeRevokeModalWrapper store={newStore} />);
+    const dispatchSpy = jest.spyOn(reduxStore, 'dispatch');
+    render(<CodeRevokeModalWrapper store={reduxStore} />);
     const TemplateSourceFields = await screen.findAllByTestId('template-source-fields');
     expect(TemplateSourceFields.length).toEqual(1);
 
@@ -220,9 +223,7 @@ describe('CodeRevokeModalWrapper', () => {
 
     const buttonNewEmailTemplate = await screen.findByTestId('btn-new-email-template');
     fireEvent.click(buttonNewEmailTemplate);
-    expect(last(newStore.getActions())).toEqual({
-      type: SET_EMAIL_TEMPLATE_SOURCE,
-      payload: { emailTemplateSource: EMAIL_TEMPLATE_SOURCE_NEW_EMAIL },
-    });
+    expect(dispatchSpy.mock.calls.some((call) => call[0]?.type === SET_EMAIL_TEMPLATE_SOURCE
+      && call[0]?.payload?.emailTemplateSource === EMAIL_TEMPLATE_SOURCE_NEW_EMAIL)).toBe(true);
   });
 });
