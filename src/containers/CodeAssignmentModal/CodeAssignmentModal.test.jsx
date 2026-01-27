@@ -2,8 +2,6 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import PropTypes from 'prop-types';
 import { MemoryRouter } from 'react-router-dom';
-import configureMockStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
 import { last } from 'lodash-es';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 import '@testing-library/jest-dom';
@@ -18,8 +16,8 @@ import {
   SET_EMAIL_TEMPLATE_SOURCE,
 } from '../../data/constants/emailTemplate';
 import '@testing-library/jest-dom/extend-expect';
+import { initializeMocks } from '../../testUtils';
 
-const mockStore = configureMockStore([thunk]);
 const initialState = {
   table: {
     'coupon-details': {
@@ -84,7 +82,7 @@ const CodeAssignmentModalWrapper = props => (
   </MemoryRouter>
 );
 
-const store = mockStore({ ...initialState });
+const store = initializeMocks(initialState).reduxStore;
 
 CodeAssignmentModalWrapper.defaultProps = {
   store,
@@ -134,13 +132,13 @@ describe('CodeAssignmentModalWrapper', () => {
 
   it('renders <TemplateSourceFields /> with source from_template', async () => {
     const user = userEvent.setup();
-    const newStore = mockStore({
+    const newStore = initializeMocks({
       ...initialState,
       emailTemplate: {
         ...initialState.emailTemplate,
         emailTemplateSource: EMAIL_TEMPLATE_SOURCE_FROM_TEMPLATE,
       },
-    });
+    }).reduxStore;
     render(<CodeAssignmentModalWrapper store={newStore} />);
     const templateSourceFields = await screen.findByTestId('template-source-fields');
     expect(templateSourceFields).toBeInTheDocument();
