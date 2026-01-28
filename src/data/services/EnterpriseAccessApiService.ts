@@ -16,7 +16,7 @@ export type LearnerCreditPlansResponse = {
 };
 
 class EnterpriseAccessApiService {
-  static baseUrl = `${configuration.ENTERPRISE_ACCESS_BASE_URL}/api/v1`;
+  static get baseUrl() { return `${configuration.ENTERPRISE_ACCESS_BASE_URL}/api/v1`; }
 
   static apiClient = getAuthenticatedHttpClient;
 

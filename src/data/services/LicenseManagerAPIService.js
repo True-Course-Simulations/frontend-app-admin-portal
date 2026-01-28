@@ -3,7 +3,7 @@ import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { configuration } from '../../config';
 
 class LicenseManagerApiService {
-  static licenseManagerBaseUrl = `${configuration.LICENSE_MANAGER_BASE_URL}/api/v1`;
+  static get licenseManagerBaseUrl() { return `${configuration.LICENSE_MANAGER_BASE_URL}/api/v1`; }
 
   static apiClient = getAuthenticatedHttpClient;
 

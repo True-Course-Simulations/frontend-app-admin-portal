@@ -3,7 +3,7 @@ import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { configuration } from '../../config';
 
 class DiscoveryApiService {
-  static discoveryBaseUrl = `${configuration.DISCOVERY_BASE_URL}/api/v1`;
+  static get discoveryBaseUrl() { return `${configuration.DISCOVERY_BASE_URL}/api/v1`; }
 
   static apiClient = getAuthenticatedHttpClient;
 

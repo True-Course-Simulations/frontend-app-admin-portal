@@ -103,8 +103,8 @@ const generatePathMatch = () => {
 
 export const SETTINGS_PARAM_MATCH = generatePathMatch();
 
-export const BLACKBOARD_OAUTH_REDIRECT_URL = `${configuration.LMS_BASE_URL}/blackboard/oauth-complete`;
-export const CANVAS_OAUTH_REDIRECT_URL = `${configuration.LMS_BASE_URL}/canvas/oauth-complete`;
+export const getBlackboardOAuthRedirectUrl = () => `${configuration.LMS_BASE_URL}/blackboard/oauth-complete`;
+export const getCanvasOAuthRedirectUrl = () => `${configuration.LMS_BASE_URL}/canvas/oauth-complete`;
 export const LMS_CONFIG_OAUTH_POLLING_TIMEOUT = 60000;
 export const LMS_CONFIG_OAUTH_POLLING_INTERVAL = 1000;
 export const SSO_CONFIG_POLLING_TIMEOUT = 240000;

@@ -4,15 +4,15 @@ import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import { configuration } from '../../config';
 
 class EnterpriseCatalogApiService {
-  static baseUrl = `${configuration.ENTERPRISE_CATALOG_BASE_URL}/api/v1`;
+  static get baseUrl() { return `${configuration.ENTERPRISE_CATALOG_BASE_URL}/api/v1`; }
 
   static apiClient = getAuthenticatedHttpClient;
 
-  static enterpriseCustomerCatalogsUrl = `${EnterpriseCatalogApiService.baseUrl}/enterprise-catalogs/`;
+  static get enterpriseCustomerCatalogsUrl() { return `${this.baseUrl}/enterprise-catalogs/`; }
 
-  static enterpriseCurationUrl = `${EnterpriseCatalogApiService.baseUrl}/enterprise-curations-admin/`;
+  static get enterpriseCurationUrl() { return `${this.baseUrl}/enterprise-curations-admin/`; }
 
-  static highlightSetUrl = `${EnterpriseCatalogApiService.baseUrl}/highlight-sets-admin/`;
+  static get highlightSetUrl() { return `${this.baseUrl}/highlight-sets-admin/`; }
 
   static fetchEnterpriseCatalogMetadata({ catalogUuid }) {
     const url = `${EnterpriseCatalogApiService.baseUrl}/enterprise-catalogs/${catalogUuid}/get_content_metadata/`;

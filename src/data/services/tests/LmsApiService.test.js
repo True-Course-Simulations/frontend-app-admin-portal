@@ -6,6 +6,10 @@ import LmsApiService from '../LmsApiService';
 import { configuration } from '../../../config';
 import { camelCaseDict } from '../../../utils';
 
+jest.mock('@edx/frontend-platform/config', () => ({
+  getConfig: jest.fn(() => ({ LMS_BASE_URL: 'http://lms.example.com' })),
+}));
+
 const lmsBaseUrl = `${configuration.LMS_BASE_URL}`;
 const mockEnterpriseUUID = 'test-enterprise-id';
 const mockUsername = 'test_username';

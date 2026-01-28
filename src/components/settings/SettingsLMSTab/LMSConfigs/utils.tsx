@@ -1,6 +1,6 @@
 import type { FormFieldValidation } from '../../../forms/FormContext';
 import {
-  BLACKBOARD_OAUTH_REDIRECT_URL, BLACKBOARD_TYPE, CANVAS_OAUTH_REDIRECT_URL,
+  getBlackboardOAuthRedirectUrl, BLACKBOARD_TYPE, getCanvasOAuthRedirectUrl,
   CANVAS_TYPE, INVALID_NAME, SUBMIT_TOAST_MESSAGE,
 } from '../../data/constants';
 import handleErrors from '../../utils';
@@ -49,12 +49,12 @@ async function handleSubmitAuthorize(
         }
       }
       oauthUrl = `${currentFormFields.blackboardBaseUrl}/learn/api/public/v1/oauth2/authorizationcode?`
-        + `redirect_uri=${BLACKBOARD_OAUTH_REDIRECT_URL}&scope=read%20write%20delete%20offline&`
+        + `redirect_uri=${getBlackboardOAuthRedirectUrl()}&scope=read%20write%20delete%20offline&`
         + `response_type=code&client_id=${appKey}&state=${configUuid}`;
     } else {
       oauthUrl = `${currentFormFields.canvasBaseUrl}/login/oauth2/auth?client_id=${currentFormFields.clientId}&`
         + `state=${currentFormFields.uuid}&response_type=code&`
-        + `redirect_uri=${CANVAS_OAUTH_REDIRECT_URL}`;
+        + `redirect_uri=${getCanvasOAuthRedirectUrl()}`;
     }
     // Open the oauth window for the user
     window.open(oauthUrl);
