@@ -1,8 +1,6 @@
 /* eslint-disable react/prop-types */
 import React from 'react';
 import PropTypes from 'prop-types';
-import configureMockStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
 import renderer from 'react-test-renderer';
 import { MemoryRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
@@ -28,6 +26,7 @@ import {
   EXPAND_SIDEBAR,
   COLLAPSE_SIDEBAR,
 } from '../../data/constants/sidebar';
+import { initializeMocks } from '../../testUtils';
 
 features.CODE_MANAGEMENT = true;
 
@@ -40,7 +39,6 @@ jest.mock('@edx/frontend-platform/config', () => ({
 
 jest.mock('../../data/services/LmsApiService');
 
-const mockStore = configureMockStore([thunk]);
 const initialState = {
   sidebar: {
     isExpanded: false,
@@ -51,9 +49,11 @@ const initialState = {
     enableCodeManagementScreen: true,
     enableSubscriptionManagementScreen: true,
     enableAnalyticsScreen: true,
-    enableReportingConfigScreenLink: true,
+  enableReportingConfigScreenLink: true,
   },
 };
+
+const createStore = (state = initialState) => initializeMocks(state).reduxStore;
 
 const initialEnterpriseAppContextValue = {
   enterpriseCuration: {
@@ -104,9 +104,7 @@ const SidebarWrapper = ({
 );
 
 SidebarWrapper.defaultProps = {
-  store: mockStore({
-    ...initialState,
-  }),
+  store: createStore(),
 };
 
 SidebarWrapper.propTypes = {
@@ -134,7 +132,7 @@ describe('<Sidebar />', () => {
   });
 
   it('renders correctly when code management is hidden', () => {
-    const store = mockStore({
+    const store = createStore({
       sidebar: {
         ...initialState.sidebar,
       },
@@ -152,7 +150,7 @@ describe('<Sidebar />', () => {
   });
 
   it('renders correctly when expanded', () => {
-    const store = mockStore({
+    const store = createStore({
       ...initialState,
       sidebar: {
         ...initialState.sidebar,
@@ -169,7 +167,7 @@ describe('<Sidebar />', () => {
   });
 
   it('renders correctly when expanded by toggle', () => {
-    const store = mockStore({
+    const store = createStore({
       ...initialState,
       sidebar: {
         ...initialState.sidebar,
@@ -210,7 +208,6 @@ describe('<Sidebar />', () => {
     beforeEach(() => {
       jest.clearAllMocks();
       store = wrapper.prop('store');
-      store.clearActions();
     });
 
     it('expands on mouse over', async () => {
@@ -237,7 +234,7 @@ describe('<Sidebar />', () => {
     });
 
     it('collapses on mouseout', () => {
-      store = mockStore({
+      store = createStore({
         ...initialState,
         sidebar: {
           ...initialState.sidebar,
@@ -259,7 +256,7 @@ describe('<Sidebar />', () => {
     });
 
     it('collapses on blur', async () => {
-      store = mockStore({
+      store = createStore({
         ...initialState,
         sidebar: {
           ...initialState.sidebar,
@@ -283,7 +280,7 @@ describe('<Sidebar />', () => {
 
   it('renders correctly when subscriptionManagementScreen is false', () => {
     // should cause subscription management to not be present
-    const store = mockStore({
+    const store = createStore({
       sidebar: {
         ...initialState.sidebar,
       },
@@ -298,7 +295,7 @@ describe('<Sidebar />', () => {
   });
 
   it('renders correctly when subscriptionManagementScreen is enabled', () => {
-    const store = mockStore({
+    const store = createStore({
       sidebar: {
         ...initialState.sidebar,
       },
@@ -313,7 +310,7 @@ describe('<Sidebar />', () => {
   });
 
   it('renders correctly when enableReportingConfigScreen is false', () => {
-    const store = mockStore({
+    const store = createStore({
       sidebar: {
         ...initialState.sidebar,
       },
@@ -328,7 +325,7 @@ describe('<Sidebar />', () => {
   });
 
   it('renders correctly when enableReportingConfigScreen is enabled', async () => {
-    const store = mockStore({
+    const store = createStore({
       sidebar: {
         ...initialState.sidebar,
       },
@@ -344,7 +341,7 @@ describe('<Sidebar />', () => {
   });
 
   it('renders settings link if the settings page has visible tabs.', () => {
-    const store = mockStore({
+    const store = createStore({
       ...initialState,
       portalConfiguration: {
         enableLearnerPortal: true,
@@ -360,7 +357,7 @@ describe('<Sidebar />', () => {
   });
 
   it('renders manage learner credit link if the canManageLearnerCredit = true.', () => {
-    const store = mockStore({
+    const store = createStore({
       ...initialState,
       portalConfiguration: {
         enableLearnerPortal: true,
@@ -374,7 +371,7 @@ describe('<Sidebar />', () => {
   });
 
   it('hides manage learner credit link if the canManageLearnerCredit = false.', () => {
-    const store = mockStore({
+    const store = createStore({
       ...initialState,
       portalConfiguration: {
         enableLearnerPortal: false,
@@ -423,7 +420,7 @@ describe('<Sidebar />', () => {
     { highlightsFeatureFlag, curationFeatureFlag, expected },
   ) => {
     getConfig.mockReturnValue({ FEATURE_CONTENT_HIGHLIGHTS: highlightsFeatureFlag });
-    const store = mockStore(initialState);
+    const store = createStore(initialState);
     render(<SidebarWrapper
       store={store}
       enterpriseAppContextValue={{
@@ -451,7 +448,7 @@ describe('<Sidebar />', () => {
       administrator: false,
     });
     getConfig.mockReturnValue({ FEATURE_CONTENT_HIGHLIGHTS: true });
-    const store = mockStore({
+    const store = createStore({
       ...initialState,
     });
     LmsApiService.fetchEnterpriseGroups.mockReturnValue({

@@ -2,23 +2,24 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import renderer from 'react-test-renderer';
 import { MemoryRouter } from 'react-router-dom';
-import configureMockStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
+import { Provider } from 'react-redux';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 import { configuration } from '../../config';
+import { initializeMocks } from '../../testUtils';
 
 import Footer from './index';
 
-const mockStore = configureMockStore([thunk]);
+const createStore = (state = {}) => initializeMocks(state).reduxStore;
 
-const FooterWrapper = props => (
+const FooterWrapper = ({ store, ...props }) => (
   <MemoryRouter>
-    <IntlProvider locale="en">
-      <Footer
-        store={props.store}
-        {...props}
-      />
-    </IntlProvider>
+    <Provider store={store}>
+      <IntlProvider locale="en">
+        <Footer
+          {...props}
+        />
+      </IntlProvider>
+    </Provider>
   </MemoryRouter>
 );
 
@@ -31,7 +32,7 @@ describe('<Footer />', () => {
   let tree;
 
   it('renders enterprise logo correctly', () => {
-    store = mockStore({
+    store = createStore({
       portalConfiguration: {
         enterpriseName: 'Test Enterprise',
         enterpriseSlug: 'test-enterprise',
@@ -50,7 +51,7 @@ describe('<Footer />', () => {
   });
 
   it('renders edX logo correctly', () => {
-    store = mockStore({
+    store = createStore({
       portalConfiguration: {},
     });
     tree = renderer
@@ -63,7 +64,7 @@ describe('<Footer />', () => {
 
   it('renders correct help center link from config', () => {
     configuration.ENTERPRISE_SUPPORT_URL = 'http://test-hc.com/hc';
-    store = mockStore({
+    store = createStore({
       portalConfiguration: {},
     });
     tree = renderer

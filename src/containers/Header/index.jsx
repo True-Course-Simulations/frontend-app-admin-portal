@@ -1,12 +1,29 @@
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 import Header from '../../components/Header';
 
-const mapStateToProps = (state) => ({
-  enterpriseName: state.portalConfiguration.enterpriseName,
-  enterpriseSlug: state.portalConfiguration.enterpriseSlug,
-  enterpriseLogo: state.portalConfiguration.enterpriseBranding?.logo,
-  hasSidebarToggle: state.sidebar.hasSidebarToggle,
-});
+const HeaderContainer = (props) => {
+  const {
+    enterpriseName,
+    enterpriseSlug,
+    enterpriseLogo,
+    hasSidebarToggle,
+  } = useSelector((state) => ({
+    enterpriseName: state.portalConfiguration.enterpriseName,
+    enterpriseSlug: state.portalConfiguration.enterpriseSlug,
+    enterpriseLogo: state.portalConfiguration.enterpriseBranding?.logo,
+    hasSidebarToggle: state.sidebar.hasSidebarToggle,
+  }));
 
-export default connect(mapStateToProps)(Header);
+  return (
+    <Header
+      {...props}
+      enterpriseName={enterpriseName}
+      enterpriseSlug={enterpriseSlug}
+      enterpriseLogo={enterpriseLogo}
+      hasSidebarToggle={hasSidebarToggle}
+    />
+  );
+};
+
+export default HeaderContainer;

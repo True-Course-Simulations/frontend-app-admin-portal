@@ -1,13 +1,12 @@
 import React from 'react';
 import renderer from 'react-test-renderer';
 import { MemoryRouter } from 'react-router-dom';
-import configureMockStore from 'redux-mock-store';
 import { userEvent } from '@testing-library/user-event';
-import thunk from 'redux-thunk';
 import { Provider } from 'react-redux';
 import { render, screen } from '@testing-library/react';
 import { SubmissionError } from 'redux-form';
 import EcommerceApiService from '../../data/services/EcommerceApiService';
+import { initializeMocks } from '../../testUtils';
 import {
   EMAIL_TEMPLATE_FIELD_MAX_LIMIT,
   OFFER_ASSIGNMENT_EMAIL_SUBJECT_LIMIT,
@@ -17,7 +16,6 @@ import {
 import SaveTemplateButton from './index';
 
 jest.mock('../../data/services/EcommerceApiService');
-const mockStore = configureMockStore([thunk]);
 const initialState = {
   portalConfiguration: {
     enterpriseId: 'test-enterprise-id',
@@ -34,9 +32,8 @@ const initialState = {
     },
   },
 };
-const store = mockStore({
-  ...initialState,
-});
+const createStore = (state = initialState) => initializeMocks(state).reduxStore;
+const store = createStore();
 const formData = {
   'template-name': 'Template from portal',
   'email-template-subject': 'Subject',
@@ -56,19 +53,22 @@ const saveTemplateData = {
 const templateType = saveTemplateData.email_type;
 const saveTemplateSpy = jest.spyOn(EcommerceApiService, 'saveTemplate');
 
-const SaveTemplateButtonWrapper = props => (
-  <MemoryRouter>
-    <Provider store={store}>
-      <SaveTemplateButton
-        templateType={templateType}
-        emailTemplateSource={EMAIL_TEMPLATE_SOURCE_NEW_EMAIL}
-        setMode={() => {}}
-        handleSubmit={submitFunction => () => submitFunction(formData)}
-        {...props}
-      />
-    </Provider>
-  </MemoryRouter>
-);
+const SaveTemplateButtonWrapper = ({ store: wrapperStore, ...props }) => {
+  const resolvedStore = wrapperStore || store;
+  return (
+    <MemoryRouter>
+      <Provider store={resolvedStore}>
+        <SaveTemplateButton
+          templateType={templateType}
+          emailTemplateSource={EMAIL_TEMPLATE_SOURCE_NEW_EMAIL}
+          setMode={() => {}}
+          handleSubmit={submitFunction => () => submitFunction(formData)}
+          {...props}
+        />
+      </Provider>
+    </MemoryRouter>
+  );
+};
 
 describe('<SaveTemplateButton />', () => {
   beforeEach(() => {
@@ -93,7 +93,7 @@ describe('<SaveTemplateButton />', () => {
   });
 
   it('renders correctly while saving a template', () => {
-    const newStore = mockStore({
+    const newStore = createStore({
       emailTemplate: {
         saving: true,
       },
@@ -109,6 +109,8 @@ describe('<SaveTemplateButton />', () => {
 
   it('calls saveTemplate on click with correct data', async () => {
     const user = userEvent.setup();
+    const storeForTest = createStore();
+    const dispatchSpy = jest.spyOn(storeForTest, 'dispatch');
     const successResponse = {
       email_subject: saveTemplateData.email_subject,
       email_greeting: saveTemplateData.email_greeting,
@@ -120,19 +122,13 @@ describe('<SaveTemplateButton />', () => {
       data: successResponse,
     }));
     const { container } = render((
-      <SaveTemplateButtonWrapper disabled={false} />
+      <SaveTemplateButtonWrapper disabled={false} store={storeForTest} />
     ));
 
     const saveButton = container.querySelector('.save-template-btn');
     await user.click(saveButton);
-    expect(store.getActions()).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          type: 'SAVE_TEMPLATE_REQUEST',
-          payload: { emailType: 'assign' },
-        }),
-      ]),
-    );
+    expect(dispatchSpy.mock.calls.some((call) => call[0]?.type === 'SAVE_TEMPLATE_REQUEST'
+      && call[0]?.payload?.emailType === 'assign')).toBe(true);
     expect(saveTemplateSpy).toHaveBeenCalledWith(saveTemplateData);
   });
 

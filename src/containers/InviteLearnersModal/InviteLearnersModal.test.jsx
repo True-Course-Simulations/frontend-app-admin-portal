@@ -2,14 +2,11 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import PropTypes from 'prop-types';
 import { MemoryRouter } from 'react-router-dom';
-import configureMockStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
 import { render, screen } from '@testing-library/react';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 
 import InviteLearnersModal from './index';
-
-const mockStore = configureMockStore([thunk]);
+import { initializeMocks } from '../../testUtils';
 
 const initialState = {
   portalConfiguration: {
@@ -23,10 +20,14 @@ const initialState = {
   },
 };
 
-const InviteLearnersModalWrapper = props => (
+const createStore = (state = initialState) => initializeMocks(state).reduxStore;
+
+const InviteLearnersModalWrapper = ({ store, ...props }) => {
+  const resolvedStore = store || createStore();
+  return (
   <MemoryRouter>
     <IntlProvider locale="en">
-      <Provider store={props.store}>
+      <Provider store={resolvedStore}>
         <InviteLearnersModal
           availableSubscriptionCount={10}
           onClose={() => {}}
@@ -38,9 +39,6 @@ const InviteLearnersModalWrapper = props => (
     </IntlProvider>
   </MemoryRouter>
 );
-
-InviteLearnersModalWrapper.defaultProps = {
-  store: mockStore(initialState),
 };
 
 InviteLearnersModalWrapper.propTypes = {

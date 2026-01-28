@@ -1,18 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { MemoryRouter } from 'react-router-dom';
-import configureMockStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
 import { Provider } from 'react-redux';
 import { render, screen } from '@testing-library/react';
 
 import { getAuthenticatedUser, hydrateAuthenticatedUser } from '@edx/frontend-platform/auth';
 import '@testing-library/jest-dom';
 import Header from './index';
+import { initializeMocks } from '../../testUtils';
 
 import { configuration } from '../../config';
-
-const mockStore = configureMockStore([thunk]);
 
 const HeaderWrapper = props => (
   <MemoryRouter>
@@ -35,6 +32,7 @@ HeaderWrapper.propTypes = {
 
 describe('<Header />', () => {
   let store;
+  const createStore = (state = {}) => initializeMocks(state).reduxStore;
 
   afterEach(() => {
     hydrateAuthenticatedUser.mockClear();
@@ -59,7 +57,7 @@ describe('<Header />', () => {
       },
       sidebar: {},
     };
-    store = mockStore({ ...storeData });
+    store = createStore({ ...storeData });
 
     render(<HeaderWrapper store={store} />);
     const logo = await screen.findByTestId('header-logo-img');
@@ -70,7 +68,7 @@ describe('<Header />', () => {
 
   it('renders edX logo correctly', async () => {
     getAuthenticatedUser.mockReturnValue({});
-    store = mockStore({
+    store = createStore({
       portalConfiguration: {},
       sidebar: {},
     });
@@ -90,7 +88,7 @@ describe('<Header />', () => {
       },
     };
     getAuthenticatedUser.mockReturnValue(userData);
-    store = mockStore({
+    store = createStore({
       portalConfiguration: {
         enterpriseSlug: 'test-enterprise',
       },
@@ -103,7 +101,7 @@ describe('<Header />', () => {
 
   it('does not render profile image or dropdown if unauthenticated', async () => {
     getAuthenticatedUser.mockReturnValue(null);
-    store = mockStore({
+    store = createStore({
       portalConfiguration: {},
       sidebar: {},
     });
@@ -114,7 +112,7 @@ describe('<Header />', () => {
 
   it('does not call hydrate if not authenticated', () => {
     getAuthenticatedUser.mockReturnValue(null);
-    store = mockStore({
+    store = createStore({
       portalConfiguration: {},
       sidebar: {},
     });
@@ -130,7 +128,7 @@ describe('<Header />', () => {
       },
     });
     it('does not show toggle', () => {
-      store = mockStore({
+      store = createStore({
         portalConfiguration: {},
         sidebar: {
           hasSidebarToggle: false,
@@ -148,7 +146,7 @@ describe('<Header />', () => {
           imageUrlMedium: null,
         },
       });
-      store = mockStore({
+      store = createStore({
         portalConfiguration: {},
         sidebar: {
           hasSidebarToggle: true,
