@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import {
   OverlayTrigger,
   Popover,
@@ -12,7 +12,8 @@ import { getConfig } from '@edx/frontend-platform/config';
 
 import { useCourseDetails } from './data/hooks';
 
-const CourseDetailsPopoverContentBase = ({ enterpriseSlug, courseId }) => {
+const CourseDetailsPopoverContentBase = ({ courseId }) => {
+  const enterpriseSlug = useSelector(state => state.portalConfiguration.enterpriseSlug);
   const { ENTERPRISE_LEARNER_PORTAL_URL } = getConfig();
   const [courseDetails, isCourseDetailsLoading] = useCourseDetails(courseId);
 
@@ -49,15 +50,8 @@ const CourseDetailsPopoverContentBase = ({ enterpriseSlug, courseId }) => {
 };
 
 CourseDetailsPopoverContentBase.propTypes = {
-  enterpriseSlug: PropTypes.string.isRequired,
   courseId: PropTypes.string.isRequired,
 };
-
-const mapStateToProps = (state) => ({
-  enterpriseSlug: state.portalConfiguration.enterpriseSlug,
-});
-
-const CourseDetailsPopoverContent = connect(mapStateToProps)(CourseDetailsPopoverContentBase);
 
 const CourseTitleCell = ({ row }) => (
   <OverlayTrigger
@@ -68,7 +62,7 @@ const CourseTitleCell = ({ row }) => (
       <Popover id="popover-requests-table-course-details">
         <Popover.Title as="h5">{row.original.courseTitle}</Popover.Title>
         <Popover.Content>
-          <CourseDetailsPopoverContent courseId={row.original.courseId} />
+          <CourseDetailsPopoverContentBase courseId={row.original.courseId} />
         </Popover.Content>
       </Popover>
     )}

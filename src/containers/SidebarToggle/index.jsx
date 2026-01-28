@@ -1,4 +1,4 @@
-import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import SidebarToggle from '../../components/SidebarToggle';
 
@@ -7,13 +7,21 @@ import {
   collapseSidebar,
 } from '../../data/actions/sidebar';
 
-const mapStateToProps = state => ({
-  isExpandedByToggle: state.sidebar.isExpandedByToggle,
-});
+const SidebarToggleContainer = (props) => {
+  const dispatch = useDispatch();
+  const isExpandedByToggle = useSelector(state => state.sidebar.isExpandedByToggle);
 
-const mapDispatchToProps = dispatch => ({
-  expandSidebar: () => dispatch(expandSidebar(true)),
-  collapseSidebar: () => dispatch(collapseSidebar(true)),
-});
+  const expandSidebarAction = () => dispatch(expandSidebar(true));
+  const collapseSidebarAction = () => dispatch(collapseSidebar(true));
 
-export default connect(mapStateToProps, mapDispatchToProps)(SidebarToggle);
+  return (
+    <SidebarToggle
+      {...props}
+      isExpandedByToggle={isExpandedByToggle}
+      expandSidebar={expandSidebarAction}
+      collapseSidebar={collapseSidebarAction}
+    />
+  );
+};
+
+export default SidebarToggleContainer;
