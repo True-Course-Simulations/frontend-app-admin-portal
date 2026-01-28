@@ -1,16 +1,18 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import Color from 'color';
 import { SCHOLAR_THEME } from '../settings/data/constants';
 
 import { configuration } from '../../config';
 
-const Hero = ({ title, enterpriseBranding }) => {
+const Hero = ({ title }) => {
+  const enterpriseBranding = useSelector(state => state.portalConfiguration.enterpriseBranding);
   const edxWhiteSemiTransparentLogo = configuration.LOGO_WHITE_URL;
   const edxLogoDark = configuration.LOGO_URL;
 
-  const color = Color(enterpriseBranding.secondary_color);
+  const secondaryColor = enterpriseBranding?.secondary_color || SCHOLAR_THEME.banner;
+  const color = useMemo(() => Color(secondaryColor), [secondaryColor]);
   const logo = color.isDark() ? edxWhiteSemiTransparentLogo : edxLogoDark;
 
   return (
@@ -25,21 +27,8 @@ const Hero = ({ title, enterpriseBranding }) => {
   );
 };
 
-Hero.defaultProps = {
-  enterpriseBranding: {
-    secondary_color: SCHOLAR_THEME.banner,
-  },
-};
-
 Hero.propTypes = {
   title: PropTypes.string.isRequired,
-  enterpriseBranding: PropTypes.shape({
-    secondary_color: PropTypes.string,
-  }),
 };
 
-const mapStateToProps = state => ({
-  enterpriseBranding: state.portalConfiguration.enterpriseBranding,
-});
-
-export default connect(mapStateToProps)(Hero);
+export default Hero;

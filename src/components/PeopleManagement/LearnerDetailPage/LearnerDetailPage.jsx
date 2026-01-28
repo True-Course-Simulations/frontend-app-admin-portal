@@ -1,7 +1,6 @@
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
+import { useSelector } from 'react-redux';
 import { useIntl } from '@edx/frontend-platform/i18n';
 import {
   Breadcrumb, Card, Icon, Skeleton,
@@ -20,7 +19,8 @@ import LearnerAccess from './LearnerAccess';
 import CourseEnrollments from './CourseEnrollments';
 import { isEmail, transformLearnerContentAssignment } from '../utils';
 
-const LearnerDetailPage = ({ enterpriseUUID }) => {
+const LearnerDetailPage = () => {
+  const enterpriseUUID = useSelector(state => state.portalConfiguration.enterpriseId);
   const { enterpriseSlug, groupUuid, learnerId } = useParams();
   const { data: enterpriseGroup } = useEnterpriseGroupUuid(groupUuid, { queryOptions: { enabled: !!groupUuid } });
 
@@ -130,12 +130,4 @@ const LearnerDetailPage = ({ enterpriseUUID }) => {
   );
 };
 
-LearnerDetailPage.propTypes = {
-  enterpriseUUID: PropTypes.string.isRequired,
-};
-
-const mapStateToProps = state => ({
-  enterpriseUUID: state.portalConfiguration.enterpriseId,
-});
-
-export default connect(mapStateToProps)(LearnerDetailPage);
+export default LearnerDetailPage;

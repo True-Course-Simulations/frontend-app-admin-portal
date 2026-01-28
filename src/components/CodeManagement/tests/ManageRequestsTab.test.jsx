@@ -1,8 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Provider } from 'react-redux';
-import thunk from 'redux-thunk';
-import configureMockStore from 'redux-mock-store';
 import dayjs from 'dayjs';
 import userEvent from '@testing-library/user-event';
 import {
@@ -16,6 +14,7 @@ import { SubsidyRequestsContext } from '../../subsidy-requests';
 import { useSubsidyRequests } from '../../SubsidyRequestManagementTable';
 import { SUBSIDY_REQUEST_STATUS } from '../../../data/constants/subsidyRequests';
 import * as couponActions from '../../../data/actions/coupons';
+import { initializeMocks } from '../../../testUtils';
 
 const mockCouponCodeRequest = {
   uuid: 'test-coupon-code-request-uuid', requestStatus: SUBSIDY_REQUEST_STATUS.REQUESTED,
@@ -138,9 +137,8 @@ const initialStore = {
   },
 };
 
-const mockStore = configureMockStore([thunk]);
-const getMockStore = store => mockStore(store);
-const defaultStore = getMockStore({ ...initialStore });
+const createStore = (state = initialStore) => initializeMocks(state).reduxStore;
+const defaultStore = createStore({ ...initialStore });
 
 const mockDecrementCouponCodeRequestCount = jest.fn();
 const defaultSubsidyRequestContextValue = { decrementCouponCodeRequestCount: mockDecrementCouponCodeRequestCount };
@@ -215,7 +213,7 @@ describe('<ManageRequestsTab />', () => {
   });
 
   it('renders <LoadingMessage /> if loading coupons', () => {
-    const store = getMockStore({
+    const store = createStore({
       ...initialStore,
       coupons: {
         loading: true,
@@ -229,7 +227,7 @@ describe('<ManageRequestsTab />', () => {
   });
 
   it('renders <LoadingMessage /> if loading coupons', () => {
-    const store = getMockStore({
+    const store = createStore({
       ...initialStore,
       coupons: {
         loading: true,
@@ -250,7 +248,7 @@ describe('<ManageRequestsTab />', () => {
 
   it('renders <ApproveCouponCodeRequestModal /> when approve is clicked', async () => {
     const user = userEvent.setup();
-    const store = getMockStore({
+    const store = createStore({
       ...initialStore,
       coupons: {
         loading: false,
@@ -271,7 +269,7 @@ describe('<ManageRequestsTab />', () => {
 
   it('closes <ApproveCouponCodeRequestModal /> when close button is clicked', async () => {
     const user = userEvent.setup();
-    const store = getMockStore({
+    const store = createStore({
       ...initialStore,
       coupons: {
         loading: false,
@@ -310,7 +308,7 @@ describe('<ManageRequestsTab />', () => {
       updateRequestStatus: mockHandleUpdateRequestStatus,
     }));
 
-    const store = getMockStore({
+    const store = createStore({
       ...initialStore,
       coupons: {
         loading: false,
@@ -375,7 +373,7 @@ describe('<ManageRequestsTab />', () => {
       updateRequestStatus: mockHandleUpdateRequestStatus,
     }));
 
-    const store = getMockStore({
+    const store = createStore({
       ...initialStore,
       coupons: {
         loading: false,

@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import dayjs from 'dayjs';
 
 import { Stack } from '@openedx/paragon';
@@ -18,7 +18,7 @@ import { NoAvailableCodesBanner } from '../subsidy-request-management-alerts';
 import { SUPPORTED_SUBSIDY_TYPES, SUBSIDY_REQUEST_STATUS } from '../../data/constants/subsidyRequests';
 import { SubsidyRequestsContext } from '../subsidy-requests';
 
-const ManageRequestsTab = ({
+export const ManageRequestsTab = ({
   enterpriseId, couponsData, loading: loadingCoupons, fetchCoupons,
 }) => {
   useEffect(() => {
@@ -118,16 +118,27 @@ ManageRequestsTab.propTypes = {
   loading: PropTypes.bool.isRequired,
   fetchCoupons: PropTypes.func.isRequired,
 };
-const mapDispatchToProps = dispatch => ({
-  fetchCoupons: (options) => {
+const ManageRequestsTabContainer = (props) => {
+  const dispatch = useDispatch();
+  const { enterpriseId, loading, couponsData } = useSelector(state => ({
+    enterpriseId: state.portalConfiguration.enterpriseId,
+    loading: state.coupons.loading,
+    couponsData: state.coupons.data ? camelCaseObject(state.coupons.data) : { results: [] },
+  }));
+
+  const fetchCoupons = (options) => {
     dispatch(fetchCouponOrders(options));
-  },
-});
+  };
 
-const mapStateToProps = state => ({
-  enterpriseId: state.portalConfiguration.enterpriseId,
-  loading: state.coupons.loading,
-  couponsData: state.coupons.data ? camelCaseObject(state.coupons.data) : { results: [] },
-});
+  return (
+    <ManageRequestsTab
+      {...props}
+      enterpriseId={enterpriseId}
+      loading={loading}
+      couponsData={couponsData}
+      fetchCoupons={fetchCoupons}
+    />
+  );
+};
 
-export default connect(mapStateToProps, mapDispatchToProps)(ManageRequestsTab);
+export default ManageRequestsTabContainer;

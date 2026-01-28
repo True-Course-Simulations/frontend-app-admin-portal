@@ -8,7 +8,7 @@ import {
   useNavigate,
   generatePath,
 } from 'react-router-dom';
-import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import { defineMessages, FormattedMessage } from '@edx/frontend-platform/i18n';
@@ -59,19 +59,49 @@ const messages = defineMessages({
   },
 });
 
-const SettingsTabs = ({
-  enterpriseId,
-  enterpriseSlug,
-  enableIntegratedCustomerLearnerPortalSearch,
-  enableLearnerPortal,
-  enableLmsConfigurationsScreen,
-  enableSamlConfigurationScreen,
-  enableUniversalLink,
-  enableApiCredentialGeneration,
-  identityProvider,
-  updatePortalConfiguration,
-  enterpriseBranding,
-}) => {
+const SettingsTabs = () => {
+  const dispatch = useDispatch();
+  const {
+    enterpriseId,
+    enterpriseSlug,
+    enableIntegratedCustomerLearnerPortalSearch,
+    enableLearnerPortal,
+    enableLmsConfigurationsScreen,
+    enableSamlConfigurationScreen,
+    enableUniversalLink,
+    enableApiCredentialGeneration,
+    identityProvider,
+    enterpriseBranding,
+  } = useSelector((state) => {
+    const {
+      enterpriseId: portalEnterpriseId,
+      enterpriseSlug: portalEnterpriseSlug,
+      enableIntegratedCustomerLearnerPortalSearch: portalEnableIntegratedCustomerLearnerPortalSearch,
+      enableLearnerPortal: portalEnableLearnerPortal,
+      enableLmsConfigurationsScreen: portalEnableLmsConfigurationsScreen,
+      enableSamlConfigurationScreen: portalEnableSamlConfigurationScreen,
+      enableApiCredentialGeneration: portalEnableApiCredentialGeneration,
+      enableUniversalLink: portalEnableUniversalLink,
+      identityProvider: portalIdentityProvider,
+      enterpriseBranding: portalEnterpriseBranding,
+    } = state.portalConfiguration;
+
+    return {
+      enterpriseId: portalEnterpriseId,
+      enterpriseSlug: portalEnterpriseSlug,
+      enableIntegratedCustomerLearnerPortalSearch: portalEnableIntegratedCustomerLearnerPortalSearch,
+      enableLearnerPortal: portalEnableLearnerPortal,
+      enableLmsConfigurationsScreen: portalEnableLmsConfigurationsScreen,
+      enableSamlConfigurationScreen: portalEnableSamlConfigurationScreen,
+      enableApiCredentialGeneration: portalEnableApiCredentialGeneration,
+      enableUniversalLink: portalEnableUniversalLink,
+      identityProvider: portalIdentityProvider,
+      enterpriseBranding: portalEnterpriseBranding,
+    };
+  });
+  const updatePortalConfiguration = (config) => {
+    dispatch(updatePortalConfigurationEvent(config));
+  };
   const [hasSSOConfig, setHasSSOConfig] = useState(false);
   const {
     FEATURE_SSO_SETTINGS_TAB, SETTINGS_PAGE_LMS_TAB,
@@ -214,34 +244,6 @@ const SettingsTabs = ({
   );
 };
 
-const mapStateToProps = state => {
-  const {
-    enterpriseId,
-    enterpriseSlug,
-    enableIntegratedCustomerLearnerPortalSearch,
-    enableLearnerPortal,
-    enableLmsConfigurationsScreen,
-    enableSamlConfigurationScreen,
-    enableApiCredentialGeneration,
-    enableUniversalLink,
-    identityProvider,
-    enterpriseBranding,
-  } = state.portalConfiguration;
-
-  return ({
-    enterpriseId,
-    enterpriseSlug,
-    enableIntegratedCustomerLearnerPortalSearch,
-    enableLearnerPortal,
-    enableLmsConfigurationsScreen,
-    enableSamlConfigurationScreen,
-    enableApiCredentialGeneration,
-    enableUniversalLink,
-    identityProvider,
-    enterpriseBranding,
-  });
-};
-
 SettingsTabs.defaultProps = {
   identityProvider: null,
   enterpriseBranding: PropTypes.shape({
@@ -268,11 +270,5 @@ SettingsTabs.propTypes = {
     tertiary_color: PropTypes.string,
   }),
 };
-
-const mapDispatchToProps = dispatch => ({
-  updatePortalConfiguration: (config) => {
-    dispatch(updatePortalConfigurationEvent(config));
-  },
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(SettingsTabs);
+ 
+export default SettingsTabs;

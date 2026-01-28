@@ -1,17 +1,16 @@
 import React from 'react';
 import { Provider } from 'react-redux';
-import thunk from 'redux-thunk';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 import {
   screen,
   render,
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import configureMockStore from 'redux-mock-store';
 
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import SettingsTabs from '../SettingsTabs';
 import { SCHOLAR_THEME } from '../data/constants';
+import { initializeMocks } from '../../../testUtils';
 
 import { features } from '../../../config';
 import '@testing-library/jest-dom/extend-expect';
@@ -75,9 +74,8 @@ const initialStore = {
   },
 };
 
-const mockStore = configureMockStore([thunk]);
-const getMockStore = store => mockStore(store);
-const defaultStore = getMockStore({ ...initialStore });
+const createStore = (state = initialStore) => initializeMocks(state).reduxStore;
+const defaultStore = createStore({ ...initialStore });
 
 const SettingsTabsWithRouter = ({ store = defaultStore }) => (
   <IntlProvider locale="en">

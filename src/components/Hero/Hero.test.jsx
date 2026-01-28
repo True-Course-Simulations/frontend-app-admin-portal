@@ -2,11 +2,10 @@ import {
   render, screen,
 } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
-import configureMockStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
 
 import { Provider } from 'react-redux';
 import Hero from './index';
+import { initializeMocks } from '../../testUtils';
 
 const lightColorStore = {
   portalConfiguration: {
@@ -26,12 +25,12 @@ const darkColorStore = {
 
 const title = 'Quokkas Rule';
 
-const mockStore = configureMockStore([thunk]);
+const createStore = (state = {}) => initializeMocks(state).reduxStore;
 
 describe('Hero Component', () => {
   it('renders hero component with appropriate logo', () => {
     render(
-      <Provider store={mockStore(lightColorStore)}>
+      <Provider store={createStore(lightColorStore)}>
         <Hero title={title} />
       </Provider>,
     );
@@ -41,7 +40,7 @@ describe('Hero Component', () => {
   });
   it('renders white logo with dark banner color', () => {
     render(
-      <Provider store={mockStore(darkColorStore)}>
+      <Provider store={createStore(darkColorStore)}>
         <Hero title={title} />
       </Provider>,
     );
