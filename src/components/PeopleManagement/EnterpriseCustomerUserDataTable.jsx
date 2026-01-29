@@ -1,6 +1,7 @@
 import {
   useCallback, useContext, useEffect, useMemo,
 } from 'react';
+import PropTypes from 'prop-types';
 import {
   CheckboxControl, DataTable, DataTableContext, Icon, TextFilter,
 } from '@openedx/paragon';
