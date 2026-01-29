@@ -4,6 +4,7 @@ import { Configure, connectStateResults, InstantSearch } from 'react-instantsear
 import { CardView, DataTable, Skeleton } from '@openedx/paragon';
 import { camelCaseObject } from '@edx/frontend-platform';
 import { SearchData, SearchHeader } from '@edx/frontend-enterprise-catalog-search';
+import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 
 import { configuration } from '../../../config';
