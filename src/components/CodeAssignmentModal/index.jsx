@@ -398,6 +398,7 @@ export class BaseCodeAssignmentModal extends React.Component {
     return (
       <ModalDialog
         isOpen
+        title={this.renderTitle()}
         size="lg"
         onClose={onClose}
         className="code-assignment"

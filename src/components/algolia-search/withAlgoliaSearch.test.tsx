@@ -34,6 +34,9 @@ jest.mock('../../config', () => ({
       SEARCH_API_KEY: 'testSearchApiKey',
     },
   },
+  features: {
+    FILE_ATTACHMENT: false,
+  },
 }));
 
 jest.mock('@edx/frontend-platform/auth', () => ({

@@ -212,6 +212,7 @@ export class BaseCodeReminderModal extends React.Component {
     return (
       <ModalDialog
         isOpen
+        title={this.renderTitle()}
         data-testid="code-reminder-modal"
         size="lg"
         onClose={onClose}

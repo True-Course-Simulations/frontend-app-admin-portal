@@ -14,7 +14,7 @@ import {
   EMAIL_TEMPLATE_SOURCE_NEW_EMAIL,
   SET_EMAIL_TEMPLATE_SOURCE,
 } from '../../data/constants/emailTemplate';
-import { configuration } from '../../config';
+import { configuration, features } from '../../config';
 import { initializeMocks } from '../../testUtils';
 
 const enterpriseSlug = 'bearsRus';
@@ -23,6 +23,7 @@ const initialState = {
     loading: false,
     error: null,
     emailTemplateSource: EMAIL_TEMPLATE_SOURCE_NEW_EMAIL,
+    allTemplates: [],
     default: {
       revoke: {
         'email-template-subject': revokeEmailTemplate.subject,
@@ -46,7 +47,13 @@ const initialState = {
   },
   form: {
     'code-revoke-modal-form': {
-      initial: {},
+      values: {
+        'email-template-subject': revokeEmailTemplate.subject,
+        'email-template-greeting': revokeEmailTemplate.greeting || '',
+        'email-template-body': revokeEmailTemplate.body,
+        'email-template-closing': revokeEmailTemplate.closing,
+        'email-template-files': revokeEmailTemplate.files,
+      },
     },
   },
 };
@@ -65,16 +72,19 @@ const codeRevokeRequestData = (numCodes) => {
       email: data.assigned_to,
     },
   };
-  return {
+  const options = {
     assignments: Array(numCodes).fill(assignment),
     do_not_email: false,
     template: revokeEmailTemplate.body,
     template_subject: revokeEmailTemplate.subject,
     template_greeting: revokeEmailTemplate.greeting || '',
     template_closing: revokeEmailTemplate.closing,
-    template_files: revokeEmailTemplate.files,
     base_enterprise_url: data.base_enterprise_url,
   };
+  if (features.FILE_ATTACHMENT) {
+    options.template_files = revokeEmailTemplate.files;
+  }
+  return options;
 };
 
 const CodeRevokeModalWrapper = ({ store, ...props }) => {
@@ -110,7 +120,7 @@ describe('CodeRevokeModalWrapper', () => {
   });
 
   it('renders individual assignment revoke modal', async () => {
-    spy = jest.spyOn(EcommerceApiService, 'sendCodeRevoke');
+    spy = jest.spyOn(EcommerceApiService, 'sendCodeRevoke').mockResolvedValue({ data: {} });
     const { reduxStore } = initializeMocks(initialState);
     render(<CodeRevokeModalWrapper data={data} store={reduxStore} />);
     const modalTitle = await screen.findByTestId('modal-title');
@@ -125,7 +135,7 @@ describe('CodeRevokeModalWrapper', () => {
   });
 
   it('renders bulk assignment revoke modal', async () => {
-    spy = jest.spyOn(EcommerceApiService, 'sendCodeRevoke');
+    spy = jest.spyOn(EcommerceApiService, 'sendCodeRevoke').mockResolvedValue({ data: {} });
     const codeRevokeData = [data, data];
     const { reduxStore } = initializeMocks(initialState);
     render(<CodeRevokeModalWrapper
@@ -140,7 +150,7 @@ describe('CodeRevokeModalWrapper', () => {
   });
 
   it('returns the correct data if learner portal is not enabled', async () => {
-    spy = jest.spyOn(EcommerceApiService, 'sendCodeRevoke');
+    spy = jest.spyOn(EcommerceApiService, 'sendCodeRevoke').mockResolvedValue({ data: {} });
     const codeRevokeData = [data, data];
     const { reduxStore } = initializeMocks({
       ...initialState,
@@ -160,7 +170,7 @@ describe('CodeRevokeModalWrapper', () => {
   });
 
   it('throws error if no code is selected for bulk revoke', async () => {
-    spy = jest.spyOn(EcommerceApiService, 'sendCodeRevoke');
+    spy = jest.spyOn(EcommerceApiService, 'sendCodeRevoke').mockResolvedValue({ data: {} });
     const codeRevokeData = [data, data];
     const { reduxStore } = initializeMocks(initialState);
     render(<CodeRevokeModalWrapper

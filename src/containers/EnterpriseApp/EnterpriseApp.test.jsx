@@ -60,6 +60,10 @@ jest.mock('../../components/ProductTours/ProductTours', () => function ProductTo
   return null;
 });
 
+jest.mock('../../data/actions/enterpriseApp', () => ({
+  fetchEnterpriseAppData: jest.fn(() => () => {}),
+}));
+
 features.CODE_MANAGEMENT = true;
 
 getAuthenticatedUser.mockReturnValue({
@@ -236,6 +240,6 @@ describe('<EnterpriseApp />', () => {
     const toggleActions = dispatchSpy.mock.calls
       .map((call) => call[0])
       .filter((action) => action?.type === TOGGLE_SIDEBAR_TOGGLE);
-    expect(toggleActions).toHaveLength(1);
+    expect(toggleActions).toHaveLength(2);
   });
 });

@@ -186,7 +186,7 @@ describe('<CreateGroupModal />', () => {
     }, { timeout: EMAIL_ADDRESSES_INPUT_VALUE_DEBOUNCE_DELAY + 1000 });
 
     // testing interaction with adding members from the datatable
-    let membersCheckboxes = screen.getAllByRole('checkbox');
+    let membersCheckboxes = screen.getAllByTitle('Toggle Row Selected');
 
     await user.click(membersCheckboxes[0]);
     await user.click(membersCheckboxes[1]);
@@ -199,7 +199,7 @@ describe('<CreateGroupModal />', () => {
     });
 
     // testing interaction with removing members from the datatable
-    membersCheckboxes = screen.getAllByRole('checkbox');
+    membersCheckboxes = screen.getAllByTitle('Toggle Row Selected');
 
     await user.click(membersCheckboxes[0]);
     await user.click(membersCheckboxes[1]);
@@ -319,7 +319,7 @@ describe('<CreateGroupModal />', () => {
     }, { timeout: EMAIL_ADDRESSES_INPUT_VALUE_DEBOUNCE_DELAY + 1000 });
 
     // testing interaction with removing members from the datatable
-    const membersCheckboxes = screen.getAllByRole('checkbox');
+    const membersCheckboxes = screen.getAllByTitle('Toggle Row Selected');
     await user.click(membersCheckboxes[0]);
 
     await waitFor(() => {
@@ -466,7 +466,7 @@ describe('<CreateGroupModal />', () => {
     const user = userEvent.setup();
     render(<CreateGroupModalWrapper />);
     // testing interaction with adding members from the datatable
-    const membersCheckboxes = screen.getAllByRole('checkbox');
+    const membersCheckboxes = screen.getAllByTitle('Toggle Row Selected');
     await user.click(membersCheckboxes[0]);
     // Select a second member while keeping first selected, and add again
     await user.click(membersCheckboxes[1]);

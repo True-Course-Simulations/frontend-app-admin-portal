@@ -2,11 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { SearchField } from '@openedx/paragon';
 
-const SearchBar = props => (
+const SearchBar = ({ onSearch, ...rest }) => (
   <SearchField
-    onSubmit={query => props.onSearch(query)}
+    onSubmit={query => onSearch(query)}
     data-testid="search-field"
-    {...props}
+    {...rest}
   />
 );
 

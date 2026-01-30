@@ -60,6 +60,17 @@ jest.mock('../../EnterpriseSubsidiesContext/data/hooks', () => ({
   }),
 }));
 
+jest.mock('../../subscriptions/data/hooks', () => ({
+  ...jest.requireActual('../../subscriptions/data/hooks'),
+  useSubscriptionData: jest.fn().mockReturnValue({
+    subscriptions: [],
+    errors: {},
+    setErrors: jest.fn(),
+    forceRefresh: jest.fn(),
+    loading: false,
+  }),
+}));
+
 const mockModuleActivityReportResponse = {
   results: [
     {

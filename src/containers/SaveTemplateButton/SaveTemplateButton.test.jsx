@@ -13,6 +13,7 @@ import {
   EMAIL_TEMPLATE_SUBJECT_KEY,
   EMAIL_TEMPLATE_SOURCE_NEW_EMAIL,
 } from '../../data/constants/emailTemplate';
+import { features } from '../../config';
 import SaveTemplateButton from './index';
 
 jest.mock('../../data/services/EcommerceApiService');
@@ -23,6 +24,7 @@ const initialState = {
   emailTemplate: {
     saving: false,
     allTemplates: [],
+    emailTemplateSource: EMAIL_TEMPLATE_SOURCE_NEW_EMAIL,
     assign: {
       'template-id': 1,
       'email-template-subject': 'email-template-subject',
@@ -48,8 +50,10 @@ const saveTemplateData = {
   email_subject: formData[EMAIL_TEMPLATE_SUBJECT_KEY],
   email_greeting: formData['email-template-greeting'],
   email_closing: formData['email-template-closing'],
-  email_files: formData['email-template-files'],
 };
+if (features.FILE_ATTACHMENT) {
+  saveTemplateData.email_files = formData['email-template-files'];
+}
 const templateType = saveTemplateData.email_type;
 const saveTemplateSpy = jest.spyOn(EcommerceApiService, 'saveTemplate');
 
@@ -94,7 +98,9 @@ describe('<SaveTemplateButton />', () => {
 
   it('renders correctly while saving a template', () => {
     const newStore = createStore({
+      ...initialState,
       emailTemplate: {
+        ...initialState.emailTemplate,
         saving: true,
       },
     });

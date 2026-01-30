@@ -14,7 +14,7 @@ import {
   EMAIL_TEMPLATE_SOURCE_NEW_EMAIL,
   SET_EMAIL_TEMPLATE_SOURCE,
 } from '../../data/constants/emailTemplate';
-import { configuration } from '../../config';
+import { configuration, features } from '../../config';
 import { initializeMocks } from '../../testUtils';
 
 const enterpriseSlug = 'bearsRus';
@@ -61,6 +61,7 @@ const initialState = {
     loading: false,
     error: null,
     emailTemplateSource: EMAIL_TEMPLATE_SOURCE_NEW_EMAIL,
+    allTemplates: [],
     default: {
       remind: {
         'email-template-subject': remindEmailTemplate.subject,
@@ -84,7 +85,13 @@ const initialState = {
   },
   form: {
     'code-reminder-modal-form': {
-      initial: {},
+      values: {
+        'email-template-subject': remindEmailTemplate.subject,
+        'email-template-greeting': remindEmailTemplate.greeting,
+        'email-template-body': remindEmailTemplate.body,
+        'email-template-closing': remindEmailTemplate.closing,
+        'email-template-files': remindEmailTemplate.files,
+      },
     },
   },
 };
@@ -108,9 +115,11 @@ const codeReminderRequestData = (numCodes, selectedToggle) => {
     template_subject: remindEmailTemplate.subject,
     template_greeting: remindEmailTemplate.greeting,
     template_closing: remindEmailTemplate.closing,
-    template_files: remindEmailTemplate.files,
     base_enterprise_url: data.base_enterprise_url,
   };
+  if (features.FILE_ATTACHMENT) {
+    options.template_files = remindEmailTemplate.files;
+  }
   if (numCodes === 0) {
     options.code_filter = selectedToggle;
   } else {
@@ -164,7 +173,7 @@ describe('CodeReminderModalWrapper', () => {
   });
 
   it('renders bulk reminder modal', async () => {
-    spy = jest.spyOn(EcommerceApiService, 'sendCodeReminder');
+    spy = jest.spyOn(EcommerceApiService, 'sendCodeReminder').mockResolvedValue({ data: {} });
     const codeRemindData = [data, data];
     const store = createStore();
     render(<CodeReminderModalWrapper
@@ -182,7 +191,7 @@ describe('CodeReminderModalWrapper', () => {
   });
 
   it('returns the correct data if learner portal is not enabled', async () => {
-    spy = jest.spyOn(EcommerceApiService, 'sendCodeReminder');
+    spy = jest.spyOn(EcommerceApiService, 'sendCodeReminder').mockResolvedValue({ data: {} });
     const codeRemindData = [data, data];
     const store = createStore({
       ...initialState,
@@ -209,7 +218,7 @@ describe('CodeReminderModalWrapper', () => {
   });
 
   it('renders remind all modal if no code is selected for bulk remind', async () => {
-    spy = jest.spyOn(EcommerceApiService, 'sendCodeReminder');
+    spy = jest.spyOn(EcommerceApiService, 'sendCodeReminder').mockResolvedValue({ data: {} });
     const codeReminderData = [data, data];
     const selectedToggle = 'unredeemed';
     const store = createStore();

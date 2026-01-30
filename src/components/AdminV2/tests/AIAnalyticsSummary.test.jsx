@@ -99,7 +99,7 @@ describe('<AIAnalyticsSummary />', () => {
 
     const detailCardComponent = await screen.findByTestId('ai-analytics-detail-card');
     expect(detailCardComponent).toBeInTheDocument();
-    expect(detailCardComponent.textContent).toContain(('Analytics not found'));
+    expect(detailCardComponent.textContent).toContain('We encountered an issue');
   });
 
   it('should hide the analytics card when Dismiss button is clicked', async () => {

@@ -101,10 +101,6 @@ export const DEFAULT_STORE_STATE = {
     username: 'edx',
     roles: ['enterprise_admin:*'],
   },
-  userAccount: {
-    loaded: true,
-    isActive: true,
-  },
   portalConfiguration: {
     enterpriseSlug: TEST_ENTERPRISE_CUSTOMER_SLUG,
     enterpriseId: TEST_ENTERPRISE_CUSTOMER_UUID,

@@ -71,7 +71,7 @@ const TourCollapsible: FC<Props> = (
   }));
   const dispatch = useDispatch();
   const intl = useIntl();
-  const [onboardingSteps, setOnboardingSteps] = useState<StepDefinition[] | undefined>();
+  const [onboardingSteps, setOnboardingSteps] = useState<StepDefinition[]>([]);
   const [showCompletedModal, setShowCompletedModal] = useState(false);
   const { data: onboardingTourData } = useFetchCompletedOnboardingFlows(adminUuid);
   const { canManageLearnerCredit } = useContext(EnterpriseSubsidiesContext);

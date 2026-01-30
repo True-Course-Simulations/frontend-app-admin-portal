@@ -182,7 +182,7 @@ describe('<AddMembersModal />', () => {
     }, { timeout: EMAIL_ADDRESSES_INPUT_VALUE_DEBOUNCE_DELAY + 1000 });
 
     // testing interaction with adding members from the datatable
-    const membersCheckboxes = screen.getAllByRole('checkbox');
+    const membersCheckboxes = screen.getAllByTitle('Toggle Row Selected');
     await user.click(membersCheckboxes[0]);
     await user.click(membersCheckboxes[1]);
 

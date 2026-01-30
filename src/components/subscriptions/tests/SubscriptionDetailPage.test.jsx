@@ -73,7 +73,7 @@ const SubscriptionDetailPageWrapper = ({ initialState = defaultInitialState, ...
   return (
     <Provider store={reduxStore}>
       <IntlProvider locale="en">
-        <SubscriptionManagementContext detailState={SUBSCRIPTION_PLAN_ZERO_STATE}>
+        <SubscriptionManagementContext detailState={SUBSCRIPTION_PLAN_ZERO_STATE} store={reduxStore}>
           <SubscriptionDetailPage {...props} />
         </SubscriptionManagementContext>
       </IntlProvider>

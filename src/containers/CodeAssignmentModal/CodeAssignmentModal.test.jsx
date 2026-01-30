@@ -45,6 +45,7 @@ const initialState = {
     loading: false,
     error: null,
     emailTemplateSource: EMAIL_TEMPLATE_SOURCE_NEW_EMAIL,
+    allTemplates: [],
     default: {
       assign: {
         'email-address': '',
