@@ -183,10 +183,12 @@ describe('<AddMembersModal />', () => {
     }, { timeout: EMAIL_ADDRESSES_INPUT_VALUE_DEBOUNCE_DELAY + 1000 });
 
     // testing interaction with adding members from the datatable
-    const table = screen.getByRole('table');
-    const membersCheckboxes = within(table).getAllByRole('checkbox');
-    await user.click(membersCheckboxes[0]);
-    await user.click(membersCheckboxes[1]);
+    const rowUser1 = screen.getByText('testuser-1@2u.com').closest('tr');
+    const rowUser2 = screen.getByText('testuser-2@2u.com').closest('tr');
+    const checkboxUser1 = within(rowUser1).getByRole('checkbox');
+    const checkboxUser2 = within(rowUser2).getByRole('checkbox');
+    await user.click(checkboxUser1);
+    await user.click(checkboxUser2);
 
     await waitFor(() => {
       expect(screen.getByText('Summary (3)')).toBeInTheDocument();
@@ -196,8 +198,8 @@ describe('<AddMembersModal />', () => {
     });
 
     // testing interaction with removing members from the datatable
-    await user.click(membersCheckboxes[0]);
-    await user.click(membersCheckboxes[1]);
+    await user.click(checkboxUser1);
+    await user.click(checkboxUser2);
 
     await waitFor(() => {
       expect(screen.getByText('Summary (1)')).toBeInTheDocument();

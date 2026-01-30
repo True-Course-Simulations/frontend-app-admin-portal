@@ -6,7 +6,7 @@ import SearchBar from './index';
 describe('<SearchBar />', () => {
   it('renders correctly', () => {
     render(<SearchBar onSearch={() => {}} />);
-    expect(screen.getByTestId('search-field')).toBeInTheDocument();
+    expect(screen.getByTestId('search-field')).toBeTruthy();
   });
 
   it('calls onSearch callback handler', () => {

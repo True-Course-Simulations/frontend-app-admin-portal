@@ -10,6 +10,7 @@ jest.mock('../ProductTours/AdminOnboardingTours/DismissConfirmationModal', () =>
   default: ({ onConfirm, openConfirmationModal }) => (
     <div>
       <button
+        data-testid="dismiss-confirm"
         type="button"
         onClick={() => {
           onConfirm();
@@ -81,8 +82,7 @@ describe('FloatingCollapsible', () => {
     setup({ onDismiss });
 
     fireEvent.click(screen.getByTestId('button-tertiary'));
-    const dismissButtons = screen.getAllByRole('button', { name: 'Dismiss' });
-    fireEvent.click(dismissButtons[dismissButtons.length - 1]);
+    fireEvent.click(screen.getByTestId('dismiss-confirm'));
 
     expect(onDismiss).toHaveBeenCalledTimes(1);
     await waitFor(() => {

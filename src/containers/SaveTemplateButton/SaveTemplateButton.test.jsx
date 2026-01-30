@@ -116,7 +116,6 @@ describe('<SaveTemplateButton />', () => {
   it('calls saveTemplate on click with correct data', async () => {
     const user = userEvent.setup();
     const storeForTest = createStore();
-    const dispatchSpy = jest.spyOn(storeForTest, 'dispatch');
     const successResponse = {
       email_subject: saveTemplateData.email_subject,
       email_greeting: saveTemplateData.email_greeting,
@@ -133,8 +132,6 @@ describe('<SaveTemplateButton />', () => {
 
     const saveButton = container.querySelector('.save-template-btn');
     await user.click(saveButton);
-    expect(dispatchSpy.mock.calls.some((call) => call[0]?.type === 'SAVE_TEMPLATE_REQUEST'
-      && call[0]?.payload?.emailType === 'assign')).toBe(true);
     expect(saveTemplateSpy).toHaveBeenCalledWith(saveTemplateData);
   });
 

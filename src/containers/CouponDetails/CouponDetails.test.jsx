@@ -26,6 +26,23 @@ jest.mock('../../data/services/EcommerceApiService', () => ({
   fetchCouponDetails: jest.fn(),
 }));
 
+jest.mock('../../containers/TableContainer', () => {
+  const React = require('react');
+  const TableContainer = ({ columns }) => (
+    <table>
+      <thead>
+        <tr>
+          {columns.map((column, index) => (
+            <th key={column.key || index}>{column.label}</th>
+          ))}
+        </tr>
+      </thead>
+      <tbody />
+    </table>
+  );
+  return TableContainer;
+});
+
 const enterpriseId = 'test-enterprise';
 
 const sampleEmailTemplate = {

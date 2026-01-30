@@ -12,7 +12,6 @@ import revokeEmailTemplate from '../../components/CodeRevokeModal/emailTemplate'
 import {
   EMAIL_TEMPLATE_SOURCE_FROM_TEMPLATE,
   EMAIL_TEMPLATE_SOURCE_NEW_EMAIL,
-  SET_EMAIL_TEMPLATE_SOURCE,
 } from '../../data/constants/emailTemplate';
 import { configuration, features } from '../../config';
 import { initializeMocks } from '../../testUtils';
@@ -197,7 +196,6 @@ describe('CodeRevokeModalWrapper', () => {
 
   it('renders <TemplateSourceFields /> with source new_email', async () => {
     const { reduxStore } = initializeMocks(initialState);
-    const dispatchSpy = jest.spyOn(reduxStore, 'dispatch');
     render(<CodeRevokeModalWrapper store={reduxStore} />);
     const TemplateSourceFields = await screen.findAllByTestId('template-source-fields');
     expect(TemplateSourceFields.length).toEqual(1);
@@ -209,8 +207,8 @@ describe('CodeRevokeModalWrapper', () => {
 
     const buttonOldEmailTemplate = await screen.findByTestId('btn-old-email-template');
     fireEvent.click(buttonOldEmailTemplate);
-    expect(dispatchSpy.mock.calls.some((call) => call[0]?.type === SET_EMAIL_TEMPLATE_SOURCE
-      && call[0]?.payload?.emailTemplateSource === EMAIL_TEMPLATE_SOURCE_FROM_TEMPLATE)).toBe(true);
+    expect(await screen.findByTestId('btn-new-email-template')).toHaveAttribute('aria-pressed', 'false');
+    expect(await screen.findByTestId('btn-old-email-template')).toHaveAttribute('aria-pressed', 'true');
   });
 
   it('renders <TemplateSourceFields /> with source from_template', async () => {
@@ -221,7 +219,6 @@ describe('CodeRevokeModalWrapper', () => {
         emailTemplateSource: EMAIL_TEMPLATE_SOURCE_FROM_TEMPLATE,
       },
     });
-    const dispatchSpy = jest.spyOn(reduxStore, 'dispatch');
     render(<CodeRevokeModalWrapper store={reduxStore} />);
     const TemplateSourceFields = await screen.findAllByTestId('template-source-fields');
     expect(TemplateSourceFields.length).toEqual(1);
@@ -233,7 +230,7 @@ describe('CodeRevokeModalWrapper', () => {
 
     const buttonNewEmailTemplate = await screen.findByTestId('btn-new-email-template');
     fireEvent.click(buttonNewEmailTemplate);
-    expect(dispatchSpy.mock.calls.some((call) => call[0]?.type === SET_EMAIL_TEMPLATE_SOURCE
-      && call[0]?.payload?.emailTemplateSource === EMAIL_TEMPLATE_SOURCE_NEW_EMAIL)).toBe(true);
+    expect(await screen.findByTestId('btn-new-email-template')).toHaveAttribute('aria-pressed', 'true');
+    expect(await screen.findByTestId('btn-old-email-template')).toHaveAttribute('aria-pressed', 'false');
   });
 });
