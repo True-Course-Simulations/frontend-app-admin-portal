@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Alert, Button } from '@openedx/paragon';
-import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { injectIntl, intlShape } from '@edx/frontend-platform/i18n';

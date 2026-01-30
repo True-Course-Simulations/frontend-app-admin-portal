@@ -11,11 +11,11 @@ const CodeRevokeModalContainer = (props) => {
     enterpriseSlug,
     enableLearnerPortal,
   } = useSelector((state) => {
-    const initialValues = state.emailTemplate.emailTemplateSource === EMAIL_TEMPLATE_SOURCE_NEW_EMAIL
+    const resolvedInitialValues = state.emailTemplate.emailTemplateSource === EMAIL_TEMPLATE_SOURCE_NEW_EMAIL
       ? state.emailTemplate.default.revoke : state.emailTemplate.revoke;
 
     return {
-      initialValues,
+      initialValues: resolvedInitialValues,
       enterpriseSlug: state.portalConfiguration.enterpriseSlug,
       enableLearnerPortal: state.portalConfiguration.enableLearnerPortal,
     };

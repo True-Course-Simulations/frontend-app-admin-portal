@@ -42,8 +42,7 @@ import useHydrateAdminOnboardingData from './AdminOnboardingTours/data/useHydrat
  * All the logic here is for determining what ProductTours we should show.
  * All actual tour specific logic/content should live within the separate tour files.
  */
-const ProductTours = ({
-}) => {
+const ProductTours = () => {
   const {
     enableLearnerPortal,
     enterpriseSlug,

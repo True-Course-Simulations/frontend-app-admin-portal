@@ -16,16 +16,16 @@ const CodeAssignmentModalContainer = (props) => {
     enterpriseUuid,
     enableLearnerPortal,
   } = useSelector((state) => {
-    let initialValues = state.emailTemplate.emailTemplateSource === EMAIL_TEMPLATE_SOURCE_NEW_EMAIL
+    let resolvedInitialValues = state.emailTemplate.emailTemplateSource === EMAIL_TEMPLATE_SOURCE_NEW_EMAIL
       ? state.emailTemplate.default.assign : state.emailTemplate.assign;
 
     // By default `Automate reminders` are enabled for code assignments
-    initialValues = { ...initialValues, 'enable-nudge-emails': true };
+    resolvedInitialValues = { ...resolvedInitialValues, 'enable-nudge-emails': true };
 
     return {
       currentEmail: state.form['code-assignment-modal-form']?.values['email-address'],
       couponDetailsTable: state.table['coupon-details'],
-      initialValues,
+      initialValues: resolvedInitialValues,
       enterpriseSlug: state.portalConfiguration.enterpriseSlug,
       enterpriseUuid: state.portalConfiguration.enterpriseId,
       enableLearnerPortal: state.portalConfiguration.enableLearnerPortal,

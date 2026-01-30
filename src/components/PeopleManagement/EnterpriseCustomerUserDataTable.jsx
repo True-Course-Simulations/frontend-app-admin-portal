@@ -107,8 +107,7 @@ CustomSelectColumnCell.propTypes = {
   }).isRequired,
 };
 
-const EnterpriseCustomerUserDataTable = ({
-}) => {
+const EnterpriseCustomerUserDataTable = () => {
   const enterpriseId = useSelector(state => state.portalConfiguration.enterpriseId);
   const enterpriseMembersTableDataContext = useEnterpriseMembersTableData({ enterpriseId });
   const {

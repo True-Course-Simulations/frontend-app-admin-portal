@@ -12,8 +12,7 @@ import { EnterpriseSubsidiesContext } from '../EnterpriseSubsidiesContext';
 import { configuration } from '../../config';
 import { useEnterpriseBudgets } from '../EnterpriseSubsidiesContext/data/hooks';
 
-const MultipleBudgetsPage = ({
-}) => {
+const MultipleBudgetsPage = () => {
   const enterpriseUUID = useSelector(state => state.portalConfiguration.enterpriseId);
   const enterpriseSlug = useSelector(state => state.portalConfiguration.enterpriseSlug);
   const enableLearnerPortal = useSelector(state => state.portalConfiguration.enableLearnerPortal);

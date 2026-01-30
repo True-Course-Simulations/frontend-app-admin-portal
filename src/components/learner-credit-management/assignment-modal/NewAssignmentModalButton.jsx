@@ -6,6 +6,7 @@ import {
 } from '@openedx/paragon';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import React, { useCallback, useContext, useState } from 'react';
+import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import { generatePath, useNavigate, useParams } from 'react-router-dom';
 import { AppContext } from '@edx/frontend-platform/react';
@@ -374,6 +375,23 @@ const NewAssignmentModalButton = ({ enterpriseId, course, children }) => {
       />
     </>
   );
+};
+
+NewAssignmentModalButton.propTypes = {
+  enterpriseId: PropTypes.string,
+  course: PropTypes.shape({
+    key: PropTypes.string.isRequired,
+    uuid: PropTypes.string.isRequired,
+    courseRuns: PropTypes.arrayOf(PropTypes.shape({
+      key: PropTypes.string.isRequired,
+      restrictionType: PropTypes.string,
+    })).isRequired,
+  }).isRequired,
+  children: PropTypes.node.isRequired,
+};
+
+NewAssignmentModalButton.defaultProps = {
+  enterpriseId: null,
 };
 
 export default NewAssignmentModalButton;
