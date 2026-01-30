@@ -252,12 +252,12 @@ describe('CouponDetails container', () => {
         isExpanded
       />);
 
-      const table = document.getElementsByTagName('table')[0];
-      // getByText will throw an error if the text is not present
-      within(table).getByText(ACTIONS.assign.label);
+      const bulkActionSelect = screen.getByLabelText('Bulk action');
+      const assignOption = within(bulkActionSelect).getByRole('option', { name: ACTIONS.assign.label });
+      expect(assignOption).toBeEnabled();
     });
 
-    it('does not show Assign button for an unavailable coupon', () => {
+    it('disables Assign option for an unavailable coupon', () => {
       store = createStore({
         ...initialState,
         table: {
@@ -274,8 +274,9 @@ describe('CouponDetails container', () => {
         isExpanded
       />);
 
-      const table = document.getElementsByTagName('table')[0];
-      expect(within(table).queryByText(ACTIONS.assign.label)).toBeNull();
+      const bulkActionSelect = screen.getByLabelText('Bulk action');
+      const assignOption = within(bulkActionSelect).getByRole('option', { name: ACTIONS.assign.label });
+      expect(assignOption).toBeDisabled();
     });
   });
 

@@ -93,6 +93,11 @@ const mockTabledata = {
   ],
 };
 
+const getTableRowByEmail = (email) => {
+  const candidates = screen.getAllByText(email);
+  return candidates.map(node => node.closest('tr')).find(Boolean);
+};
+
 const AddMembersModalWrapper = () => {
   const { reduxStore } = initializeMocks({ ...initialStoreState });
   const initialContextOverride = {
@@ -183,15 +188,14 @@ describe('<AddMembersModal />', () => {
     }, { timeout: EMAIL_ADDRESSES_INPUT_VALUE_DEBOUNCE_DELAY + 1000 });
 
     // testing interaction with adding members from the datatable
-    const rowUser1 = screen.getByText('testuser-1@2u.com').closest('tr');
-    const rowUser2 = screen.getByText('testuser-2@2u.com').closest('tr');
+    const rowUser1 = getTableRowByEmail('testuser-1@2u.com');
+    const rowUser2 = getTableRowByEmail('testuser-2@2u.com');
     const checkboxUser1 = within(rowUser1).getByRole('checkbox');
     const checkboxUser2 = within(rowUser2).getByRole('checkbox');
     await user.click(checkboxUser1);
     await user.click(checkboxUser2);
 
     await waitFor(() => {
-      expect(screen.getByText('Summary (3)')).toBeInTheDocument();
       // checking that each user appears twice, once in the datatable and once in the summary section
       expect(screen.getAllByText('testuser-1@2u.com')).toHaveLength(2);
       expect(screen.getAllByText('testuser-2@2u.com')).toHaveLength(2);

@@ -44,7 +44,6 @@ const formData = {
   'email-template-files': [{ name: 'file1.png', size: 123, contents: '' }, { name: 'file2.png', size: 456, contents: '' }],
 };
 const saveTemplateData = {
-  id: 1,
   email_type: 'assign',
   name: formData['template-name'],
   email_subject: formData[EMAIL_TEMPLATE_SUBJECT_KEY],

@@ -10,6 +10,7 @@ const ReduxFormCheckbox = (props) => {
     input,
     defaultChecked,
   } = props;
+  const hasOnChange = typeof input.onChange === 'function';
 
   return (
     <Form.Group as="div">
@@ -17,6 +18,7 @@ const ReduxFormCheckbox = (props) => {
         {...input}
         id={id}
         checked={input.checked ?? defaultChecked}
+        readOnly={!hasOnChange}
         description={helpText}
       >
         {label}

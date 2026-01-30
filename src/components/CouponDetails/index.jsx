@@ -364,7 +364,7 @@ class CouponDetails extends React.Component {
 
     selectColumn.label = React.cloneElement(selectColumn.label, {
       checked: allCodesForPageSelected,
-      className: hasPartialSelection ? ['mixed'] : [],
+      className: hasPartialSelection ? 'mixed' : undefined,
     });
 
     // The Paragon `CheckBox` component does not currently support the mixed state. To

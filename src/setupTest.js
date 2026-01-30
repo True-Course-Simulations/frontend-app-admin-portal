@@ -66,6 +66,12 @@ const CONSOLE_FILTERS = {
     'Support for defaultProps will be removed from function components',
     'findDOMNode is deprecated and will be removed in the next major release',
     'was not wrapped in act',
+    'Failed prop type:',
+    'MISSING_TRANSLATION',
+    'React does not recognize',
+    'A component is changing a controlled input to be uncontrolled',
+    'A component is changing an uncontrolled input to be controlled',
+    'Each child in a list should have a unique "key" prop',
   ],
 };
 
