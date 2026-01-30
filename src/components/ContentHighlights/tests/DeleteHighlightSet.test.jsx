@@ -55,7 +55,7 @@ const DeleteHighlightSetWrapper = ({
 }) => {
   const { reduxStore } = initializeMocks(initialState);
   return (
-/* eslint-enable react/prop-types */
+  /* eslint-enable react/prop-types */
     <IntlProvider locale="en">
       <Provider store={reduxStore}>
         <EnterpriseAppContext.Provider value={enterpriseAppContextValue}>

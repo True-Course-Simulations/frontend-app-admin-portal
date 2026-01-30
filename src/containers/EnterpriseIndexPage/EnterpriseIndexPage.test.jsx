@@ -45,9 +45,7 @@ describe('<EnterpriseIndexPage />', () => {
     ));
   });
 
-  it('clearPortalConfiguration dispatches clearPortalConfiguration action', () => {
-    return waitFor(() => {
-      expect(dispatchSpy).toHaveBeenCalled();
-    });
-  });
+  it('clearPortalConfiguration dispatches clearPortalConfiguration action', () => waitFor(() => {
+    expect(dispatchSpy).toHaveBeenCalled();
+  }));
 });

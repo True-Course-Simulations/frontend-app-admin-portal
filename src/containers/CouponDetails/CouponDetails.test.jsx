@@ -95,17 +95,17 @@ const initialCouponData = {
 const CouponDetailsWrapper = ({ store, ...props }) => {
   const resolvedStore = store || createStore();
   return (
-  <MemoryRouter>
-    <Provider store={resolvedStore}>
-      <IntlProvider locale="en">
-        <CouponDetails
-          couponData={initialCouponData}
-          {...props}
-        />
-      </IntlProvider>
-    </Provider>
-  </MemoryRouter>
-);
+    <MemoryRouter>
+      <Provider store={resolvedStore}>
+        <IntlProvider locale="en">
+          <CouponDetails
+            couponData={initialCouponData}
+            {...props}
+          />
+        </IntlProvider>
+      </Provider>
+    </MemoryRouter>
+  );
 };
 
 CouponDetailsWrapper.propTypes = {

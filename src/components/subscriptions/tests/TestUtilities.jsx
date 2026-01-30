@@ -113,13 +113,11 @@ export const DEFAULT_STORE_STATE = {
   },
 };
 
-export const createMockStore = (state) => {
-  return initializeMocks({
-    ...DEFAULT_STORE_STATE,
-    // override any previously set fields with ``state`` argument
-    ...state,
-  }).reduxStore;
-};
+export const createMockStore = (state) => initializeMocks({
+  ...DEFAULT_STORE_STATE,
+  // override any previously set fields with ``state`` argument
+  ...state,
+}).reduxStore;
 
 const initialHistory = createMemoryHistory({
   initialEntries: ['/'],

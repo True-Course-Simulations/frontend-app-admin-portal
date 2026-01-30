@@ -80,20 +80,20 @@ const codeRevokeRequestData = (numCodes) => {
 const CodeRevokeModalWrapper = ({ store, ...props }) => {
   const resolvedStore = store || initializeMocks(initialState).reduxStore;
   return (
-  <MemoryRouter>
-    <Provider store={resolvedStore}>
-      <IntlProvider locale="en">
-        <CodeRevokeModal
-          couponId={couponId}
-          title={couponTitle}
-          onClose={() => {}}
-          onSuccess={() => {}}
-          {...props}
-        />
-      </IntlProvider>
-    </Provider>
-  </MemoryRouter>
-);
+    <MemoryRouter>
+      <Provider store={resolvedStore}>
+        <IntlProvider locale="en">
+          <CodeRevokeModal
+            couponId={couponId}
+            title={couponTitle}
+            onClose={() => {}}
+            onSuccess={() => {}}
+            {...props}
+          />
+        </IntlProvider>
+      </Provider>
+    </MemoryRouter>
+  );
 };
 
 CodeRevokeModalWrapper.propTypes = {

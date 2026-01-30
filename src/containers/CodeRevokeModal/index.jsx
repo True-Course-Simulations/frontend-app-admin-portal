@@ -1,8 +1,8 @@
+import { useDispatch, useSelector } from 'react-redux';
 import CodeRevokeModal from '../../components/CodeRevokeModal';
 
 import sendCodeRevoke from '../../data/actions/codeRevoke';
 import { EMAIL_TEMPLATE_SOURCE_NEW_EMAIL } from '../../data/constants/emailTemplate';
-import { useDispatch, useSelector } from 'react-redux';
 
 const CodeRevokeModalContainer = (props) => {
   const dispatch = useDispatch();

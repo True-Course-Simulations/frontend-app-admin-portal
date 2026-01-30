@@ -13,6 +13,8 @@ import { SubsidyRequestsContext } from '../../subsidy-requests';
 import { SUPPORTED_SUBSIDY_TYPES } from '../../../data/constants/subsidyRequests';
 import { initializeMocks } from '../../../testUtils';
 
+import { fetchCouponOrders, clearCouponOrders } from '../../../data/actions/coupons';
+
 jest.mock('../../../data/actions/coupons', () => {
   const { COUPONS_REQUEST: COUPONS_REQUEST_TYPE, CLEAR_COUPONS: CLEAR_COUPONS_TYPE } = jest.requireActual('../../../data/constants/coupons');
   return {
@@ -20,8 +22,6 @@ jest.mock('../../../data/actions/coupons', () => {
     clearCouponOrders: jest.fn(() => ({ type: CLEAR_COUPONS_TYPE })),
   };
 });
-
-import { fetchCouponOrders, clearCouponOrders } from '../../../data/actions/coupons';
 
 const BNR_NEW_FEATURE_ALERT_TEXT = 'browse and request new feature alert!';
 jest.mock('../../NewFeatureAlertBrowseAndRequest', () => ({

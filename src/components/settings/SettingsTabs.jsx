@@ -270,5 +270,5 @@ SettingsTabs.propTypes = {
     tertiary_color: PropTypes.string,
   }),
 };
- 
+
 export default SettingsTabs;

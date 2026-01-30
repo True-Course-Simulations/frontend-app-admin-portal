@@ -49,7 +49,7 @@ const initialState = {
     enableCodeManagementScreen: true,
     enableSubscriptionManagementScreen: true,
     enableAnalyticsScreen: true,
-  enableReportingConfigScreenLink: true,
+    enableReportingConfigScreenLink: true,
   },
 };
 

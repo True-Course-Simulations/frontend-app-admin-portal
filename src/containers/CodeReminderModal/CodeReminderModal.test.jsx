@@ -124,20 +124,20 @@ const createStore = (state = initialState) => initializeMocks(state).reduxStore;
 const CodeReminderModalWrapper = ({ store, ...props }) => {
   const resolvedStore = store || createStore();
   return (
-  <MemoryRouter>
-    <Provider store={resolvedStore}>
-      <IntlProvider locale="en">
-        <CodeReminderModal
-          couponId={couponId}
-          title="AABBCC"
-          onClose={() => {}}
-          onSuccess={() => {}}
-          {...props}
-        />
-      </IntlProvider>
-    </Provider>
-  </MemoryRouter>
-);
+    <MemoryRouter>
+      <Provider store={resolvedStore}>
+        <IntlProvider locale="en">
+          <CodeReminderModal
+            couponId={couponId}
+            title="AABBCC"
+            onClose={() => {}}
+            onSuccess={() => {}}
+            {...props}
+          />
+        </IntlProvider>
+      </Provider>
+    </MemoryRouter>
+  );
 };
 
 CodeReminderModalWrapper.propTypes = {
