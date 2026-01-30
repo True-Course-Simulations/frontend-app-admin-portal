@@ -100,6 +100,7 @@ const emailTemplate = (state = initialState, action) => {
       };
     case EMAIL_TEMPLATE_FAILURE:
       return {
+        ...state,
         loading: false,
         error: action.payload.error,
       };

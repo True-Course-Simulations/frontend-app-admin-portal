@@ -4,14 +4,14 @@ import PropTypes from 'prop-types';
 import userEvent from '@testing-library/user-event';
 import { within } from '@testing-library/dom';
 import { MemoryRouter } from 'react-router-dom';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 
 import '@testing-library/jest-dom/extend-expect';
 // import { Alert } from '@openedx/paragon';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 
 import { MULTI_USE } from '../../data/constants/coupons';
-// import EcommerceaApiService from '../../data/services/EcommerceApiService';
+import EcommerceApiService from '../../data/services/EcommerceApiService';
 
 import CouponDetails from './index';
 import { EMAIL_TEMPLATE_SOURCE_NEW_EMAIL } from '../../data/constants/emailTemplate';
@@ -21,6 +21,10 @@ import { initializeMocks } from '../../testUtils';
 import {
   ACTIONS, COUPON_FILTERS, DEFAULT_TABLE_COLUMNS,
 } from '../../components/CouponDetails/constants';
+
+jest.mock('../../data/services/EcommerceApiService', () => ({
+  fetchCouponDetails: jest.fn(),
+}));
 
 const enterpriseId = 'test-enterprise';
 
@@ -158,6 +162,10 @@ describe('CouponDetails container', () => {
   // let wrapper;
   let store;
 
+  beforeEach(() => {
+    EcommerceApiService.fetchCouponDetails.mockResolvedValue({ data: sampleTableData.data });
+  });
+
   // const selectAllCodesOnPage = ({ isSelected, expectedSelectionLength }) => {
   //   const selectAllCheckbox = wrapper.find('table th').find('input[type=\'checkbox\']');
   //   selectAllCheckbox.simulate('change', { target: { checked: isSelected } });
@@ -204,8 +212,10 @@ describe('CouponDetails container', () => {
       render(<CouponDetailsWrapper store={store} isExpanded />);
       await user.selectOptions(screen.getByLabelText('Filter by code status'), filterType);
 
-      DEFAULT_TABLE_COLUMNS[filterType].forEach(({ label }) => {
-        expect(screen.getByText(label)).toBeInTheDocument();
+      await waitFor(() => {
+        DEFAULT_TABLE_COLUMNS[filterType].forEach(({ label }) => {
+          expect(screen.getByText(label)).toBeInTheDocument();
+        });
       });
     });
 
@@ -370,7 +380,9 @@ describe('CouponDetails container', () => {
 
     render(<CouponDetailsWrapper store={store} isExpanded />);
 
-    expect(screen.getByLabelText('Bulk action')).toBeEnabled();
+    return waitFor(() => {
+      expect(screen.getByLabelText('Bulk action')).toBeEnabled();
+    });
   });
 
   // it('removes remind button in case overview has errors', () => {

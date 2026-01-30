@@ -33,7 +33,9 @@ const AddMembersModalContent = ({
   }, [dispatch, validatedEmails]);
 
   useEffect(() => {
-    const groupEnterpriseLearners = enterpriseGroupLearners.map((learner) => learner?.memberDetails?.userEmail);
+    const groupEnterpriseLearners = (enterpriseGroupLearners || []).map(
+      (learner) => learner?.memberDetails?.userEmail,
+    );
     if (allEnterpriseLearners) {
       dispatch(initializeEnterpriseEmailsAction({ allEnterpriseLearners, groupEnterpriseLearners }));
     }
@@ -58,7 +60,7 @@ const AddMembersModalContent = ({
           <Hyperlink
             destination={HELP_CENTER_URL}
             target="_blank"
-            variant="inline"
+            variant="brand"
             className="ml-1"
           >
             Learn more.

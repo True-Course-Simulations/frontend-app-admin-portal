@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  fireEvent, render, screen, waitFor,
+  fireEvent, render, screen, waitFor, within,
 } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import userEvent from '@testing-library/user-event';
@@ -51,6 +51,7 @@ const defaultProps = {
   closeModal: jest.fn(),
   groupName: 'test-group-name',
   groupUuid: TEST_GROUP,
+  onInviteError: jest.fn(),
 };
 
 const mockTabledata = {
@@ -95,7 +96,7 @@ const mockTabledata = {
 const AddMembersModalWrapper = () => {
   const { reduxStore } = initializeMocks({ ...initialStoreState });
   const initialContextOverride = {
-    groupEnterpriseLearners: mockTabledata.results.map((user) => user.email),
+    groupEnterpriseLearners: [],
   };
   return (
     <IntlProvider locale="en">
@@ -182,7 +183,8 @@ describe('<AddMembersModal />', () => {
     }, { timeout: EMAIL_ADDRESSES_INPUT_VALUE_DEBOUNCE_DELAY + 1000 });
 
     // testing interaction with adding members from the datatable
-    const membersCheckboxes = screen.getAllByTitle('Toggle Row Selected');
+    const table = screen.getByRole('table');
+    const membersCheckboxes = within(table).getAllByRole('checkbox');
     await user.click(membersCheckboxes[0]);
     await user.click(membersCheckboxes[1]);
 

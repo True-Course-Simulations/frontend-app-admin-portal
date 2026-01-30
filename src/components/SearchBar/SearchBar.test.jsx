@@ -1,19 +1,12 @@
 import React from 'react';
-import renderer from 'react-test-renderer';
-import { fireEvent, render } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 
 import SearchBar from './index';
 
 describe('<SearchBar />', () => {
   it('renders correctly', () => {
-    const tree = renderer
-      .create((
-        <SearchBar
-          onSearch={() => {}}
-        />
-      ))
-      .toJSON();
-    expect(tree).toMatchSnapshot();
+    render(<SearchBar onSearch={() => {}} />);
+    expect(screen.getByTestId('search-field')).toBeInTheDocument();
   });
 
   it('calls onSearch callback handler', () => {

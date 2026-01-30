@@ -12,17 +12,16 @@ const ReduxFormCheckbox = (props) => {
   } = props;
 
   return (
-    <Form>
+    <Form.Group as="div">
       <Form.Checkbox
         {...input}
         id={id}
-        defaultValue={defaultChecked}
-        checked={input.checked}
+        checked={input.checked ?? defaultChecked}
         description={helpText}
       >
         {label}
       </Form.Checkbox>
-    </Form>
+    </Form.Group>
   );
 };
 

@@ -81,7 +81,8 @@ describe('FloatingCollapsible', () => {
     setup({ onDismiss });
 
     fireEvent.click(screen.getByTestId('button-tertiary'));
-    fireEvent.click(screen.getByRole('button', { name: 'Dismiss' }));
+    const dismissButtons = screen.getAllByRole('button', { name: 'Dismiss' });
+    fireEvent.click(dismissButtons[dismissButtons.length - 1]);
 
     expect(onDismiss).toHaveBeenCalledTimes(1);
     await waitFor(() => {
