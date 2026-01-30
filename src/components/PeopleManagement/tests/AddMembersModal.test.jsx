@@ -196,9 +196,10 @@ describe('<AddMembersModal />', () => {
     await user.click(checkboxUser2);
 
     await waitFor(() => {
-      // checking that each user appears twice, once in the datatable and once in the summary section
-      expect(screen.getAllByText('testuser-1@2u.com')).toHaveLength(2);
-      expect(screen.getAllByText('testuser-2@2u.com')).toHaveLength(2);
+      // summary should reflect CSV + two selected members
+      expect(screen.getByText('Summary (3)')).toBeInTheDocument();
+      expect(screen.getByText('testuser-1@2u.com')).toBeInTheDocument();
+      expect(screen.getByText('testuser-2@2u.com')).toBeInTheDocument();
     });
 
     // testing interaction with removing members from the datatable
