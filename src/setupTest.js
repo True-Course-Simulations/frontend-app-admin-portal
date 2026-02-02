@@ -56,6 +56,20 @@ global.URL.createObjectURL = jest.fn();
 const originalConsoleError = console.error;
 const originalConsoleWarn = console.warn;
 
+const normalizeConsoleArgs = (args) => args.map((arg) => {
+  if (typeof arg === 'string') {
+    return arg;
+  }
+  if (arg && typeof arg.message === 'string') {
+    return arg.message;
+  }
+  try {
+    return JSON.stringify(arg);
+  } catch (e) {
+    return String(arg);
+  }
+}).join(' ');
+
 const CONSOLE_FILTERS = {
   warn: [
     'PubSub already loaded',
@@ -69,28 +83,21 @@ const CONSOLE_FILTERS = {
     'Failed prop type:',
     'MISSING_TRANSLATION',
     'React does not recognize',
+    'Select elements must be either controlled or uncontrolled',
     'A component is changing a controlled input to be uncontrolled',
     'A component is changing an uncontrolled input to be controlled',
     'Each child in a list should have a unique "key" prop',
+    'Invalid prop `variant` of value',
+    'Invalid prop `size` of value',
+    'The prop `alt` is marked as required',
+    '[@formatjs/intl Error INVALID_CONFIG]',
+    'locale" was not configured',
   ],
 };
 
 // Override `console.error`
 console.error = (...args) => {
-  const first = args[0];
-
-  let message = '';
-  if (typeof first === 'string') {
-    message = first;
-  } else if (first && typeof first.message === 'string') {
-    message = first.message;
-  } else {
-    try {
-      message = JSON.stringify(first);
-    } catch (e) {
-      message = String(first);
-    }
-  }
+  const message = normalizeConsoleArgs(args);
 
   if (
     message
@@ -104,11 +111,8 @@ console.error = (...args) => {
 
 // Override `console.warn`
 console.warn = (...args) => {
-  const message = args[0];
-  if (
-    typeof message === 'string'
-      && CONSOLE_FILTERS.warn.some(ignored => message.includes(ignored))
-  ) {
+  const message = normalizeConsoleArgs(args);
+  if (message && CONSOLE_FILTERS.warn.some(ignored => message.includes(ignored))) {
     return;
   }
   originalConsoleWarn(...args);

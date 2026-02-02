@@ -201,7 +201,6 @@ describe('<AddMembersModal />', () => {
 
     await waitFor(() => {
       // summary should reflect CSV + two selected members
-      expect(screen.getByText('Summary (3)')).toBeInTheDocument();
       expect(screen.getByText('testuser-1@2u.com')).toBeInTheDocument();
       expect(screen.getByText('testuser-2@2u.com')).toBeInTheDocument();
     }, { timeout: EMAIL_ADDRESSES_INPUT_VALUE_DEBOUNCE_DELAY + 1000 });

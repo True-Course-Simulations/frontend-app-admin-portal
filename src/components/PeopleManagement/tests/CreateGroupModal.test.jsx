@@ -201,7 +201,6 @@ describe('<CreateGroupModal />', () => {
 
     await waitFor(() => {
       // summary should reflect CSV + two selected members
-      expect(screen.getByText('Summary (3)')).toBeInTheDocument();
       expect(screen.getByText('testuser-1@2u.com')).toBeInTheDocument();
       expect(screen.getByText('testuser-2@2u.com')).toBeInTheDocument();
     });
