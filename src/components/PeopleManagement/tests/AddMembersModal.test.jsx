@@ -94,7 +94,12 @@ const mockTabledata = {
 };
 
 const getTableRowByEmail = (email) => {
-  const candidates = screen.getAllByText(email);
+  const tableHeader = screen.getByRole('columnheader', { name: /member details/i });
+  const table = tableHeader.closest('table');
+  if (!table) {
+    throw new Error('Members table not found');
+  }
+  const candidates = within(table).getAllByText(email);
   return candidates.map(node => node.closest('tr')).find(Boolean);
 };
 
@@ -201,8 +206,8 @@ describe('<AddMembersModal />', () => {
 
     await waitFor(() => {
       // summary should reflect CSV + two selected members
-      expect(screen.getByText('testuser-1@2u.com')).toBeInTheDocument();
-      expect(screen.getByText('testuser-2@2u.com')).toBeInTheDocument();
+      expect(screen.getAllByText('testuser-1@2u.com')).toHaveLength(2);
+      expect(screen.getAllByText('testuser-2@2u.com')).toHaveLength(2);
     }, { timeout: EMAIL_ADDRESSES_INPUT_VALUE_DEBOUNCE_DELAY + 1000 });
 
     expect(checkboxUser1).toBeChecked();
