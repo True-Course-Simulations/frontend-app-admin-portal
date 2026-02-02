@@ -190,8 +190,12 @@ describe('<AddMembersModal />', () => {
     // testing interaction with adding members from the datatable
     const rowUser1 = getTableRowByEmail('testuser-1@2u.com');
     const rowUser2 = getTableRowByEmail('testuser-2@2u.com');
-    const checkboxUser1 = within(rowUser1).getByRole('checkbox');
-    const checkboxUser2 = within(rowUser2).getByRole('checkbox');
+    const selectionCell1 = rowUser1.querySelector('.pgn__data-table__controlled-select');
+    const selectionCell2 = rowUser2.querySelector('.pgn__data-table__controlled-select');
+    expect(selectionCell1).not.toBeNull();
+    expect(selectionCell2).not.toBeNull();
+    const checkboxUser2 = within(selectionCell2).getByRole('checkbox');
+    const checkboxUser1 = within(selectionCell1).getByRole('checkbox');
     await user.click(checkboxUser1);
     await user.click(checkboxUser2);
 
@@ -200,7 +204,10 @@ describe('<AddMembersModal />', () => {
       expect(screen.getByText('Summary (3)')).toBeInTheDocument();
       expect(screen.getByText('testuser-1@2u.com')).toBeInTheDocument();
       expect(screen.getByText('testuser-2@2u.com')).toBeInTheDocument();
-    });
+    }, { timeout: EMAIL_ADDRESSES_INPUT_VALUE_DEBOUNCE_DELAY + 1000 });
+
+    expect(checkboxUser1).toBeChecked();
+    expect(checkboxUser2).toBeChecked();
 
     // testing interaction with removing members from the datatable
     await user.click(checkboxUser1);

@@ -77,13 +77,28 @@ const CONSOLE_FILTERS = {
 
 // Override `console.error`
 console.error = (...args) => {
-  const message = args[0];
+  const first = args[0];
+
+  let message = '';
+  if (typeof first === 'string') {
+    message = first;
+  } else if (first && typeof first.message === 'string') {
+    message = first.message;
+  } else {
+    try {
+      message = JSON.stringify(first);
+    } catch (e) {
+      message = String(first);
+    }
+  }
+
   if (
-    typeof message === 'string'
-      && CONSOLE_FILTERS.error.some(ignored => message.includes(ignored))
+    message
+    && CONSOLE_FILTERS.error.some((ignored) => message.includes(ignored))
   ) {
     return;
   }
+
   originalConsoleError(...args);
 };
 

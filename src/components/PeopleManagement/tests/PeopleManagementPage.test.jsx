@@ -68,18 +68,22 @@ const mockGroupsResponse = [{
 
 const mockMultipleGroupsResponse = [
   {
+    uuid: 'group-1',
     name: 'captain crunch',
     acceptedMembersCount: 4,
   },
   {
+    uuid: 'group-2',
     name: 'cinnamon toast crunch',
     acceptedMembersCount: 5,
   },
   {
+    uuid: 'group-3',
     name: 'cocoa puffs',
     acceptedMembersCount: 10,
   },
   {
+    uuid: 'group-4',
     name: 'fruity pebbles',
     acceptedMembersCount: 5,
   },

@@ -7,14 +7,15 @@ import GroupDetailCard from './GroupDetailCard';
 import { ORGANIZE_LEARNER_TARGETS } from '../ProductTours/AdminOnboardingTours/constants';
 
 const GroupCardGrid = ({ groups }) => {
-  const [previewGroups, setPreviewGroups] = useState();
-  const [overflowGroups, setOverflowGroups] = useState();
+  const [previewGroups, setPreviewGroups] = useState([]);
+  const [overflowGroups, setOverflowGroups] = useState([]);
   useEffect(() => {
     if (groups.length > 3) {
       setPreviewGroups(groups.slice(0, 3));
       setOverflowGroups(groups.slice(3));
     } else {
       setPreviewGroups(groups);
+      setOverflowGroups([]);
     }
   }, [groups]);
   return (
@@ -25,7 +26,7 @@ const GroupCardGrid = ({ groups }) => {
           lg: 6,
           xl: 4,
         }}
-        hasEqualColumnHeights="true"
+        hasEqualColumnHeights
       >
         {previewGroups?.map((group, index) => {
           if (index === 0) {
@@ -34,7 +35,7 @@ const GroupCardGrid = ({ groups }) => {
           return <GroupDetailCard key={group.uuid} group={group} />;
         })}
       </CardGrid>
-      {overflowGroups && (
+      {overflowGroups.length > 0 && (
         <Collapsible.Advanced>
           <Collapsible.Body>
             <CardGrid
@@ -46,7 +47,7 @@ const GroupCardGrid = ({ groups }) => {
               hasEqualColumnHeights
             >
               {overflowGroups.map((group) => (
-                <GroupDetailCard group={group} />
+                <GroupDetailCard key={group.uuid} group={group} />
               ))}
             </CardGrid>
           </Collapsible.Body>

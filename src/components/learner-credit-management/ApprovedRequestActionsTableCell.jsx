@@ -21,7 +21,7 @@ const ApprovedRequestActionsTableCell = ({ row }) => {
   }
 
   return (
-    <Dropdown drop="top">
+    <Dropdown drop="up">
       <Dropdown.Toggle
         id={`dropdown-toggle-${original.uuid}`}
         data-testid={`dropdown-toggle-${original.uuid}`}

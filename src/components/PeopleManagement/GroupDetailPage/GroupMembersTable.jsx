@@ -42,7 +42,7 @@ const KabobMenu = ({
         isOpen={isErrorModalOpen}
         close={closeErrorModal}
       />
-      <Dropdown drop="top">
+      <Dropdown drop="up">
         <Dropdown.Toggle
           id="kabob-menu-dropdown"
           data-testid="kabob-menu-dropdown"
