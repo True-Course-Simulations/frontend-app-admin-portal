@@ -8,7 +8,7 @@ import { useFormContext } from './FormContext';
 
 type InheritedParagonCheckboxProps = {
   className?: string;
-  children: ReactNode;
+  children?: ReactNode;
 };
 
 export type ValidatedFormCheckboxProps = {
@@ -41,10 +41,13 @@ const ValidatedFormCheckbox = (props: ValidatedFormCheckboxProps) => {
     id: props.formId,
     value: formFields && formFields[props.formId],
   };
+  const labelContent = props.children ?? formCheckboxProps.label;
 
   return (
     <>
-      <Form.Label {...formCheckboxProps}>{formCheckboxProps.label}</Form.Label>
+      {labelContent && (
+        <Form.Label {...formCheckboxProps}>{labelContent}</Form.Label>
+      )}
       <Form.Checkbox {...formCheckboxProps} checked={value} onChange={onChange} />
       {formCheckboxProps.fieldInstructions && (
         <Form.Text>{formCheckboxProps.fieldInstructions}</Form.Text>
