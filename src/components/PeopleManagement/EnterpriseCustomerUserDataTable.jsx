@@ -74,6 +74,22 @@ const CustomSelectColumnCell = ({ row }) => {
     }
   }, [dataTableDispatch, itemCount, row, isTableSelected, isValidated]);
 
+  useEffect(() => {
+    if (!selectedEmail || !validateEmailsDispatch) {
+      return;
+    }
+    if (isTableSelected && !isValidated) {
+      validateEmailsDispatch(addEmailsAction({ emails: [selectedEmail], actionType: 'CLICK_ACTION' }));
+    } else if (!isTableSelected && isValidated) {
+      validateEmailsDispatch(removeEmailsAction({ emails: [selectedEmail] }));
+    }
+  }, [
+    isTableSelected,
+    isValidated,
+    selectedEmail,
+    validateEmailsDispatch,
+  ]);
+
   const checkboxControlProps = useCheckboxControlProps(
     row.getToggleRowSelectedProps(),
   );
