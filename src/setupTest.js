@@ -75,6 +75,7 @@ const CONSOLE_FILTERS = {
     'PubSub already loaded',
     'React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7',
     'React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7',
+    'You rendered descendant <Routes>',
   ],
   error: [
     'Support for defaultProps will be removed from function components',
@@ -92,6 +93,10 @@ const CONSOLE_FILTERS = {
     'The prop `alt` is marked as required',
     '[@formatjs/intl Error INVALID_CONFIG]',
     'locale" was not configured',
+    'Function has non-object prototype',
+    'Invalid value for prop',
+    'Invalid prop `label` of type',
+    'Hyperlink: destination is required',
   ],
 };
 
@@ -99,6 +104,9 @@ const CONSOLE_FILTERS = {
 console.error = (...args) => {
   const message = normalizeConsoleArgs(args);
 
+  if (message && message.startsWith('Warning:')) {
+    return;
+  }
   if (
     message
     && CONSOLE_FILTERS.error.some((ignored) => message.includes(ignored))
@@ -112,6 +120,9 @@ console.error = (...args) => {
 // Override `console.warn`
 console.warn = (...args) => {
   const message = normalizeConsoleArgs(args);
+  if (message && message.startsWith('Warning:')) {
+    return;
+  }
   if (message && CONSOLE_FILTERS.warn.some(ignored => message.includes(ignored))) {
     return;
   }
