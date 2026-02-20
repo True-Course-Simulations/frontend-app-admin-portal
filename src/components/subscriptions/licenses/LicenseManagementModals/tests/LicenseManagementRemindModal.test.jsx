@@ -6,9 +6,9 @@ import {
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
 import { logError } from '@edx/frontend-platform/logging';
+import { IntlProvider } from '@edx/frontend-platform/i18n';
 import { initializeMocks } from '../../../../../testUtils';
 
-import { IntlProvider } from '@edx/frontend-platform/i18n';
 import LicenseManagerApiService from '../../../../../data/services/LicenseManagerAPIService';
 import LicenseManagementRemindModal from '../LicenseManagementRemindModal';
 import { ASSIGNED } from '../../../data/constants';

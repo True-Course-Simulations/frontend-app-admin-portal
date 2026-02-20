@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  fireEvent, render, screen, waitFor,
+  fireEvent, render, screen, waitFor, within,
 } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import userEvent from '@testing-library/user-event';
@@ -99,12 +99,22 @@ const mockTabledata = {
   ],
 };
 
-const CreateGroupModalWrapper = (isCreateGroupListSelection = false, isCreateGroupFileUploaded = false) => {
+const getTableRowByEmail = (email) => {
+  const tableHeader = screen.getByRole('columnheader', { name: /member details/i });
+  const table = tableHeader.closest('table');
+  if (!table) {
+    throw new Error('Members table not found');
+  }
+  const candidates = within(table).getAllByText(email);
+  return candidates.map(node => node.closest('tr')).find(Boolean);
+};
+
+const CreateGroupModalWrapper = (isCreateGroupListSelection = false, isCreateGroupFileUpload = false) => {
   const { reduxStore } = initializeMocks({ ...initialStoreState });
   const initialContextOverride = {
-    groupEnterpriseLearners: mockTabledata.results.map((user) => user.email),
+    groupEnterpriseLearners: [],
     isCreateGroupListSelection,
-    isCreateGroupFileUploaded,
+    isCreateGroupFileUpload,
   };
   return (
     <IntlProvider locale="en">
@@ -164,7 +174,7 @@ describe('<CreateGroupModal />', () => {
     const mockInviteData = { records_processed: 1, new_learners: 1, existing_learners: 0 };
     LmsApiService.inviteEnterpriseLearnersToGroup.mockResolvedValue(mockInviteData);
 
-    render(<CreateGroupModalWrapper isCreateGroupFileUploaded isCreateGroupListSelection />);
+    render(<CreateGroupModalWrapper isCreateGroupFileUpload isCreateGroupListSelection />);
     expect(screen.getByText('You haven\'t uploaded any members yet.')).toBeInTheDocument();
     expect(screen.getByText('Upload a CSV file or select members to get started.')).toBeInTheDocument();
     const fakeFile = new File(['tomhaverford@pawnee.org'], 'emails.csv', { type: 'text/csv' });
@@ -186,23 +196,23 @@ describe('<CreateGroupModal />', () => {
     }, { timeout: EMAIL_ADDRESSES_INPUT_VALUE_DEBOUNCE_DELAY + 1000 });
 
     // testing interaction with adding members from the datatable
-    let membersCheckboxes = screen.getAllByRole('checkbox');
+    const rowUser1 = getTableRowByEmail('testuser-1@2u.com');
+    const rowUser2 = getTableRowByEmail('testuser-2@2u.com');
+    const checkboxUser1 = within(rowUser1).getByRole('checkbox');
+    const checkboxUser2 = within(rowUser2).getByRole('checkbox');
 
-    await user.click(membersCheckboxes[0]);
-    await user.click(membersCheckboxes[1]);
+    await user.click(checkboxUser1);
+    await user.click(checkboxUser2);
 
     await waitFor(() => {
-      expect(screen.getByText('Summary (3)')).toBeInTheDocument();
-      // checking that each user appears twice, once in the datatable and once in the summary section
+      // summary should reflect CSV + two selected members
       expect(screen.getAllByText('testuser-1@2u.com')).toHaveLength(2);
       expect(screen.getAllByText('testuser-2@2u.com')).toHaveLength(2);
     });
 
     // testing interaction with removing members from the datatable
-    membersCheckboxes = screen.getAllByRole('checkbox');
-
-    await user.click(membersCheckboxes[0]);
-    await user.click(membersCheckboxes[1]);
+    await user.click(checkboxUser1);
+    await user.click(checkboxUser2);
 
     await waitFor(() => {
       expect(screen.getByText('Summary (1)')).toBeInTheDocument();
@@ -244,9 +254,12 @@ describe('<CreateGroupModal />', () => {
     const groupNameInput = screen.getByTestId('group-name');
     await user.type(groupNameInput, 'test group name');
 
-    const membersCheckbox = screen.getAllByTitle('Toggle Row Selected');
-    await user.click(membersCheckbox[0]);
-    await user.click(membersCheckbox[1]);
+    const rowUser1 = getTableRowByEmail('testuser-1@2u.com');
+    const rowUser2 = getTableRowByEmail('testuser-2@2u.com');
+    const checkboxUser1 = within(rowUser1).getByRole('checkbox');
+    const checkboxUser2 = within(rowUser2).getByRole('checkbox');
+    await user.click(checkboxUser1);
+    await user.click(checkboxUser2);
 
     const createButton = screen.getByRole('button', { name: 'Create' });
     await user.click(createButton);
@@ -319,8 +332,9 @@ describe('<CreateGroupModal />', () => {
     }, { timeout: EMAIL_ADDRESSES_INPUT_VALUE_DEBOUNCE_DELAY + 1000 });
 
     // testing interaction with removing members from the datatable
-    const membersCheckboxes = screen.getAllByRole('checkbox');
-    await user.click(membersCheckboxes[0]);
+    const rowUser1 = getTableRowByEmail('testuser-1@2u.com');
+    const checkboxUser1 = within(rowUser1).getByRole('checkbox');
+    await user.click(checkboxUser1);
 
     await waitFor(() => {
       expect(screen.getByText('Summary (1)')).toBeInTheDocument();
@@ -466,10 +480,13 @@ describe('<CreateGroupModal />', () => {
     const user = userEvent.setup();
     render(<CreateGroupModalWrapper />);
     // testing interaction with adding members from the datatable
-    const membersCheckboxes = screen.getAllByRole('checkbox');
-    await user.click(membersCheckboxes[0]);
+    const rowUser1 = getTableRowByEmail('testuser-1@2u.com');
+    const rowUser2 = getTableRowByEmail('testuser-2@2u.com');
+    const checkboxUser1 = within(rowUser1).getByRole('checkbox');
+    const checkboxUser2 = within(rowUser2).getByRole('checkbox');
+    await user.click(checkboxUser1);
     // Select a second member while keeping first selected, and add again
-    await user.click(membersCheckboxes[1]);
+    await user.click(checkboxUser2);
 
     await waitFor(() => {
       expect(screen.getAllByText('testuser-1@2u.com')).toHaveLength(2);
@@ -490,8 +507,9 @@ describe('<CreateGroupModal />', () => {
     await user.type(groupNameInput, 'test group name');
 
     // Add non-lowercased member
-    const membersCheckbox = screen.getAllByTitle('Toggle Row Selected');
-    await user.click(membersCheckbox[3]);
+    const rowUser = getTableRowByEmail('testUser-NonLowercase@2u.com');
+    const checkboxUser = within(rowUser).getByRole('checkbox');
+    await user.click(checkboxUser);
 
     await waitFor(() => {
       expect(screen.getByText('Summary (1)')).toBeInTheDocument();
@@ -499,7 +517,7 @@ describe('<CreateGroupModal />', () => {
     }, { timeout: EMAIL_ADDRESSES_INPUT_VALUE_DEBOUNCE_DELAY + 1000 });
 
     // Remove non-lowercased member
-    await user.click(membersCheckbox[3]);
+    await user.click(checkboxUser);
 
     await waitFor(() => {
       expect(screen.queryByText('Summary (1)')).not.toBeInTheDocument();

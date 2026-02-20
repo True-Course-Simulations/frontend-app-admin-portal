@@ -23,6 +23,7 @@ const ConfigErrorModal = ({
     isOpen={isOpen}
     onClose={close}
     hasCloseButton
+    isOverflowVisible={false}
     footerNode={(
       <ActionRow>
         <ActionRow.Spacer />

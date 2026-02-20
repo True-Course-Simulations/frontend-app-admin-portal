@@ -12,9 +12,8 @@ import remindEmailTemplate from '../../components/CodeReminderModal/emailTemplat
 import {
   EMAIL_TEMPLATE_SOURCE_FROM_TEMPLATE,
   EMAIL_TEMPLATE_SOURCE_NEW_EMAIL,
-  SET_EMAIL_TEMPLATE_SOURCE,
 } from '../../data/constants/emailTemplate';
-import { configuration } from '../../config';
+import { configuration, features } from '../../config';
 import { initializeMocks } from '../../testUtils';
 
 const enterpriseSlug = 'bearsRus';
@@ -61,6 +60,7 @@ const initialState = {
     loading: false,
     error: null,
     emailTemplateSource: EMAIL_TEMPLATE_SOURCE_NEW_EMAIL,
+    allTemplates: [],
     default: {
       remind: {
         'email-template-subject': remindEmailTemplate.subject,
@@ -84,7 +84,13 @@ const initialState = {
   },
   form: {
     'code-reminder-modal-form': {
-      initial: {},
+      values: {
+        'email-template-subject': remindEmailTemplate.subject,
+        'email-template-greeting': remindEmailTemplate.greeting,
+        'email-template-body': remindEmailTemplate.body,
+        'email-template-closing': remindEmailTemplate.closing,
+        'email-template-files': remindEmailTemplate.files,
+      },
     },
   },
 };
@@ -108,9 +114,11 @@ const codeReminderRequestData = (numCodes, selectedToggle) => {
     template_subject: remindEmailTemplate.subject,
     template_greeting: remindEmailTemplate.greeting,
     template_closing: remindEmailTemplate.closing,
-    template_files: remindEmailTemplate.files,
     base_enterprise_url: data.base_enterprise_url,
   };
+  if (features.FILE_ATTACHMENT) {
+    options.template_files = remindEmailTemplate.files;
+  }
   if (numCodes === 0) {
     options.code_filter = selectedToggle;
   } else {
@@ -124,20 +132,20 @@ const createStore = (state = initialState) => initializeMocks(state).reduxStore;
 const CodeReminderModalWrapper = ({ store, ...props }) => {
   const resolvedStore = store || createStore();
   return (
-  <MemoryRouter>
-    <Provider store={resolvedStore}>
-      <IntlProvider locale="en">
-        <CodeReminderModal
-          couponId={couponId}
-          title="AABBCC"
-          onClose={() => {}}
-          onSuccess={() => {}}
-          {...props}
-        />
-      </IntlProvider>
-    </Provider>
-  </MemoryRouter>
-);
+    <MemoryRouter>
+      <Provider store={resolvedStore}>
+        <IntlProvider locale="en">
+          <CodeReminderModal
+            couponId={couponId}
+            title="AABBCC"
+            onClose={() => {}}
+            onSuccess={() => {}}
+            {...props}
+          />
+        </IntlProvider>
+      </Provider>
+    </MemoryRouter>
+  );
 };
 
 CodeReminderModalWrapper.propTypes = {
@@ -164,7 +172,7 @@ describe('CodeReminderModalWrapper', () => {
   });
 
   it('renders bulk reminder modal', async () => {
-    spy = jest.spyOn(EcommerceApiService, 'sendCodeReminder');
+    spy = jest.spyOn(EcommerceApiService, 'sendCodeReminder').mockResolvedValue({ data: {} });
     const codeRemindData = [data, data];
     const store = createStore();
     render(<CodeReminderModalWrapper
@@ -182,7 +190,7 @@ describe('CodeReminderModalWrapper', () => {
   });
 
   it('returns the correct data if learner portal is not enabled', async () => {
-    spy = jest.spyOn(EcommerceApiService, 'sendCodeReminder');
+    spy = jest.spyOn(EcommerceApiService, 'sendCodeReminder').mockResolvedValue({ data: {} });
     const codeRemindData = [data, data];
     const store = createStore({
       ...initialState,
@@ -209,7 +217,7 @@ describe('CodeReminderModalWrapper', () => {
   });
 
   it('renders remind all modal if no code is selected for bulk remind', async () => {
-    spy = jest.spyOn(EcommerceApiService, 'sendCodeReminder');
+    spy = jest.spyOn(EcommerceApiService, 'sendCodeReminder').mockResolvedValue({ data: {} });
     const codeReminderData = [data, data];
     const selectedToggle = 'unredeemed';
     const store = createStore();
@@ -238,7 +246,6 @@ describe('CodeReminderModalWrapper', () => {
 
   it('renders <TemplateSourceFields /> with source new_email', async () => {
     const store = createStore();
-    const dispatchSpy = jest.spyOn(store, 'dispatch');
     render(<CodeReminderModalWrapper store={store} />);
     const TemplateSourceFields = await screen.findAllByTestId('template-source-fields');
     expect(TemplateSourceFields.length).toEqual(1);
@@ -250,8 +257,8 @@ describe('CodeReminderModalWrapper', () => {
 
     const buttonOldEmailTemplate = await screen.findByTestId('btn-old-email-template');
     fireEvent.click(buttonOldEmailTemplate);
-    expect(dispatchSpy.mock.calls.some((call) => call[0]?.type === SET_EMAIL_TEMPLATE_SOURCE
-      && call[0]?.payload?.emailTemplateSource === EMAIL_TEMPLATE_SOURCE_FROM_TEMPLATE)).toBe(true);
+    expect(await screen.findByTestId('btn-new-email-template')).toHaveAttribute('aria-pressed', 'false');
+    expect(await screen.findByTestId('btn-old-email-template')).toHaveAttribute('aria-pressed', 'true');
   });
 
   it('renders <TemplateSourceFields /> with source from_template', async () => {
@@ -262,7 +269,6 @@ describe('CodeReminderModalWrapper', () => {
         emailTemplateSource: EMAIL_TEMPLATE_SOURCE_FROM_TEMPLATE,
       },
     });
-    const dispatchSpy = jest.spyOn(newStore, 'dispatch');
     render(<CodeReminderModalWrapper store={newStore} />);
     const TemplateSourceFields = await screen.findAllByTestId('template-source-fields');
     expect(TemplateSourceFields.length).toEqual(1);
@@ -274,7 +280,7 @@ describe('CodeReminderModalWrapper', () => {
 
     const buttonOldEmailTemplate = await screen.findByTestId('btn-new-email-template');
     fireEvent.click(buttonOldEmailTemplate);
-    expect(dispatchSpy.mock.calls.some((call) => call[0]?.type === SET_EMAIL_TEMPLATE_SOURCE
-      && call[0]?.payload?.emailTemplateSource === EMAIL_TEMPLATE_SOURCE_NEW_EMAIL)).toBe(true);
+    expect(await screen.findByTestId('btn-new-email-template')).toHaveAttribute('aria-pressed', 'true');
+    expect(await screen.findByTestId('btn-old-email-template')).toHaveAttribute('aria-pressed', 'false');
   });
 });

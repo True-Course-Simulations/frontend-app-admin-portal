@@ -237,7 +237,7 @@ const SyncHistory = () => {
         <>
           <Breadcrumb
             links={[
-              { label: 'Learning Platform', url: `${redirectPath}` },
+              { label: 'Learning Platform', href: `${redirectPath}` },
             ]}
             activeLabel={config.displayName}
           />

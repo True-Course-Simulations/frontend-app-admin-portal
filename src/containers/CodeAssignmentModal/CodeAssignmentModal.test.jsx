@@ -2,7 +2,6 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import PropTypes from 'prop-types';
 import { MemoryRouter } from 'react-router-dom';
-import { last } from 'lodash-es';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 import '@testing-library/jest-dom';
 
@@ -13,7 +12,6 @@ import assignEmailTemplate from '../../components/CodeAssignmentModal/emailTempl
 import {
   EMAIL_TEMPLATE_SOURCE_FROM_TEMPLATE,
   EMAIL_TEMPLATE_SOURCE_NEW_EMAIL,
-  SET_EMAIL_TEMPLATE_SOURCE,
 } from '../../data/constants/emailTemplate';
 import '@testing-library/jest-dom/extend-expect';
 import { initializeMocks } from '../../testUtils';
@@ -45,6 +43,7 @@ const initialState = {
     loading: false,
     error: null,
     emailTemplateSource: EMAIL_TEMPLATE_SOURCE_NEW_EMAIL,
+    allTemplates: [],
     default: {
       assign: {
         'email-address': '',
@@ -124,10 +123,8 @@ describe('CodeAssignmentModalWrapper', () => {
 
     const btnOldEmailTemplate = await screen.findByTestId('btn-old-email-template');
     await user.click(btnOldEmailTemplate);
-    expect(last(store.getActions())).toEqual({
-      type: SET_EMAIL_TEMPLATE_SOURCE,
-      payload: { emailTemplateSource: EMAIL_TEMPLATE_SOURCE_FROM_TEMPLATE },
-    });
+    expect(await screen.findByTestId('btn-new-email-template')).toHaveAttribute('aria-pressed', 'false');
+    expect(await screen.findByTestId('btn-old-email-template')).toHaveAttribute('aria-pressed', 'true');
   });
 
   it('renders <TemplateSourceFields /> with source from_template', async () => {
@@ -150,9 +147,7 @@ describe('CodeAssignmentModalWrapper', () => {
 
     const btnNewEmailTemplate = await screen.findByTestId('btn-new-email-template');
     await user.click(btnNewEmailTemplate);
-    expect(last(newStore.getActions())).toEqual({
-      type: SET_EMAIL_TEMPLATE_SOURCE,
-      payload: { emailTemplateSource: EMAIL_TEMPLATE_SOURCE_NEW_EMAIL },
-    });
+    expect(await screen.findByTestId('btn-new-email-template')).toHaveAttribute('aria-pressed', 'true');
+    expect(await screen.findByTestId('btn-old-email-template')).toHaveAttribute('aria-pressed', 'false');
   });
 });

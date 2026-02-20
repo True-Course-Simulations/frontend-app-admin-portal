@@ -23,8 +23,7 @@ import LmsApiService from '../../../data/services/LmsApiService';
 import { SETTINGS_ACCESS_EVENTS } from '../../../eventTracking';
 import { MAX_UNIVERSAL_LINKS } from '../data/constants';
 
-const SettingsAccessLinkManagement = ({
-}) => {
+const SettingsAccessLinkManagement = () => {
   const {
     enterpriseUUID,
     enterpriseSlug,

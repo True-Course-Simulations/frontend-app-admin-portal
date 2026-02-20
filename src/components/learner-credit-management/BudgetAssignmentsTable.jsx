@@ -41,15 +41,27 @@ const selectColumn = {
   disableSortBy: true,
 };
 
+const defaultTableData = {
+  results: [],
+  learnerStateCounts: [],
+  count: 0,
+  numPages: 0,
+};
+
 const BudgetAssignmentsTable = ({
   isLoading,
   tableData,
   fetchTableData,
 }) => {
   const intl = useIntl();
+  const normalizedTableData = {
+    ...defaultTableData,
+    ...tableData,
+    learnerStateCounts: tableData?.learnerStateCounts || defaultTableData.learnerStateCounts,
+  };
   const { subsidyAccessPolicyId } = useBudgetId();
   const { data: subsidyAccessPolicy } = useSubsidyAccessPolicy(subsidyAccessPolicyId);
-  const statusFilterChoices = tableData.learnerStateCounts
+  const statusFilterChoices = normalizedTableData.learnerStateCounts
     .filter(({ learnerState }) => !!getLearnerStateDisplayName(learnerState))
     .map(({ learnerState, count }) => ({
       name: getLearnerStateDisplayName(learnerState),
@@ -159,13 +171,13 @@ const BudgetAssignmentsTable = ({
         filters: [],
       }}
       fetchData={fetchTableData}
-      data={tableData.results || []}
-      itemCount={tableData.count || 0}
-      pageCount={tableData.numPages || 1}
+      data={normalizedTableData.results || []}
+      itemCount={normalizedTableData.count || 0}
+      pageCount={normalizedTableData.numPages || 1}
       EmptyTableComponent={CustomDataTableEmptyState}
       bulkActions={[
-        <AssignmentTableRemindAction learnerStateCounts={tableData.learnerStateCounts} />,
-        <AssignmentTableCancelAction learnerStateCounts={tableData.learnerStateCounts} />,
+        <AssignmentTableRemindAction learnerStateCounts={normalizedTableData.learnerStateCounts} />,
+        <AssignmentTableCancelAction learnerStateCounts={normalizedTableData.learnerStateCounts} />,
       ]}
     />
   );
@@ -178,11 +190,16 @@ BudgetAssignmentsTable.propTypes = {
     learnerStateCounts: PropTypes.arrayOf(PropTypes.shape({
       learnerState: PropTypes.string.isRequired,
       count: PropTypes.number.isRequired,
-    })).isRequired,
-    count: PropTypes.number.isRequired,
-    numPages: PropTypes.number.isRequired,
-  }).isRequired,
-  fetchTableData: PropTypes.func.isRequired,
+    })),
+    count: PropTypes.number,
+    numPages: PropTypes.number,
+  }),
+  fetchTableData: PropTypes.func,
+};
+
+BudgetAssignmentsTable.defaultProps = {
+  tableData: defaultTableData,
+  fetchTableData: () => {},
 };
 
 export default BudgetAssignmentsTable;

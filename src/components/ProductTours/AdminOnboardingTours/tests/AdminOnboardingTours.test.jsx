@@ -90,7 +90,7 @@ describe('AdminOnboardingTours', () => {
   const renderComponent = (props = {}) => {
     const { reduxStore } = initializeMocks(storeState);
     const finalProps = { ...defaultProps, ...props };
-    return render(
+    const renderResult = render(
       <IntlProvider locale="en">
         <Provider store={reduxStore}>
           <Router>
@@ -103,6 +103,7 @@ describe('AdminOnboardingTours', () => {
         </Provider>
       </IntlProvider>,
     );
+    return { ...renderResult, reduxStore };
   };
 
   it('renders nothing when isOpen is false', async () => {
@@ -153,7 +154,7 @@ describe('AdminOnboardingTours', () => {
 
   it('resets current step to 0 when targetSelector is in RESET_TARGETS', () => {
     // Render with a non-reset target first
-    const { rerender } = renderComponent({ targetSelector: '#step-1' });
+    const { rerender, reduxStore } = renderComponent({ targetSelector: '#step-1' });
 
     // Verify we start at step 1
     expect(screen.getByText('Step 1')).toBeInTheDocument();
@@ -161,7 +162,7 @@ describe('AdminOnboardingTours', () => {
     // Change to a reset target
     rerender(
       <IntlProvider locale="en">
-        <Provider store={store}>
+        <Provider store={reduxStore}>
           <Router>
             <p id="step-1">Step 1</p>
             <p id="step-2">Step 2</p>

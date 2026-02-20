@@ -42,7 +42,7 @@ const ValidatedFormControl = (props: ValidatedFormControlProps) => {
   const formControlProps = {
     ...omit(props, ['formId']),
     onChange,
-    isInvalid: showErrors && showError,
+    isInvalid: Boolean(showErrors && showError),
     id: props.formId,
     value: formFields && formFields[props.formId],
   };

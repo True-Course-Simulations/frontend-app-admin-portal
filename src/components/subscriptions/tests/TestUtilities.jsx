@@ -101,10 +101,6 @@ export const DEFAULT_STORE_STATE = {
     username: 'edx',
     roles: ['enterprise_admin:*'],
   },
-  userAccount: {
-    loaded: true,
-    isActive: true,
-  },
   portalConfiguration: {
     enterpriseSlug: TEST_ENTERPRISE_CUSTOMER_SLUG,
     enterpriseId: TEST_ENTERPRISE_CUSTOMER_UUID,
@@ -113,13 +109,11 @@ export const DEFAULT_STORE_STATE = {
   },
 };
 
-export const createMockStore = (state) => {
-  return initializeMocks({
-    ...DEFAULT_STORE_STATE,
-    // override any previously set fields with ``state`` argument
-    ...state,
-  }).reduxStore;
-};
+export const createMockStore = (state) => initializeMocks({
+  ...DEFAULT_STORE_STATE,
+  // override any previously set fields with ``state`` argument
+  ...state,
+}).reduxStore;
 
 const initialHistory = createMemoryHistory({
   initialEntries: ['/'],

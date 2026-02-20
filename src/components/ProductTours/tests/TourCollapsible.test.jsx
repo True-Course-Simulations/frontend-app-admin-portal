@@ -41,6 +41,15 @@ jest.mock('@openedx/paragon', () => {
   const OriginalModule = jest.requireActual('@openedx/paragon');
   return {
     ...OriginalModule,
+    OverlayTrigger: ({ children, overlay }) => (
+      <div>
+        {children}
+        {overlay}
+      </div>
+    ),
+    Tooltip: ({ id, children }) => (
+      <div id={id}>{children}</div>
+    ),
     IconButton: ({
       src, onClick, alt, iconAs: IconAs,
     }) => (
@@ -52,8 +61,8 @@ jest.mock('@openedx/paragon', () => {
 });
 
 jest.mock('../../../data/actions/enterpriseCustomerAdmin', () => ({
-  dismissOnboardingTour: jest.fn(),
-  reopenOnboardingTour: jest.fn(),
+  dismissOnboardingTour: jest.fn(() => ({ type: 'DISMISS_ONBOARDING_TOUR' })),
+  reopenOnboardingTour: jest.fn(() => ({ type: 'REOPEN_ONBOARDING_TOUR' })),
 }));
 
 const defaultState = {

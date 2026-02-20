@@ -1,0 +1,41 @@
+{
+  "name": "frontend-app-admin-portal",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "features": {},
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "ms-vscode.vscode-typescript-next",
+        "github.vscode-pull-request-github"
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
+        "editor.formatOnSave": true
+      }
+    }
+  },
+
+  "remoteUser": "node",
+
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/${localWorkspaceFolderBasename},type=bind,consistency=cached",
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+
+  "postCreateCommand": "npm ci || npm install",
+
+  "forwardPorts": [1991, 3000, 8080],
+  "portsAttributes": {
+    "1991": { "label": "dev-server (common)" },
+    "3000": { "label": "dev-server" },
+    "8080": { "label": "dev-server (alt)" }
+  },
+
+  "containerEnv": {
+    "TZ": "UTC",
+    "CI": "true"
+  }
+}

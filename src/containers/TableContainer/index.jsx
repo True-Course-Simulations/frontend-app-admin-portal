@@ -1,4 +1,5 @@
 import React, { forwardRef } from 'react';
+import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 
 import TableComponent from '../../components/TableComponent';
@@ -56,5 +57,10 @@ const TableContainer = forwardRef((props, ref) => {
     />
   );
 });
+
+TableContainer.propTypes = {
+  id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  fetchMethod: PropTypes.func.isRequired,
+};
 
 export default TableContainer;

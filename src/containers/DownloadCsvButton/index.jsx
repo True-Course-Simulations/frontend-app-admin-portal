@@ -1,4 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux';
+import PropTypes from 'prop-types';
 
 import { fetchCsv, clearCsv } from '../../data/actions/csv';
 import DownloadCsvButton from '../../components/DownloadCsvButton';
@@ -30,6 +31,10 @@ const DownloadCsvButtonContainer = (props) => {
       clearCsv={clearCsvAction}
     />
   );
+};
+
+DownloadCsvButtonContainer.propTypes = {
+  id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
 };
 
 export default DownloadCsvButtonContainer;

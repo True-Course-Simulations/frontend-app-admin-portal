@@ -41,7 +41,7 @@ InviteModalInputFeedback.propTypes = {
   memberInviteMetadata: PropTypes.shape({
     isValidInput: PropTypes.bool,
     validationError: PropTypes.shape({
-      message: PropTypes.number,
+      message: PropTypes.string,
     }),
     lowerCasedEmails: PropTypes.arrayOf(
       PropTypes.string,

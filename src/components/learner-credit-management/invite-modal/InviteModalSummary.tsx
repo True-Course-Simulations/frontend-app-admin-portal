@@ -24,8 +24,8 @@ const InviteModalSummary = ({
     validatedEmails,
     duplicateEmails,
   } = memberInviteMetadata;
-  const renderCard = (contents, showErrorHighlight = false): ReactElement => (
-    <Stack gap={2.5} className="mb-4">
+  const renderCard = (contents, showErrorHighlight = false, key?: string): ReactElement => (
+    <Stack gap={2.5} className="mb-4" key={key}>
       <Card
         className={classNames(
           'invite-modal-summary-card rounded-0 shadow-none',
@@ -44,19 +44,23 @@ const InviteModalSummary = ({
   let cardSections = [] as ReactElement[];
   if (hasLearnerEmails) {
     cardSections = cardSections.concat(
-      renderCard(<InviteModalSummaryLearnerList learnerEmails={validatedEmails} />),
+      renderCard(
+        <InviteModalSummaryLearnerList learnerEmails={validatedEmails} />,
+        false,
+        'summary-learner-list',
+      ),
     );
   }
 
   if (!isValidInput) {
     cardSections = cardSections.concat(
-      renderCard(<InviteModalSummaryErrorState />, true),
+      renderCard(<InviteModalSummaryErrorState />, true, 'summary-error'),
     );
   }
 
   if (isEmpty(cardSections)) {
     cardSections = cardSections.concat(
-      renderCard(<InviteModalSummaryEmptyState isGroupInvite={isGroupInvite} />),
+      renderCard(<InviteModalSummaryEmptyState isGroupInvite={isGroupInvite} />, false, 'summary-empty'),
     );
   }
 

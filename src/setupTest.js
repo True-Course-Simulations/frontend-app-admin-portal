@@ -17,6 +17,15 @@ getAuthenticatedHttpClient.mockReturnValue(axios);
 axios.isAccessTokenExpired = jest.fn();
 axios.isAccessTokenExpired.mockReturnValue(false);
 
+// Provide a default mock for secured Algolia API key lookups to avoid noisy retries in tests
+axiosMock.onGet(/secured-algolia-api-key/).reply(200, {
+  algolia: {
+    secured_api_key: 'test-secured-api-key',
+    valid_until: '2100-01-01T00:00:00Z',
+  },
+  catalog_uuids_to_catalog_query_uuids: {},
+});
+
 // Mock IntersectionObserver
 global.IntersectionObserver = class IntersectionObserver {
   disconnect() {
@@ -47,34 +56,74 @@ global.URL.createObjectURL = jest.fn();
 const originalConsoleError = console.error;
 const originalConsoleWarn = console.warn;
 
+const normalizeConsoleArgs = (args) => args.map((arg) => {
+  if (typeof arg === 'string') {
+    return arg;
+  }
+  if (arg && typeof arg.message === 'string') {
+    return arg.message;
+  }
+  try {
+    return JSON.stringify(arg);
+  } catch (e) {
+    return String(arg);
+  }
+}).join(' ');
+
 const CONSOLE_FILTERS = {
   warn: [
     'PubSub already loaded',
+    'React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7',
+    'React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7',
+    'You rendered descendant <Routes>',
   ],
   error: [
     'Support for defaultProps will be removed from function components',
+    'findDOMNode is deprecated and will be removed in the next major release',
+    'was not wrapped in act',
+    'Failed prop type:',
+    'MISSING_TRANSLATION',
+    'React does not recognize',
+    'Select elements must be either controlled or uncontrolled',
+    'A component is changing a controlled input to be uncontrolled',
+    'A component is changing an uncontrolled input to be controlled',
+    'Each child in a list should have a unique "key" prop',
+    'Invalid prop `variant` of value',
+    'Invalid prop `size` of value',
+    'The prop `alt` is marked as required',
+    '[@formatjs/intl Error INVALID_CONFIG]',
+    'locale" was not configured',
+    'Function has non-object prototype',
+    'Invalid value for prop',
+    'Invalid prop `label` of type',
+    'Hyperlink: destination is required',
   ],
 };
 
 // Override `console.error`
 console.error = (...args) => {
-  const message = args[0];
+  const message = normalizeConsoleArgs(args);
+
+  if (message && message.startsWith('Warning:')) {
+    return;
+  }
   if (
-    typeof message === 'string'
-      && CONSOLE_FILTERS.error.some(ignored => message.includes(ignored))
+    message
+    && CONSOLE_FILTERS.error.some((ignored) => message.includes(ignored))
   ) {
     return;
   }
+
   originalConsoleError(...args);
 };
 
 // Override `console.warn`
 console.warn = (...args) => {
-  const message = args[0];
-  if (
-    typeof message === 'string'
-      && CONSOLE_FILTERS.warn.some(ignored => message.includes(ignored))
-  ) {
+  const message = normalizeConsoleArgs(args);
+  if (message && message.startsWith('Warning:')) {
+    return;
+  }
+  if (message && CONSOLE_FILTERS.warn.some(ignored => message.includes(ignored))) {
     return;
   }
   originalConsoleWarn(...args);

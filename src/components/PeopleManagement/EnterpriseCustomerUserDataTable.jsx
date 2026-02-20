@@ -1,6 +1,7 @@
 import {
   useCallback, useContext, useEffect, useMemo,
 } from 'react';
+import PropTypes from 'prop-types';
 import {
   CheckboxControl, DataTable, DataTableContext, Icon, TextFilter,
 } from '@openedx/paragon';
@@ -73,6 +74,22 @@ const CustomSelectColumnCell = ({ row }) => {
     }
   }, [dataTableDispatch, itemCount, row, isTableSelected, isValidated]);
 
+  useEffect(() => {
+    if (!selectedEmail || !validateEmailsDispatch) {
+      return;
+    }
+    if (isTableSelected && !isValidated) {
+      validateEmailsDispatch(addEmailsAction({ emails: [selectedEmail], actionType: 'CLICK_ACTION' }));
+    } else if (!isTableSelected && isValidated) {
+      validateEmailsDispatch(removeEmailsAction({ emails: [selectedEmail] }));
+    }
+  }, [
+    isTableSelected,
+    isValidated,
+    selectedEmail,
+    validateEmailsDispatch,
+  ]);
+
   const checkboxControlProps = useCheckboxControlProps(
     row.getToggleRowSelectedProps(),
   );
@@ -106,8 +123,7 @@ CustomSelectColumnCell.propTypes = {
   }).isRequired,
 };
 
-const EnterpriseCustomerUserDataTable = ({
-}) => {
+const EnterpriseCustomerUserDataTable = () => {
   const enterpriseId = useSelector(state => state.portalConfiguration.enterpriseId);
   const enterpriseMembersTableDataContext = useEnterpriseMembersTableData({ enterpriseId });
   const {

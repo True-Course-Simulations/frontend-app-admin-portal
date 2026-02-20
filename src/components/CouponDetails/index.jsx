@@ -253,7 +253,9 @@ class CouponDetails extends React.Component {
           }}
           checked={this.hasAllTableRowsSelected}
           ref={this.selectAllCheckBoxRef}
-        />
+        >
+          <span className="sr-only">Select all codes</span>
+        </Form.Checkbox>
       ),
       key: 'select',
     };
@@ -362,7 +364,7 @@ class CouponDetails extends React.Component {
 
     selectColumn.label = React.cloneElement(selectColumn.label, {
       checked: allCodesForPageSelected,
-      className: hasPartialSelection ? ['mixed'] : [],
+      className: hasPartialSelection ? 'mixed' : undefined,
     });
 
     // The Paragon `CheckBox` component does not currently support the mixed state. To
@@ -427,7 +429,9 @@ class CouponDetails extends React.Component {
             }
           }}
           checked={selectedCodes.findIndex(selectedCode => selectedCode === code) !== -1}
-        />
+        >
+          <span className="sr-only">{`Select code ${code.code}`}</span>
+        </Form.Checkbox>
       ),
     }));
   }
@@ -736,7 +740,7 @@ CouponDetails.propTypes = {
     errors: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
     num_unassigned: PropTypes.number.isRequired,
     usage_limitation: PropTypes.string.isRequired,
-    available: PropTypes.bool.isRequired.isRequired,
+    available: PropTypes.bool.isRequired,
   }).isRequired,
   isExpanded: PropTypes.bool,
   navigate: PropTypes.func,

@@ -19,13 +19,13 @@ const DownloadCsvIconButton = ({
   fetchAllData,
   dataCount,
   testId,
-  tableInstance: { state },
+  tableInstance: { state: tableState },
   groupName,
 }) => {
   const enterpriseUUID = useSelector(state => state.portalConfiguration.enterpriseId);
   const [isToastOpen, openToast, closeToast] = useToggle(false);
   const [isErrorModalOpen, openErrorModal, closeErrorModal] = useToggle(false);
-  const selectedRowsCount = Object.keys(state.selectedRowIds).length;
+  const selectedRowsCount = Object.keys(tableState.selectedRowIds).length;
   const downloadHoverTextMessage = selectedRowsCount === dataCount || !selectedRowsCount ? `Download all (${dataCount})` : `Download (${selectedRowsCount})`;
   const intl = useIntl();
   const messages = defineMessages({
@@ -50,7 +50,7 @@ const DownloadCsvIconButton = ({
     fetchAllData().then((response) => {
       const fileName = getTimeStampedFilename(`${groupName}.csv`);
       const selectedRowIdsToDownload = selectedRowsCount ? (response.results.filter(result => (
-        state.selectedRowIds[result.memberDetails.userEmail]
+        tableState.selectedRowIds[result.memberDetails.userEmail]
       ))) : response.results;
       downloadCsv(fileName, selectedRowIdsToDownload, csvHeaders, dataEntryToRow);
       openToast();

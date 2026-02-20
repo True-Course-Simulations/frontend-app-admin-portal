@@ -7,7 +7,6 @@ import { SSOConfigContextProvider, SSO_INITIAL_STATE } from '../SSOConfigContext
 import { getMockStore, initialStore } from '../testutils';
 import LmsApiService from '../../../../data/services/LmsApiService';
 
-const store = getMockStore({ ...initialStore });
 const TEST_PROVIDER_ID = 'test-provider-id';
 const INITIAL_SSO_STATE = {
   ...SSO_INITIAL_STATE,
@@ -23,9 +22,9 @@ mockGetProviderConfig.mockResolvedValue({ data: { results: [{ id: TEST_PROVIDER_
 
 describe('SSO Config Connect step', () => {
   test('renders page with metadata link', () => {
-    const store = getMockStore({ ...initialStore });
+    const reduxStore = getMockStore({ ...initialStore });
     render(
-      <Provider store={store}>
+      <Provider store={reduxStore}>
         <SSOConfigContextProvider initialState={INITIAL_SSO_STATE}>
           <SSOConfigConnectStep
             setConnectError={jest.fn()}

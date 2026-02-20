@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
   Container,
   Tabs,
@@ -99,9 +99,12 @@ const SettingsTabs = () => {
       enterpriseBranding: portalEnterpriseBranding,
     };
   });
-  const updatePortalConfiguration = (config) => {
-    dispatch(updatePortalConfigurationEvent(config));
-  };
+  const updatePortalConfiguration = useCallback(
+    (config) => {
+      dispatch(updatePortalConfigurationEvent(config));
+    },
+    [dispatch],
+  );
   const [hasSSOConfig, setHasSSOConfig] = useState(false);
   const {
     FEATURE_SSO_SETTINGS_TAB, SETTINGS_PAGE_LMS_TAB,
@@ -270,5 +273,5 @@ SettingsTabs.propTypes = {
     tertiary_color: PropTypes.string,
   }),
 };
- 
+
 export default SettingsTabs;

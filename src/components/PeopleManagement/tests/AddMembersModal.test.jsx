@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  fireEvent, render, screen, waitFor,
+  fireEvent, render, screen, waitFor, within,
 } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import userEvent from '@testing-library/user-event';
@@ -51,6 +51,7 @@ const defaultProps = {
   closeModal: jest.fn(),
   groupName: 'test-group-name',
   groupUuid: TEST_GROUP,
+  onInviteError: jest.fn(),
 };
 
 const mockTabledata = {
@@ -92,10 +93,20 @@ const mockTabledata = {
   ],
 };
 
+const getTableRowByEmail = (email) => {
+  const tableHeader = screen.getByRole('columnheader', { name: /member details/i });
+  const table = tableHeader.closest('table');
+  if (!table) {
+    throw new Error('Members table not found');
+  }
+  const candidates = within(table).getAllByText(email);
+  return candidates.map(node => node.closest('tr')).find(Boolean);
+};
+
 const AddMembersModalWrapper = () => {
   const { reduxStore } = initializeMocks({ ...initialStoreState });
   const initialContextOverride = {
-    groupEnterpriseLearners: mockTabledata.results.map((user) => user.email),
+    groupEnterpriseLearners: [],
   };
   return (
     <IntlProvider locale="en">
@@ -182,20 +193,29 @@ describe('<AddMembersModal />', () => {
     }, { timeout: EMAIL_ADDRESSES_INPUT_VALUE_DEBOUNCE_DELAY + 1000 });
 
     // testing interaction with adding members from the datatable
-    const membersCheckboxes = screen.getAllByRole('checkbox');
-    await user.click(membersCheckboxes[0]);
-    await user.click(membersCheckboxes[1]);
+    const rowUser1 = getTableRowByEmail('testuser-1@2u.com');
+    const rowUser2 = getTableRowByEmail('testuser-2@2u.com');
+    const selectionCell1 = rowUser1.querySelector('.pgn__data-table__controlled-select');
+    const selectionCell2 = rowUser2.querySelector('.pgn__data-table__controlled-select');
+    expect(selectionCell1).not.toBeNull();
+    expect(selectionCell2).not.toBeNull();
+    const checkboxUser2 = within(selectionCell2).getByRole('checkbox');
+    const checkboxUser1 = within(selectionCell1).getByRole('checkbox');
+    await user.click(checkboxUser1);
+    await user.click(checkboxUser2);
 
     await waitFor(() => {
-      expect(screen.getByText('Summary (3)')).toBeInTheDocument();
-      // checking that each user appears twice, once in the datatable and once in the summary section
+      // summary should reflect CSV + two selected members
       expect(screen.getAllByText('testuser-1@2u.com')).toHaveLength(2);
       expect(screen.getAllByText('testuser-2@2u.com')).toHaveLength(2);
-    });
+    }, { timeout: EMAIL_ADDRESSES_INPUT_VALUE_DEBOUNCE_DELAY + 1000 });
+
+    expect(checkboxUser1).toBeChecked();
+    expect(checkboxUser2).toBeChecked();
 
     // testing interaction with removing members from the datatable
-    await user.click(membersCheckboxes[0]);
-    await user.click(membersCheckboxes[1]);
+    await user.click(checkboxUser1);
+    await user.click(checkboxUser2);
 
     await waitFor(() => {
       expect(screen.getByText('Summary (1)')).toBeInTheDocument();

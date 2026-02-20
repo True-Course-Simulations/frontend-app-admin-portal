@@ -209,8 +209,8 @@ const FormWorkflow = <FormConfigData extends unknown>({
           {step && step?.formComponent && <FormComponent />}
         </Stepper.Step>
       );
-    }
-    return null;
+  }
+  return null;
   };
 
   useEffect(() => {
@@ -233,12 +233,13 @@ const FormWorkflow = <FormConfigData extends unknown>({
     // show spinner if Next button operation is ongoing
     nextButtonContents = <Spinner animation="border" size="sm" />;
   }
+  const formErrorMessage = stateMap?.[FORM_ERROR_MESSAGE];
   return (
     <>
       <ConfigErrorModal
-        isOpen={stateMap && stateMap[FORM_ERROR_MESSAGE] && !nextButtonConfig?.preventDefaultErrorModal}
+        isOpen={Boolean(formErrorMessage) && !nextButtonConfig?.preventDefaultErrorModal}
         close={clearFormError}
-        configTextOverride={stateMap && stateMap[FORM_ERROR_MESSAGE]}
+        configTextOverride={formErrorMessage || undefined}
       />
       {/* @ts-ignore JSX element type 'UnsavedChangesModal' does not have any construct or call signatures. */}
       <UnsavedChangesModal

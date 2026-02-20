@@ -12,9 +12,8 @@ import revokeEmailTemplate from '../../components/CodeRevokeModal/emailTemplate'
 import {
   EMAIL_TEMPLATE_SOURCE_FROM_TEMPLATE,
   EMAIL_TEMPLATE_SOURCE_NEW_EMAIL,
-  SET_EMAIL_TEMPLATE_SOURCE,
 } from '../../data/constants/emailTemplate';
-import { configuration } from '../../config';
+import { configuration, features } from '../../config';
 import { initializeMocks } from '../../testUtils';
 
 const enterpriseSlug = 'bearsRus';
@@ -23,6 +22,7 @@ const initialState = {
     loading: false,
     error: null,
     emailTemplateSource: EMAIL_TEMPLATE_SOURCE_NEW_EMAIL,
+    allTemplates: [],
     default: {
       revoke: {
         'email-template-subject': revokeEmailTemplate.subject,
@@ -46,7 +46,13 @@ const initialState = {
   },
   form: {
     'code-revoke-modal-form': {
-      initial: {},
+      values: {
+        'email-template-subject': revokeEmailTemplate.subject,
+        'email-template-greeting': revokeEmailTemplate.greeting || '',
+        'email-template-body': revokeEmailTemplate.body,
+        'email-template-closing': revokeEmailTemplate.closing,
+        'email-template-files': revokeEmailTemplate.files,
+      },
     },
   },
 };
@@ -65,35 +71,38 @@ const codeRevokeRequestData = (numCodes) => {
       email: data.assigned_to,
     },
   };
-  return {
+  const options = {
     assignments: Array(numCodes).fill(assignment),
     do_not_email: false,
     template: revokeEmailTemplate.body,
     template_subject: revokeEmailTemplate.subject,
     template_greeting: revokeEmailTemplate.greeting || '',
     template_closing: revokeEmailTemplate.closing,
-    template_files: revokeEmailTemplate.files,
     base_enterprise_url: data.base_enterprise_url,
   };
+  if (features.FILE_ATTACHMENT) {
+    options.template_files = revokeEmailTemplate.files;
+  }
+  return options;
 };
 
 const CodeRevokeModalWrapper = ({ store, ...props }) => {
   const resolvedStore = store || initializeMocks(initialState).reduxStore;
   return (
-  <MemoryRouter>
-    <Provider store={resolvedStore}>
-      <IntlProvider locale="en">
-        <CodeRevokeModal
-          couponId={couponId}
-          title={couponTitle}
-          onClose={() => {}}
-          onSuccess={() => {}}
-          {...props}
-        />
-      </IntlProvider>
-    </Provider>
-  </MemoryRouter>
-);
+    <MemoryRouter>
+      <Provider store={resolvedStore}>
+        <IntlProvider locale="en">
+          <CodeRevokeModal
+            couponId={couponId}
+            title={couponTitle}
+            onClose={() => {}}
+            onSuccess={() => {}}
+            {...props}
+          />
+        </IntlProvider>
+      </Provider>
+    </MemoryRouter>
+  );
 };
 
 CodeRevokeModalWrapper.propTypes = {
@@ -110,7 +119,7 @@ describe('CodeRevokeModalWrapper', () => {
   });
 
   it('renders individual assignment revoke modal', async () => {
-    spy = jest.spyOn(EcommerceApiService, 'sendCodeRevoke');
+    spy = jest.spyOn(EcommerceApiService, 'sendCodeRevoke').mockResolvedValue({ data: {} });
     const { reduxStore } = initializeMocks(initialState);
     render(<CodeRevokeModalWrapper data={data} store={reduxStore} />);
     const modalTitle = await screen.findByTestId('modal-title');
@@ -125,7 +134,7 @@ describe('CodeRevokeModalWrapper', () => {
   });
 
   it('renders bulk assignment revoke modal', async () => {
-    spy = jest.spyOn(EcommerceApiService, 'sendCodeRevoke');
+    spy = jest.spyOn(EcommerceApiService, 'sendCodeRevoke').mockResolvedValue({ data: {} });
     const codeRevokeData = [data, data];
     const { reduxStore } = initializeMocks(initialState);
     render(<CodeRevokeModalWrapper
@@ -140,7 +149,7 @@ describe('CodeRevokeModalWrapper', () => {
   });
 
   it('returns the correct data if learner portal is not enabled', async () => {
-    spy = jest.spyOn(EcommerceApiService, 'sendCodeRevoke');
+    spy = jest.spyOn(EcommerceApiService, 'sendCodeRevoke').mockResolvedValue({ data: {} });
     const codeRevokeData = [data, data];
     const { reduxStore } = initializeMocks({
       ...initialState,
@@ -160,7 +169,7 @@ describe('CodeRevokeModalWrapper', () => {
   });
 
   it('throws error if no code is selected for bulk revoke', async () => {
-    spy = jest.spyOn(EcommerceApiService, 'sendCodeRevoke');
+    spy = jest.spyOn(EcommerceApiService, 'sendCodeRevoke').mockResolvedValue({ data: {} });
     const codeRevokeData = [data, data];
     const { reduxStore } = initializeMocks(initialState);
     render(<CodeRevokeModalWrapper
@@ -187,7 +196,6 @@ describe('CodeRevokeModalWrapper', () => {
 
   it('renders <TemplateSourceFields /> with source new_email', async () => {
     const { reduxStore } = initializeMocks(initialState);
-    const dispatchSpy = jest.spyOn(reduxStore, 'dispatch');
     render(<CodeRevokeModalWrapper store={reduxStore} />);
     const TemplateSourceFields = await screen.findAllByTestId('template-source-fields');
     expect(TemplateSourceFields.length).toEqual(1);
@@ -199,8 +207,8 @@ describe('CodeRevokeModalWrapper', () => {
 
     const buttonOldEmailTemplate = await screen.findByTestId('btn-old-email-template');
     fireEvent.click(buttonOldEmailTemplate);
-    expect(dispatchSpy.mock.calls.some((call) => call[0]?.type === SET_EMAIL_TEMPLATE_SOURCE
-      && call[0]?.payload?.emailTemplateSource === EMAIL_TEMPLATE_SOURCE_FROM_TEMPLATE)).toBe(true);
+    expect(await screen.findByTestId('btn-new-email-template')).toHaveAttribute('aria-pressed', 'false');
+    expect(await screen.findByTestId('btn-old-email-template')).toHaveAttribute('aria-pressed', 'true');
   });
 
   it('renders <TemplateSourceFields /> with source from_template', async () => {
@@ -211,7 +219,6 @@ describe('CodeRevokeModalWrapper', () => {
         emailTemplateSource: EMAIL_TEMPLATE_SOURCE_FROM_TEMPLATE,
       },
     });
-    const dispatchSpy = jest.spyOn(reduxStore, 'dispatch');
     render(<CodeRevokeModalWrapper store={reduxStore} />);
     const TemplateSourceFields = await screen.findAllByTestId('template-source-fields');
     expect(TemplateSourceFields.length).toEqual(1);
@@ -223,7 +230,7 @@ describe('CodeRevokeModalWrapper', () => {
 
     const buttonNewEmailTemplate = await screen.findByTestId('btn-new-email-template');
     fireEvent.click(buttonNewEmailTemplate);
-    expect(dispatchSpy.mock.calls.some((call) => call[0]?.type === SET_EMAIL_TEMPLATE_SOURCE
-      && call[0]?.payload?.emailTemplateSource === EMAIL_TEMPLATE_SOURCE_NEW_EMAIL)).toBe(true);
+    expect(await screen.findByTestId('btn-new-email-template')).toHaveAttribute('aria-pressed', 'true');
+    expect(await screen.findByTestId('btn-old-email-template')).toHaveAttribute('aria-pressed', 'false');
   });
 });

@@ -31,7 +31,7 @@ const KabobMenu = ({
   }
   return (
     <>
-      <Dropdown drop="top">
+      <Dropdown drop="up">
         <Dropdown.Toggle
           id="kabob-menu-dropdown"
           data-testid="kabob-menu-dropdown"

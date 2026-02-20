@@ -34,6 +34,7 @@ class EnterpriseApp extends React.Component {
     const { enterpriseSlug } = this.props;
     this.props.fetchEnterpriseAppData(enterpriseSlug);
     this.props.toggleSidebarToggle(); // ensure sidebar toggle button is in header
+    this.handleSidebarMenuItemClick();
   }
 
   componentDidUpdate(prevProps) {

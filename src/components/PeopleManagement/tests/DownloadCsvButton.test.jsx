@@ -76,10 +76,10 @@ const DownloadCSVButtonWrapper = props => {
   const { reduxStore } = initializeMocks(storeState);
   return (
     <Provider store={reduxStore}>
-    <IntlProvider locale="en">
-      <DownloadCsvButton {...props} />
-    </IntlProvider>
-  </Provider>
+      <IntlProvider locale="en">
+        <DownloadCsvButton {...props} />
+      </IntlProvider>
+    </Provider>
   );
 };
 

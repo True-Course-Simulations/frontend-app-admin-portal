@@ -25,20 +25,20 @@ const createStore = (state = initialState) => initializeMocks(state).reduxStore;
 const InviteLearnersModalWrapper = ({ store, ...props }) => {
   const resolvedStore = store || createStore();
   return (
-  <MemoryRouter>
-    <IntlProvider locale="en">
-      <Provider store={resolvedStore}>
-        <InviteLearnersModal
-          availableSubscriptionCount={10}
-          onClose={() => {}}
-          onSuccess={() => {}}
-          subscriptionUUID="foo"
-          {...props}
-        />
-      </Provider>
-    </IntlProvider>
-  </MemoryRouter>
-);
+    <MemoryRouter>
+      <IntlProvider locale="en">
+        <Provider store={resolvedStore}>
+          <InviteLearnersModal
+            availableSubscriptionCount={10}
+            onClose={() => {}}
+            onSuccess={() => {}}
+            subscriptionUUID="foo"
+            {...props}
+          />
+        </Provider>
+      </IntlProvider>
+    </MemoryRouter>
+  );
 };
 
 InviteLearnersModalWrapper.propTypes = {

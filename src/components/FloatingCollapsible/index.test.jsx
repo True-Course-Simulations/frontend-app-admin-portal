@@ -5,6 +5,24 @@ import {
 import { IntlProvider } from '@edx/frontend-platform/i18n';
 import FloatingCollapsible from './index';
 
+jest.mock('../ProductTours/AdminOnboardingTours/DismissConfirmationModal', () => ({
+  __esModule: true,
+  default: ({ onConfirm, openConfirmationModal }) => (
+    <div>
+      <button
+        data-testid="dismiss-confirm"
+        type="button"
+        onClick={() => {
+          onConfirm();
+          openConfirmationModal(false);
+        }}
+      >
+        Dismiss
+      </button>
+    </div>
+  ),
+}));
+
 // Mock Paragon components
 jest.mock('@openedx/paragon', () => {
   const OriginalModule = jest.requireActual('@openedx/paragon');
@@ -64,7 +82,7 @@ describe('FloatingCollapsible', () => {
     setup({ onDismiss });
 
     fireEvent.click(screen.getByTestId('button-tertiary'));
-    fireEvent.click(screen.getByRole('button', { name: 'Dismiss' }));
+    fireEvent.click(screen.getByTestId('dismiss-confirm'));
 
     expect(onDismiss).toHaveBeenCalledTimes(1);
     await waitFor(() => {

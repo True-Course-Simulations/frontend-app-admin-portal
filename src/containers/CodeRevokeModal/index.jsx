@@ -1,8 +1,8 @@
+import { useDispatch, useSelector } from 'react-redux';
 import CodeRevokeModal from '../../components/CodeRevokeModal';
 
 import sendCodeRevoke from '../../data/actions/codeRevoke';
 import { EMAIL_TEMPLATE_SOURCE_NEW_EMAIL } from '../../data/constants/emailTemplate';
-import { useDispatch, useSelector } from 'react-redux';
 
 const CodeRevokeModalContainer = (props) => {
   const dispatch = useDispatch();
@@ -11,11 +11,11 @@ const CodeRevokeModalContainer = (props) => {
     enterpriseSlug,
     enableLearnerPortal,
   } = useSelector((state) => {
-    const initialValues = state.emailTemplate.emailTemplateSource === EMAIL_TEMPLATE_SOURCE_NEW_EMAIL
+    const resolvedInitialValues = state.emailTemplate.emailTemplateSource === EMAIL_TEMPLATE_SOURCE_NEW_EMAIL
       ? state.emailTemplate.default.revoke : state.emailTemplate.revoke;
 
     return {
-      initialValues,
+      initialValues: resolvedInitialValues,
       enterpriseSlug: state.portalConfiguration.enterpriseSlug,
       enableLearnerPortal: state.portalConfiguration.enableLearnerPortal,
     };

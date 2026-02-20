@@ -105,9 +105,9 @@ const BudgetDetailRedemptions = () => {
   });
 
   return (
-  <section data-testid="spent-section" id={ALLOCATE_LEARNING_BUDGETS_TARGETS.BUDGET_SPENT_TABLE}>
-    <h3 className="mb-3" ref={spentHeadingRef}>
-      <FormattedMessage
+    <section data-testid="spent-section" id={ALLOCATE_LEARNING_BUDGETS_TARGETS.BUDGET_SPENT_TABLE}>
+      <h3 className="mb-3" ref={spentHeadingRef}>
+        <FormattedMessage
           id="lcm.budget.detail.page.spent.heading"
           defaultMessage="Spent"
           description="Heading for the spent section of the budget detail page"

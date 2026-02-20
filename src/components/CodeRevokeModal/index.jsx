@@ -221,6 +221,7 @@ class CodeRevokeModal extends React.Component {
     return (
       <ModalDialog
         isOpen
+        title={this.renderTitle()}
         onClose={onClose}
         className="code-revoke"
         hasCloseButton
