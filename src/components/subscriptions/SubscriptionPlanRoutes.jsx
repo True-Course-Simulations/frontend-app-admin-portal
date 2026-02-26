@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
 import { Route, Routes } from 'react-router-dom';
 import { useSelector } from 'react-redux';
@@ -8,7 +9,7 @@ import ConnectedSubscriptionDetailPage from './SubscriptionDetailPage';
 import { ROUTE_NAMES } from '../EnterpriseApp/data/constants';
 import { MANAGE_LEARNERS_TAB } from './data/constants';
 
-const SubscriptionPlanRoutes = () => {
+const SubscriptionPlanRoutes = ({ routePath }) => {
   const enterpriseSlug = useSelector(state => state.portalConfiguration.enterpriseSlug);
   const multipleSubsCreateActions = (subscription) => {
     const now = dayjs();
@@ -20,7 +21,7 @@ const SubscriptionPlanRoutes = () => {
     const actions = [];
 
     if (!isScheduled) {
-      const to = `/${enterpriseSlug}/admin/${ROUTE_NAMES.subscriptionManagement}/${MANAGE_LEARNERS_TAB}/${subscription.uuid}`;
+      const to = `/${enterpriseSlug}/admin/${routePath}/${MANAGE_LEARNERS_TAB}/${subscription.uuid}`;
       actions.push({
         variant: buttonVariant,
         to,
@@ -31,7 +32,7 @@ const SubscriptionPlanRoutes = () => {
     return actions;
   };
 
-  const redirectPage = `${ROUTE_NAMES.subscriptionManagement}/${MANAGE_LEARNERS_TAB}`;
+  const redirectPage = `${routePath}/${MANAGE_LEARNERS_TAB}`;
 
   return (
     <Routes>
@@ -46,10 +47,18 @@ const SubscriptionPlanRoutes = () => {
       />
       <Route
         path="/:subscriptionUUID"
-        element={<ConnectedSubscriptionDetailPage />}
+        element={<ConnectedSubscriptionDetailPage routePath={routePath} />}
       />
     </Routes>
   );
+};
+
+SubscriptionPlanRoutes.defaultProps = {
+  routePath: ROUTE_NAMES.subscriptionManagement,
+};
+
+SubscriptionPlanRoutes.propTypes = {
+  routePath: PropTypes.string,
 };
 
 export default SubscriptionPlanRoutes;

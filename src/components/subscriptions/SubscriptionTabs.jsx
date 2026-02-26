@@ -1,4 +1,5 @@
 import React, { useContext, useMemo } from 'react';
+import PropTypes from 'prop-types';
 import { Tabs, Tab } from '@openedx/paragon';
 import {
   useNavigate,
@@ -22,7 +23,7 @@ import {
 import { SUPPORTED_SUBSIDY_TYPES } from '../../data/constants/subsidyRequests';
 import NotFoundPage from '../NotFoundPage';
 
-const SubscriptionTabs = () => {
+const SubscriptionTabs = ({ routePath }) => {
   const enterpriseSlug = useSelector(state => state.portalConfiguration.enterpriseSlug);
   const { subsidyRequestConfiguration, subsidyRequestsCounts } = useContext(SubsidyRequestsContext);
 
@@ -49,8 +50,8 @@ const SubscriptionTabs = () => {
   const subscriptionsTab = params[SUBSCRIPTIONS_TAB_PARAM];
 
   const routesByTabKey = {
-    [MANAGE_LEARNERS_TAB]: `/${enterpriseSlug}/admin/${ROUTE_NAMES.subscriptionManagement}/${MANAGE_LEARNERS_TAB}`,
-    [MANAGE_REQUESTS_TAB]: `/${enterpriseSlug}/admin/${ROUTE_NAMES.subscriptionManagement}/${MANAGE_REQUESTS_TAB}`,
+    [MANAGE_LEARNERS_TAB]: `/${enterpriseSlug}/admin/${routePath}/${MANAGE_LEARNERS_TAB}`,
+    [MANAGE_REQUESTS_TAB]: `/${enterpriseSlug}/admin/${routePath}/${MANAGE_REQUESTS_TAB}`,
   };
 
   const handleTabSelect = (key) => {
@@ -74,7 +75,7 @@ const SubscriptionTabs = () => {
         className="pt-4"
       >
         {SUBSCRIPTION_TABS_VALUES[MANAGE_LEARNERS_TAB] === subscriptionsTab && (
-          <SubscriptionPlanRoutes />
+          <SubscriptionPlanRoutes routePath={routePath} />
         )}
       </Tab>,
     );
@@ -120,6 +121,14 @@ const SubscriptionTabs = () => {
       {visibleTabs}
     </Tabs>
   );
+};
+
+SubscriptionTabs.defaultProps = {
+  routePath: ROUTE_NAMES.subscriptionManagement,
+};
+
+SubscriptionTabs.propTypes = {
+  routePath: PropTypes.string,
 };
 
 export default SubscriptionTabs;

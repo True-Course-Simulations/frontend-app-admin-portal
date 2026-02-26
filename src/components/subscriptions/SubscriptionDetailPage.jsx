@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Navigate, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
@@ -11,7 +12,7 @@ import SubscriptionDetailsSkeleton from './SubscriptionDetailsSkeleton';
 import { ROUTE_NAMES } from '../EnterpriseApp/data/constants';
 import { MANAGE_LEARNERS_TAB } from './data/constants';
 
-export const SubscriptionDetailPage = () => {
+export const SubscriptionDetailPage = ({ routePath }) => {
   const { subscriptionUUID } = useParams();
   const enterpriseSlug = useSelector(state => state.portalConfiguration.enterpriseSlug);
   const [subscription, loadingSubscription] = useSubscriptionFromParams({ subscriptionUUID });
@@ -19,7 +20,7 @@ export const SubscriptionDetailPage = () => {
   if (!subscription && !loadingSubscription) {
     return (
       <Navigate
-        to={`/${enterpriseSlug}/admin/${ROUTE_NAMES.subscriptionManagement}/${MANAGE_LEARNERS_TAB}`}
+        to={`/${enterpriseSlug}/admin/${routePath}/${MANAGE_LEARNERS_TAB}`}
         replace
       />
     );
@@ -37,6 +38,14 @@ export const SubscriptionDetailPage = () => {
       <LicenseAllocationDetails />
     </SubscriptionDetailContextProvider>
   );
+};
+
+SubscriptionDetailPage.defaultProps = {
+  routePath: ROUTE_NAMES.subscriptionManagement,
+};
+
+SubscriptionDetailPage.propTypes = {
+  routePath: PropTypes.string,
 };
 
 export default SubscriptionDetailPage;

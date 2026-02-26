@@ -139,6 +139,13 @@ const Sidebar = ({
       notification: !!subsidyRequestsCounts.couponCodes,
     },
     {
+      title: 'License Management',
+      to: `${baseUrl}/admin/${ROUTE_NAMES.licenseManagement}`,
+      icon: <Icon src={CreditCard} />,
+      hidden: !enableSubscriptionManagementScreen,
+      notification: !!subsidyRequestsCounts.subscriptionLicenses,
+    },
+    {
       title: 'Subscription Management',
       to: `${baseUrl}/admin/${ROUTE_NAMES.subscriptionManagement}`,
       icon: <Icon src={CreditCard} />,

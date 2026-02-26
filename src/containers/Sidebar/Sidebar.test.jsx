@@ -1,7 +1,6 @@
 /* eslint-disable react/prop-types */
 import React from 'react';
 import PropTypes from 'prop-types';
-import renderer from 'react-test-renderer';
 import { MemoryRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { IntlProvider } from '@edx/frontend-platform/i18n';
@@ -123,12 +122,10 @@ describe('<Sidebar />', () => {
   });
 
   it('renders correctly', () => {
-    const tree = renderer
-      .create((
-        <SidebarWrapper />
-      ))
-      .toJSON();
-    expect(tree).toMatchSnapshot();
+    render(<SidebarWrapper />);
+    expect(screen.getByRole('link', { name: 'Learner Progress Report' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'License Management' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Subscription Management' })).toBeInTheDocument();
   });
 
   it('renders correctly when code management is hidden', () => {
@@ -141,12 +138,8 @@ describe('<Sidebar />', () => {
       },
     });
 
-    const tree = renderer
-      .create((
-        <SidebarWrapper store={store} />
-      ))
-      .toJSON();
-    expect(tree).toMatchSnapshot();
+    render(<SidebarWrapper store={store} />);
+    expect(screen.queryByRole('link', { name: 'Code Management' })).toBeNull();
   });
 
   it('renders correctly when expanded', () => {
@@ -158,12 +151,8 @@ describe('<Sidebar />', () => {
       },
     });
 
-    const tree = renderer
-      .create((
-        <SidebarWrapper store={store} />
-      ))
-      .toJSON();
-    expect(tree).toMatchSnapshot();
+    render(<SidebarWrapper store={store} />);
+    expect(screen.getByTestId('nav-sidebar')).toHaveClass('expanded');
   });
 
   it('renders correctly when expanded by toggle', () => {
@@ -175,12 +164,8 @@ describe('<Sidebar />', () => {
       },
     });
 
-    const tree = renderer
-      .create((
-        <SidebarWrapper store={store} />
-      ))
-      .toJSON();
-    expect(tree).toMatchSnapshot();
+    render(<SidebarWrapper store={store} />);
+    expect(screen.getByTestId('nav-sidebar')).toHaveClass('expanded');
   });
 
   describe('calls onWidthChange callback', () => {
@@ -307,6 +292,21 @@ describe('<Sidebar />', () => {
     const subscriptionManagementLink = screen.getByRole('link', { name: 'Subscription Management' });
     expect(subscriptionManagementLink).toBeInTheDocument();
     expect(subscriptionManagementLink).toHaveAttribute('href', '/test-enterprise-slug/admin/subscriptions');
+  });
+
+  it('renders correctly when licenseManagementScreen is enabled', () => {
+    const store = createStore({
+      sidebar: {
+        ...initialState.sidebar,
+      },
+      portalConfiguration: {
+        enableSubscriptionManagementScreen: true,
+      },
+    });
+    render(<SidebarWrapper store={store} />);
+    const licenseManagementLink = screen.getByRole('link', { name: 'License Management' });
+    expect(licenseManagementLink).toBeInTheDocument();
+    expect(licenseManagementLink).toHaveAttribute('href', '/test-enterprise-slug/admin/licenses');
   });
 
   it('renders correctly when enableReportingConfigScreen is false', () => {

@@ -10,7 +10,7 @@ import ReportingConfig from '../ReportingConfig';
 import NotFoundPage from '../NotFoundPage';
 import LoadingMessage from '../LoadingMessage';
 import SettingsPage from '../settings';
-import { SubscriptionManagementPage } from '../subscriptions';
+import { LicenseManagementPage, SubscriptionManagementPage } from '../subscriptions';
 import AnalyticsV2Page from '../AdvanceAnalyticsV2/AnalyticsV2Page';
 import RevisedAnalyticsV2Page from '../AdvanceAnalyticsV2.0/AnalyticsPage';
 import FeatureNotSupportedPage from '../FeatureNotSupportedPage';
@@ -79,6 +79,14 @@ const EnterpriseAppRoutes = ({
           key="subscription-management"
           path="/*"
           element={<SubscriptionManagementPage />}
+        />
+      )}
+
+      {enableSubscriptionManagementPage && enterpriseAppPage === ROUTE_NAMES.licenseManagement && (
+        <Route
+          key="license-management"
+          path="/*"
+          element={<LicenseManagementPage />}
         />
       )}
 

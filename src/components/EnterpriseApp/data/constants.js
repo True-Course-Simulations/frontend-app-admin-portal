@@ -8,6 +8,7 @@ export const ROUTE_NAMES = {
   bulkEnrollmentResults: 'bulk-enrollment-results',
   codeManagement: 'coupons',
   contentHighlights: 'content-highlights',
+  licenseManagement: 'licenses',
   learners: 'learners',
   learners_v2: 'learners-v2',
   learnerCredit: 'learner-credit',
